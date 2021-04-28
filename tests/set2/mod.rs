@@ -105,3 +105,36 @@ mod challenge11_ecb_cbc_detection_oracle {
 /// Byte-at-a-time ECB decryption (Simple) - http://cryptopals.com/sets/2/challenges/12
 /// Byte-at-a-time ECB decryption (Harder) - http://cryptopals.com/sets/2/challenges/14
 mod challenge12_14_ecb_decrypt;
+
+/// ECB cut-and-paste - http://cryptopals.com/sets/2/challenges/13
+mod challenge13_ecb_cut_and_paste;
+
+/// PKCS#7 padding validation - http://cryptopals.com/sets/2/challenges/15
+mod challenge15_pkcs7_validation {
+    use pkcs7::PKCS7Error;
+    use rustopals::block::pkcs7;
+
+    #[test]
+    fn correct_padding() {
+        assert_eq!(
+            pkcs7::unpad("ICE ICE BABY\x04\x04\x04\x04".as_bytes(), 16).unwrap(),
+            "ICE ICE BABY".as_bytes()
+        );
+    }
+
+    #[test]
+    fn wrong_padding() {
+        assert_eq!(
+            pkcs7::unpad("ICE ICE BABY\x05\x05\x05\x05".as_bytes(), 16),
+            Err(PKCS7Error::BadPadding)
+        );
+
+        assert_eq!(
+            pkcs7::unpad("ICE ICE BABY\x01\x02\x03\x04".as_bytes(), 16),
+            Err(PKCS7Error::BadPadding)
+        );
+    }
+}
+
+/// CBC bitflipping attacks - http://cryptopals.com/sets/2/challenges/16
+mod challenge16_cbc_bitflip;

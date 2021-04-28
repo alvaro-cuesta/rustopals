@@ -1,0 +1,115 @@
+mod adversary {
+    use rustopals::block::{aes128, Cipher};
+    use std::collections::HashMap;
+
+    pub struct LoginSystem {
+        key: Vec<u8>,
+    }
+
+    impl LoginSystem {
+        pub fn new() -> LoginSystem {
+            LoginSystem {
+                key: crate::gen_random_bytes(aes128::Cipher::BLOCK_SIZE),
+            }
+        }
+
+        pub fn generate_payload(&self, email: &str) -> Vec<u8> {
+            aes128::CIPHER.encrypt_ecb_pkcs7(profile_for(email).as_bytes(), &self.key)
+        }
+
+        pub fn is_admin(&self, payload: &[u8]) -> bool {
+            use std::str;
+
+            match aes128::CIPHER.decrypt_ecb_pkcs7(payload, &self.key) {
+                Ok(decrypted) => match str::from_utf8(&decrypted) {
+                    Ok(string) => parse(string)["role"] == "admin",
+                    Err(_) => false,
+                },
+                Err(_) => false,
+            }
+        }
+    }
+
+    /// Parse a querystring-like string into a `K -> V` mapping.
+    fn parse(data: &str) -> HashMap<&str, &str> {
+        data.split('&')
+            .map(|part| {
+                let pair = part.splitn(2, '=').collect::<Vec<_>>();
+                (pair[0], if pair.len() == 2 { pair[1] } else { "true" })
+            })
+            .collect()
+    }
+
+    /// Build a user profile for a certain email.
+    fn profile_for(email: &str) -> String {
+        let sanitized = email.replace("=", "").replace("&", "");
+
+        ["email=", &sanitized, "&uid=10&role=user"].concat()
+    }
+
+    #[cfg(test)]
+    mod test {
+        #[test]
+        fn parse() {
+            use std::array::IntoIter;
+            use std::collections::HashMap;
+            use std::iter::FromIterator;
+
+            let expected = HashMap::<_, _>::from_iter(IntoIter::new([
+                ("foo", "bar"),
+                ("baz", "qux"),
+                ("zap", "zazzle"),
+                ("inga", "true"),
+            ]));
+
+            assert_eq!(super::parse("foo=bar&baz=qux&zap=zazzle&inga"), expected)
+        }
+
+        #[test]
+        fn profile_for() {
+            assert_eq!(
+                super::profile_for("foo@bar.com"),
+                "email=foo@bar.com&uid=10&role=user"
+            );
+
+            assert_eq!(
+                super::profile_for("f=o&o@b==&ar.com==&"),
+                "email=foo@bar.com&uid=10&role=user"
+            );
+        }
+    }
+}
+
+/*
+ *
+ */
+
+fn crack(login: &adversary::LoginSystem) -> Vec<u8> {
+    // CUT
+    // 0123456789abcdef0123456789abcdef0123456789abcdef
+    //                 ----------------
+    // email=0000000000admin___________&uid=10&role=user (where _ is pkcs7 padding)
+    let admin =
+        login.generate_payload("0000000000admin\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b");
+    let admin_bytes = &admin[0x10..0x20];
+
+    // PASTE
+    // 0123456789abcdef0123456789abcdef0123456789abcdef
+    //                                 ----------------
+    // email=trust@mee.com&uid=10&role=user____________
+    let mut my_email = login.generate_payload("trust@mee.com");
+    my_email.truncate(0x20);
+    my_email.extend_from_slice(admin_bytes);
+
+    my_email
+}
+
+#[cfg(test)]
+mod test {
+    #[test]
+    fn crack() {
+        let login = super::adversary::LoginSystem::new();
+
+        assert!(login.is_admin(&super::crack(&login)))
+    }
+}
