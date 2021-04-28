@@ -36,20 +36,31 @@ pub fn generate_bytes(n: usize) -> Vec<u8> {
   rng.sample_iter(&Standard).take(n).collect()
 }
 
+/// Scores text based on its contents.
+pub trait TextScorer {
+  fn score(&self, string: &str) -> f32;
+}
+
+/// Scores according to occurrences of English's most common letters.
+pub struct NaiveTextScorer;
+
+/// Letters to count in `NaiveTextScorer`.
 const ENGLISH_COMMON_LETTERS: &str = "ETAOIN SHRDLU";
 
-pub(crate) fn score_string(string: &str) -> f32 {
-  use iter::Occurrenceable;
+impl TextScorer for NaiveTextScorer {
+  fn score(&self, string: &str) -> f32 {
+    use iter::Occurrenceable;
 
-  let input_occurrences = string
-    .chars()
-    .map(|ch| ch.to_uppercase().collect::<String>())
-    .occurrences();
+    let input_occurrences = string
+      .chars()
+      .map(|ch| ch.to_uppercase().collect::<String>())
+      .occurrences();
 
-  let occurrences: usize = ENGLISH_COMMON_LETTERS
-    .chars()
-    .map(|x| input_occurrences.get(&x.to_string()).unwrap_or(&0))
-    .sum();
+    let occurrences: usize = ENGLISH_COMMON_LETTERS
+      .chars()
+      .map(|x| input_occurrences.get(&x.to_string()).unwrap_or(&0))
+      .sum();
 
-  occurrences as f32 / ENGLISH_COMMON_LETTERS.len() as f32
+    occurrences as f32 / ENGLISH_COMMON_LETTERS.len() as f32
+  }
 }

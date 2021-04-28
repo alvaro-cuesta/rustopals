@@ -8,6 +8,7 @@ use num_traits::Bounded;
 use std::{iter, ops};
 
 use crate::stream;
+use crate::util::TextScorer;
 use stream::Cipher;
 
 /// XOR cipher with a single-item key (`AAAAAAAAAAAA...`)
@@ -44,7 +45,7 @@ impl<K> SingleCipher<K> {
     /// analysis.
     ///
     /// Returns `Some<(key, plaintext)>` if cracked successfully, `None` otherwise.
-    pub fn crack<'t, T>(ciphertext: &'t [T]) -> Option<(K, String)>
+    pub fn crack<'t, T>(scorer: &dyn TextScorer, ciphertext: &'t [T]) -> Option<(K, String)>
     where
         &'t T: ops::BitXor<K, Output = u8>,
         K: Bounded + iter::Step,
@@ -57,7 +58,7 @@ impl<K> SingleCipher<K> {
 
                 String::from_utf8(xored)
                     .ok()
-                    .map(|plaintext| (key, crate::util::score_string(&plaintext), plaintext))
+                    .map(|plaintext| (key, scorer.score(&plaintext), plaintext))
             })
             .max_by(|(_, a_score, _), (_, b_score, _)| a_score.partial_cmp(b_score).unwrap())
             .map(|(key, _, plaintext)| (key, plaintext))
@@ -68,7 +69,10 @@ impl<K> SingleCipher<K> {
     ///
     /// Returns `Some(index, key, plaintext)` if cracked successfully, `None`
     /// otherwise.
-    pub fn detect<'t, T>(ciphertexts: &[&'t [T]]) -> Option<(usize, K, String)>
+    pub fn detect<'t, T>(
+        scorer: &dyn TextScorer,
+        ciphertexts: &[&'t [T]],
+    ) -> Option<(usize, K, String)>
     where
         &'t T: ops::BitXor<K, Output = u8>,
         K: Bounded + iter::Step,
@@ -77,11 +81,9 @@ impl<K> SingleCipher<K> {
             .into_iter()
             .enumerate()
             .filter_map(|(pos, ciphertext)| {
-                Self::crack(&ciphertext).map(|(key, plaintext)| (pos, key, plaintext))
+                Self::crack(scorer, &ciphertext).map(|(key, plaintext)| (pos, key, plaintext))
             })
-            .map(|(pos, key, plaintext)| {
-                (pos, key, crate::util::score_string(&plaintext), plaintext)
-            })
+            .map(|(pos, key, plaintext)| (pos, key, scorer.score(&plaintext), plaintext))
             .max_by(|(_, _, a_score, _), (_, _, b_score, _)| a_score.partial_cmp(b_score).unwrap())
             .map(|(pos, key, _, plaintext)| (pos, key, plaintext))
     }
@@ -142,7 +144,7 @@ impl<'k, K> RepeatingCipher<'k, K> {
     }
 
     /// Guess key of `guessed_keysize` for a given `ciphertext`.
-    pub fn guess_key<T>(ciphertext: &[T], guessed_keysize: usize) -> Vec<K>
+    pub fn guess_key<T>(scorer: &dyn TextScorer, ciphertext: &[T], guessed_keysize: usize) -> Vec<K>
     where
         T: Clone,
         for<'t> &'t T: ops::BitXor<K, Output = u8>,
@@ -161,7 +163,7 @@ impl<'k, K> RepeatingCipher<'k, K> {
                     inner_vec.push(block[i].clone());
                 }
 
-                SingleCipher::crack(&inner_vec).map(|(key, _)| key)
+                SingleCipher::crack(scorer, &inner_vec).map(|(key, _)| key)
             })
             .collect::<Vec<_>>()
     }

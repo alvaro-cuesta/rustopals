@@ -1,3 +1,5 @@
+use rustopals::util::NaiveTextScorer;
+
 #[test]
 /// Convert hex to base64 - https://cryptopals.com/sets/1/challenges/1
 fn challenge1_hex_to_base64() {
@@ -46,7 +48,7 @@ fn challenge3_single_byte_xor_cipher() {
     .map(|x| x.unwrap())
     .collect::<Vec<_>>();
 
-  let (key, plaintext) = SingleCipher::<u8>::crack(&input).unwrap();
+  let (key, plaintext) = SingleCipher::<u8>::crack(&NaiveTextScorer, &input).unwrap();
 
   assert_eq!(key, EXPECTED_KEY);
   assert_eq!(plaintext, EXPECTED_PLAINTEXT);
@@ -72,7 +74,7 @@ fn challenge4_detect_single_byte_xor() {
 
   let input_slices = input.iter().map(Vec::as_slice).collect::<Vec<_>>();
 
-  let (pos, key, plaintext) = SingleCipher::<u8>::detect(&input_slices).unwrap();
+  let (pos, key, plaintext) = SingleCipher::<u8>::detect(&NaiveTextScorer, &input_slices).unwrap();
 
   assert_eq!(pos, EXPECTED_POS);
   assert_eq!(key, EXPECTED_KEY);
@@ -117,7 +119,8 @@ fn challenge6_repeating_key_xor() {
 
   assert_eq!(guessed_keysize, EXPECTED_KEY.len());
 
-  let guessed_key = RepeatingCipher::<u8>::guess_key(&ciphertext, guessed_keysize);
+  let guessed_key =
+    RepeatingCipher::<u8>::guess_key(&NaiveTextScorer, &ciphertext, guessed_keysize);
 
   assert_eq!(guessed_key, EXPECTED_KEY);
 
