@@ -1,5 +1,9 @@
+//! CTR-based stream cipher.
 use crate::{block, stream};
 
+/// CTR-based stream cipher.
+///
+/// Generate a stream cipher from any block cipher.
 pub struct Cipher<'k, 'c, C: block::Cipher + 'c> {
     block_cipher: &'c C,
     key: &'k [u8],
@@ -7,6 +11,7 @@ pub struct Cipher<'k, 'c, C: block::Cipher + 'c> {
 }
 
 impl<'k, 'c, C: block::Cipher + 'c> Cipher<'k, 'c, C> {
+    /// Generate a stream cipher from any block cipher in CTR mode.
     pub fn new(cipher: &'c C, key: &'k [u8]) -> Cipher<'k, 'c, C> {
         use crate::util::generate_bytes;
 
@@ -17,6 +22,7 @@ impl<'k, 'c, C: block::Cipher + 'c> Cipher<'k, 'c, C> {
         }
     }
 
+    /// Allows specifying the initial CTR nonce.
     pub fn from_nonce(cipher: &'c C, key: &'k [u8], nonce: &[u8]) -> Cipher<'k, 'c, C> {
         Cipher {
             block_cipher: cipher,
