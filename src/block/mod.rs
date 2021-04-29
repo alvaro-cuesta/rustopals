@@ -175,3 +175,15 @@ impl Mode {
         }
     }
 }
+
+/// Count repeated `block_size` bocks in `data`.
+pub fn count_repeated(data: &[u8], block_size: usize) -> usize {
+    let mut chunks: Vec<&[u8]> = data.chunks(block_size).collect();
+
+    let total_len = chunks.len();
+
+    chunks.sort();
+    chunks.dedup();
+
+    total_len - chunks.len()
+}
