@@ -323,6 +323,7 @@ fn inv_mix_columns(state: &mut State) {
 #[cfg(test)]
 mod test {
     use crate::block::Cipher;
+    use test::Bencher;
 
     const PLAINTEXT: [u8; 16] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     const KEY: [u8; 16] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -422,5 +423,17 @@ mod test {
         super::inv_mix_columns(&mut state);
 
         assert_eq!(state, MIX_COLUMNS_INPUT);
+    }
+
+    const BENCH_BUFFER: [u8; super::Cipher::KEY_SIZE] = [0; super::Cipher::KEY_SIZE];
+
+    #[bench]
+    fn bench_aes128_encrypt(b: &mut Bencher) {
+        b.iter(|| super::Cipher.encrypt(&BENCH_BUFFER, &BENCH_BUFFER))
+    }
+
+    #[bench]
+    fn bench_aes128_decrypt(b: &mut Bencher) {
+        b.iter(|| super::Cipher.decrypt(&BENCH_BUFFER, &BENCH_BUFFER))
     }
 }

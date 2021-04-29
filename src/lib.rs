@@ -14,6 +14,10 @@
 //! serve as a real-world exercise.
 
 #![feature(step_trait)]
+#![feature(test)]
+
+#[cfg(test)]
+extern crate test;
 
 pub mod block;
 pub mod rand;
