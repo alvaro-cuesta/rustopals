@@ -1,3 +1,5 @@
+//! [AES-128](https://en.wikipedia.org/wiki/Advanced_Encryption_Standard) block-cipher.
+
 mod key;
 
 use crate::block;
@@ -157,6 +159,7 @@ static MULT_E: [u8; 256] = [
     0xd7, 0xd9, 0xcb, 0xc5, 0xef, 0xe1, 0xf3, 0xfd, 0xa7, 0xa9, 0xbb, 0xb5, 0x9f, 0x91, 0x83, 0x8d,
 ];
 
+/// [AES-128](https://en.wikipedia.org/wiki/Advanced_Encryption_Standard) block-cipher implementation.
 pub struct Cipher;
 
 pub static CIPHER: &Cipher = &Cipher;
