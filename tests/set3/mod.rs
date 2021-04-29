@@ -7,11 +7,11 @@ fn matasano_18_implement_ctr() {
     use rustopals::block::aes128;
     use rustopals::stream::{ctr, Cipher};
 
-    static BASE64_INPUT: &'static str =
+    const BASE64_INPUT: &str =
         "L77na/nrFsKvynd6HzOoG7GHTLXsTVu9qvY/2syLXzhPweyyMTJULu/6/kXX0KSvoOLSFQ==";
-    static KEY: &'static str = "YELLOW SUBMARINE";
-    static NONCE: &'static [u8] = &[0, 0, 0, 0, 0, 0, 0, 0];
-    static EXPECTED: &'static str = "Yo, VIP Let's kick it Ice, Ice, baby Ice, Ice, baby ";
+    const KEY: &str = "YELLOW SUBMARINE";
+    const NONCE: &[u8] = &[0, 0, 0, 0, 0, 0, 0, 0];
+    const EXPECTED: &str = "Yo, VIP Let's kick it Ice, Ice, baby Ice, Ice, baby ";
 
     let input = base64::decode(BASE64_INPUT).unwrap();
 

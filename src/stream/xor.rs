@@ -18,9 +18,9 @@ use stream::Cipher;
 /// ```
 /// use rustopals::stream::{ Cipher, xor };
 ///
-/// static KEY: u8 = 1;
-/// static PLAINTEXT: &[u8] = &[1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
-/// static EXPECTED_CIPHERTEXT: &[u8] = &[0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+/// const KEY: u8 = 1;
+/// const PLAINTEXT: &[u8] = &[1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
+/// const EXPECTED_CIPHERTEXT: &[u8] = &[0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 ///
 /// let result = xor::SingleCipher(KEY)
 ///     .process(PLAINTEXT)
@@ -96,9 +96,9 @@ impl<K> SingleCipher<K> {
 /// ```
 /// use rustopals::stream::{ Cipher, xor };
 ///
-/// static KEY: &[u8] = &[0, 1, 2, 3];
-/// static PLAINTEXT: &[u8] = &[0, 1, 2, 3, 0, 1, 2, 3, 0, 1];
-/// static EXPECTED_CIPHERTEXT: &[u8] = &[0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+/// const KEY: &[u8] = &[0, 1, 2, 3];
+/// const PLAINTEXT: &[u8] = &[0, 1, 2, 3, 0, 1, 2, 3, 0, 1];
+/// const EXPECTED_CIPHERTEXT: &[u8] = &[0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 ///
 /// let result = xor::RepeatingCipher(KEY)
 ///     .process(PLAINTEXT)

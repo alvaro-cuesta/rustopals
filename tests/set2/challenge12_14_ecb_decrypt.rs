@@ -1,4 +1,4 @@
-static UNKNOWN_STRING: &'static str = "Um9sbGluJyBpbiBteSA1LjAKV2l0aCBteSByYWctdG9wIGRvd24gc28gbXkgaGFpciBjYW4gYmxvdwpUaGUgZ2lybGllcyBvbiBzdGFuZGJ5IHdhdmluZyBqdXN0IHRvIHNheSBoaQpEaWQgeW91IHN0b3A/IE5vLCBJIGp1c3QgZHJvdmUgYnkK";
+const UNKNOWN_STRING: &str = "Um9sbGluJyBpbiBteSA1LjAKV2l0aCBteSByYWctdG9wIGRvd24gc28gbXkgaGFpciBjYW4gYmxvdwpUaGUgZ2lybGllcyBvbiBzdGFuZGJ5IHdhdmluZyBqdXN0IHRvIHNheSBoaQpEaWQgeW91IHN0b3A/IE5vLCBJIGp1c3QgZHJvdmUgYnkK";
 
 mod adversary {
     use rustopals::block::{aes128, Cipher};
@@ -222,8 +222,8 @@ mod test {
     use super::adversary::Encryptor;
     use rustopals::block::{aes128, Cipher};
 
-    static TEST_MIN_PREPEND: usize = 10;
-    static TEST_MAX_PREPEND: usize = 32;
+    const TEST_MIN_PREPEND: usize = 10;
+    const TEST_MAX_PREPEND: usize = 32;
 
     #[test]
     fn test_discover_block_size_easy() {

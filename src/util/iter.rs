@@ -28,11 +28,11 @@ where
     /// ```
     /// use rustopals::util::iter::Xorable;
     ///
-    /// static EXPECTED_DISTANCE: u32 = 37;
+    /// const EXPECTED_DISTANCE: u32 = 37;
     ///
-    /// static A: &[u8] = &[0u8, 1, 2, 3];
-    /// static B: &[u8] = &[1u8, 3, 3, 7];
-    /// static EXPECTED: &[u8] = &[1u8, 2, 1, 4];
+    /// const A: &[u8] = &[0u8, 1, 2, 3];
+    /// const B: &[u8] = &[1u8, 3, 3, 7];
+    /// const EXPECTED: &[u8] = &[1u8, 2, 1, 4];
     ///
     /// let result = A
     ///     .iter()
@@ -56,11 +56,11 @@ where
     /// ```
     /// use rustopals::util::iter::Xorable;
     ///
-    /// static EXPECTED_DISTANCE: u32 = 37;
+    /// const EXPECTED_DISTANCE: u32 = 37;
     ///
-    /// static A: &[u8] = &[0u8, 1, 2, 3, 4];
-    /// static B: &[u8] = &[1u8, 3];
-    /// static EXPECTED: &[u8] = &[1u8, 2, 3, 0, 5];
+    /// const A: &[u8] = &[0u8, 1, 2, 3, 4];
+    /// const B: &[u8] = &[1u8, 3];
+    /// const EXPECTED: &[u8] = &[1u8, 2, 3, 0, 5];
     ///
     /// let result = A
     ///     .iter()
@@ -121,7 +121,7 @@ where
 /// ```
 /// use rustopals::util::iter::Hammingable;
 ///
-/// static EXPECTED_DISTANCE: u32 = 37;
+/// const EXPECTED_DISTANCE: u32 = 37;
 ///
 /// let distance = "this is a test".as_bytes()
 ///     .hamming_distance("wokka wokka!!!".as_bytes());
@@ -157,8 +157,8 @@ where
 /// ```
 /// use rustopals::util::iter::ToHexable;
 ///
-/// static INPUT: &[u8] = &[0x13, 0x37, 0xde, 0xad, 0xbe, 0xef];
-/// static EXPECTED: &str = "1337deadbeef";
+/// const INPUT: &[u8] = &[0x13, 0x37, 0xde, 0xad, 0xbe, 0xef];
+/// const EXPECTED: &str = "1337deadbeef";
 ///
 /// let result = INPUT
 ///     .iter()
@@ -191,7 +191,7 @@ where
 /// use std::iter::FromIterator;
 /// use rustopals::util::iter::Occurrenceable;
 ///
-/// static INPUT: &str = "Hello world!";
+/// const INPUT: &str = "Hello world!";
 ///
 /// let expected = HashMap::<_, _>::from_iter(IntoIter::new([
 ///     ('H', 1),

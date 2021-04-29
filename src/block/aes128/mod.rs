@@ -324,9 +324,9 @@ fn inv_mix_columns(state: &mut State) {
 mod test {
     use crate::block::Cipher;
 
-    static PLAINTEXT: [u8; 16] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-    static KEY: [u8; 16] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-    static CIPHERTEXT: [u8; 16] = [
+    const PLAINTEXT: [u8; 16] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    const KEY: [u8; 16] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    const CIPHERTEXT: [u8; 16] = [
         102, 233, 75, 212, 239, 138, 44, 59, 136, 76, 250, 89, 202, 52, 43, 46,
     ];
 
@@ -342,14 +342,14 @@ mod test {
         assert_eq!(decrypted, PLAINTEXT);
     }
 
-    static SUB_BYTES_INPUT: super::State = [
+    const SUB_BYTES_INPUT: super::State = [
         [0x0f, 0x14, 0x73, 0xca],
         [0x43, 0xdc, 0xee, 0x5e],
         [0x04, 0xbe, 0xa7, 0xdd],
         [0xa3, 0x72, 0x69, 0x97],
     ];
 
-    static SUB_BYTES_OUTPUT: super::State = [
+    const SUB_BYTES_OUTPUT: super::State = [
         [0x76, 0xfa, 0x8f, 0x74],
         [0x1a, 0x86, 0x28, 0x58],
         [0xf2, 0xae, 0x5c, 0xc1],
@@ -372,10 +372,10 @@ mod test {
         assert_eq!(state, SUB_BYTES_INPUT);
     }
 
-    static SHIFT_ROWS_INPUT: super::State =
+    const SHIFT_ROWS_INPUT: super::State =
         [[0, 1, 2, 3], [4, 5, 6, 7], [8, 9, 10, 11], [12, 13, 14, 15]];
 
-    static SHIFT_ROWS_OUTPUT: super::State =
+    const SHIFT_ROWS_OUTPUT: super::State =
         [[0, 5, 10, 15], [4, 9, 14, 3], [8, 13, 2, 7], [12, 1, 6, 11]];
 
     #[test]
@@ -394,14 +394,14 @@ mod test {
         assert_eq!(state, SHIFT_ROWS_INPUT);
     }
 
-    static MIX_COLUMNS_INPUT: super::State = [
+    const MIX_COLUMNS_INPUT: super::State = [
         [0x76, 0x86, 0x5c, 0x88],
         [0x1a, 0xae, 0xf9, 0x74],
         [0xf2, 0x40, 0x8f, 0x58],
         [0x0a, 0xfa, 0x28, 0xc1],
     ];
 
-    static MIX_COLUMNS_OUTPUT: super::State = [
+    const MIX_COLUMNS_OUTPUT: super::State = [
         [0xa9, 0x0d, 0xcb, 0x4b],
         [0x50, 0x39, 0xc1, 0x91],
         [0xe8, 0xa0, 0x5f, 0x72],

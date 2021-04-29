@@ -75,9 +75,9 @@ fn key_core(input: &[u8; 4], iteration: usize) -> [u8; 4] {
 mod test {
     #[test]
     fn expand() {
-        static KEY: [u8; 16] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
+        const KEY: [u8; 16] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
 
-        static EXPECTED_EXPANDED_KEY: super::ExpandedKey = [
+        const EXPECTED_EXPANDED_KEY: super::ExpandedKey = [
             [
                 [0x00, 0x01, 0x02, 0x03],
                 [0x04, 0x05, 0x06, 0x07],

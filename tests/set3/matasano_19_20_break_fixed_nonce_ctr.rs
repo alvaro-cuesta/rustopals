@@ -43,7 +43,7 @@ Points for automating this, but part of the reason I'm having you do this is tha
 
 #[test]
 fn crack_substitutions_19() {
-    static STRINGS: &'static str = include_str!("19.txt");
+    const STRINGS: &str = include_str!("19.txt");
 
     let strings = STRINGS
         .lines()
@@ -72,7 +72,7 @@ Solve the resulting concatenation of ciphertexts as if for repeating- key XOR, w
 
 #[test]
 fn crack_statistically_20() {
-    static STRINGS: &'static str = include_str!("20.txt");
+    const STRINGS: &str = include_str!("20.txt");
 
     let strings = STRINGS
         .lines()

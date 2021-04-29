@@ -3,9 +3,9 @@
 fn challenge9_pkcs7_padding() {
     use rustopals::block::pkcs7;
 
-    static INPUT: &[u8] = b"YELLOW SUBMARINE";
-    static BLOCK_SIZE: u8 = 20;
-    static EXPECTED: &[u8] = b"YELLOW SUBMARINE\x04\x04\x04\x04";
+    const INPUT: &[u8] = b"YELLOW SUBMARINE";
+    const BLOCK_SIZE: u8 = 20;
+    const EXPECTED: &[u8] = b"YELLOW SUBMARINE\x04\x04\x04\x04";
 
     assert_eq!(pkcs7::pad(INPUT, BLOCK_SIZE), EXPECTED,);
 }
@@ -14,10 +14,10 @@ fn challenge9_pkcs7_padding() {
 mod challenge10_cbc_mode {
     use rustopals::block::{aes128, cbc};
 
-    static CIPHERTEXT: &str = include_str!("10.txt");
-    static PLAINTEXT: &[u8] = include_bytes!("10.solution.txt");
-    static KEY: &[u8] = b"YELLOW SUBMARINE";
-    static IV: &[u8] = &[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    const CIPHERTEXT: &str = include_str!("10.txt");
+    const PLAINTEXT: &[u8] = include_bytes!("10.solution.txt");
+    const KEY: &[u8] = b"YELLOW SUBMARINE";
+    const IV: &[u8] = &[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 
     #[test]
     fn encrypt() {
@@ -81,7 +81,7 @@ mod challenge11_ecb_cbc_detection_oracle {
 
     #[test]
     fn detect_mode() {
-        static TEST_TIMES: usize = 100;
+        const TEST_TIMES: usize = 100;
 
         for _ in 0..TEST_TIMES {
             let mut snitched_mode = None;

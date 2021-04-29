@@ -1,6 +1,6 @@
 use rustopals::block::{aes128, Cipher};
 
-static STRINGS: &'static str = include_str!("17.txt");
+const STRINGS: &str = include_str!("17.txt");
 
 mod adversary {
     use rustopals::block::{aes128, Cipher};
