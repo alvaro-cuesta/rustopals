@@ -13,7 +13,6 @@ use crate::util::iter::Xorable;
 
 /// Encrypt `plaintext` in CBC mode with `key` and initialization vector `iv`
 /// using `block::Cipher`.
-#[allow(unstable_name_collisions)]
 pub fn encrypt<C: block::Cipher>(cipher: &C, plaintext: &[u8], key: &[u8], iv: &[u8]) -> Vec<u8> {
     assert_eq!(iv.len(), C::BLOCK_SIZE);
 
@@ -38,7 +37,6 @@ pub fn encrypt<C: block::Cipher>(cipher: &C, plaintext: &[u8], key: &[u8], iv: &
 
 /// Decrypt `ciphertext` in CBC mode with `key` and initialization vector `iv`
 /// using `block::Cipher`.
-#[allow(unstable_name_collisions)]
 pub fn decrypt<C: block::Cipher>(cipher: &C, ciphertext: &[u8], key: &[u8], iv: &[u8]) -> Vec<u8> {
     assert_eq!(iv.len(), C::BLOCK_SIZE);
 
