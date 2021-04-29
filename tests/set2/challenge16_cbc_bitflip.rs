@@ -26,13 +26,13 @@ mod adversary {
             ]
             .concat();
 
-            aes128::CIPHER.encrypt_cbc_pkcs7(plaintext.as_bytes(), &self.key, &self.iv)
+            aes128::Cipher.encrypt_cbc_pkcs7(plaintext.as_bytes(), &self.key, &self.iv)
         }
 
         pub fn is_admin(&self, payload: &[u8]) -> bool {
             use std::str;
 
-            match aes128::CIPHER.decrypt_cbc_pkcs7(payload, &self.key, &self.iv) {
+            match aes128::Cipher.decrypt_cbc_pkcs7(payload, &self.key, &self.iv) {
                 Ok(decrypted) => {
                     // Whoopsies! Rust is so cool I had to mark this as unsafe
                     // Forced to use unsafe because String::from_utf8 detected wrong UTF-8 in the garbage block

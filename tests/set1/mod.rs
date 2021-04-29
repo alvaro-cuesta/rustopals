@@ -145,7 +145,7 @@ mod challenge7_aes_ecb {
     let expected_ciphertext = ::base64::decode(&ciphertext_no_newlines).unwrap();
 
     assert_eq!(
-      ecb::encrypt(aes128::CIPHER, PLAINTEXT, KEY),
+      ecb::encrypt(&aes128::Cipher, PLAINTEXT, KEY),
       expected_ciphertext,
     );
   }
@@ -154,7 +154,7 @@ mod challenge7_aes_ecb {
   fn decrypt() {
     let ciphertext_no_newlines = CIPHERTEXT.lines().collect::<String>();
     let ciphertext = ::base64::decode(&ciphertext_no_newlines).unwrap();
-    let decrypted = ecb::decrypt(aes128::CIPHER, &ciphertext, KEY);
+    let decrypted = ecb::decrypt(&aes128::Cipher, &ciphertext, KEY);
 
     assert_eq!(decrypted, PLAINTEXT,);
   }

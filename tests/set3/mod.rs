@@ -15,7 +15,7 @@ fn matasano_18_implement_ctr() {
 
     let input = base64::decode(BASE64_INPUT).unwrap();
 
-    let result = ctr::Cipher::from_nonce(aes128::CIPHER, KEY.as_bytes(), NONCE)
+    let result = ctr::Cipher::from_nonce(&aes128::Cipher, KEY.as_bytes(), NONCE)
         .process(input)
         .collect::<Vec<_>>();
 

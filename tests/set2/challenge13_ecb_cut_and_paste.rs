@@ -14,13 +14,13 @@ mod adversary {
         }
 
         pub fn generate_payload(&self, email: &str) -> Vec<u8> {
-            aes128::CIPHER.encrypt_ecb_pkcs7(profile_for(email).as_bytes(), &self.key)
+            aes128::Cipher.encrypt_ecb_pkcs7(profile_for(email).as_bytes(), &self.key)
         }
 
         pub fn is_admin(&self, payload: &[u8]) -> bool {
             use std::str;
 
-            match aes128::CIPHER.decrypt_ecb_pkcs7(payload, &self.key) {
+            match aes128::Cipher.decrypt_ecb_pkcs7(payload, &self.key) {
                 Ok(decrypted) => match str::from_utf8(&decrypted) {
                     Ok(string) => parse(string)["role"] == "admin",
                     Err(_) => false,

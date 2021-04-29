@@ -25,7 +25,7 @@ mod challenge10_cbc_mode {
         let expected_ciphertext = ::base64::decode(&ciphertext_no_newlines).unwrap();
 
         assert_eq!(
-            cbc::encrypt(aes128::CIPHER, PLAINTEXT, KEY, IV),
+            cbc::encrypt(&aes128::Cipher, PLAINTEXT, KEY, IV),
             expected_ciphertext,
         );
     }
@@ -36,7 +36,7 @@ mod challenge10_cbc_mode {
         let ciphertext = ::base64::decode(&ciphertext_no_newlines).unwrap();
 
         assert_eq!(
-            cbc::decrypt(aes128::CIPHER, &ciphertext, KEY, IV),
+            cbc::decrypt(&aes128::Cipher, &ciphertext, KEY, IV),
             PLAINTEXT,
         );
     }
@@ -67,14 +67,14 @@ mod challenge11_ecb_cbc_detection_oracle {
         if ::rand::random::<bool>() {
             (
                 block::Mode::ECB,
-                aes128::CIPHER.encrypt_ecb_pkcs7(&extended_plaintext, &key),
+                aes128::Cipher.encrypt_ecb_pkcs7(&extended_plaintext, &key),
             )
         } else {
             let iv = crate::gen_random_bytes(aes128::Cipher::BLOCK_SIZE);
 
             (
                 block::Mode::CBC,
-                aes128::CIPHER.encrypt_cbc_pkcs7(&extended_plaintext, &key, &iv),
+                aes128::Cipher.encrypt_cbc_pkcs7(&extended_plaintext, &key, &iv),
             )
         }
     }

@@ -26,7 +26,7 @@ mod adversary {
 
             let iv = generate_bytes(aes128::Cipher::BLOCK_SIZE);
 
-            let encrypted = aes128::CIPHER.encrypt_cbc_pkcs7(
+            let encrypted = aes128::Cipher.encrypt_cbc_pkcs7(
                 &base64::decode(chosen_string).unwrap(),
                 &self.key,
                 &iv,
@@ -36,7 +36,7 @@ mod adversary {
         }
 
         pub fn is_correct_padding(&self, ciphertext: &[u8], iv: &[u8]) -> bool {
-            aes128::CIPHER
+            aes128::Cipher
                 .decrypt_cbc_pkcs7(ciphertext, &self.key, iv)
                 .is_ok()
         }

@@ -29,7 +29,7 @@ mod adversary {
                 .chain(decoded_base64)
                 .collect::<Vec<_>>();
 
-            aes128::CIPHER.encrypt_ecb_pkcs7(&extended_plaintext, &self.key)
+            aes128::Cipher.encrypt_ecb_pkcs7(&extended_plaintext, &self.key)
         }
     }
 
@@ -59,7 +59,7 @@ mod adversary {
                 .chain(decoded_base64)
                 .collect::<Vec<_>>();
 
-            aes128::CIPHER.encrypt_ecb_pkcs7(&extended_plaintext, &self.key)
+            aes128::Cipher.encrypt_ecb_pkcs7(&extended_plaintext, &self.key)
         }
     }
 }

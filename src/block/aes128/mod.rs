@@ -162,8 +162,6 @@ static MULT_E: [u8; 256] = [
 /// [AES-128](https://en.wikipedia.org/wiki/Advanced_Encryption_Standard) block-cipher implementation.
 pub struct Cipher;
 
-pub static CIPHER: &Cipher = &Cipher;
-
 impl Cipher {
     fn key_from_slice(key: &[u8]) -> [u8; 16] {
         let mut key_array: [u8; 16] = [0; 16];

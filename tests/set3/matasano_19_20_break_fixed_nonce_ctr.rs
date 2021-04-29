@@ -18,7 +18,7 @@ mod adversary {
         pub fn encrypt(&self, plaintext: &[u8]) -> Vec<u8> {
             let nonce = vec![0; aes128::Cipher::BLOCK_SIZE / 2];
 
-            ctr::Cipher::from_nonce(aes128::CIPHER, &self.key, &nonce)
+            ctr::Cipher::from_nonce(&aes128::Cipher, &self.key, &nonce)
                 .process(plaintext)
                 .collect()
         }
