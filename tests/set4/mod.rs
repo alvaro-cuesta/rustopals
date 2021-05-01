@@ -53,3 +53,6 @@ mod challenge25_break_random_access_aes_ctr {
 
 /// CTR bitflipping - https://cryptopals.com/sets/4/challenges/26
 mod challenge26_ctr_bitflip;
+
+// Recover the key from CBC with IV=Key - https://cryptopals.com/sets/4/challenges/27
+mod challenge27_recover_iv_as_key;

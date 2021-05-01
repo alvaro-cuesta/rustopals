@@ -83,7 +83,7 @@ serve as a real-world exercise.
 
 - [X] [Break "random access read/write" AES CTR](https://cryptopals.com/sets/4/challenges/25)
 - [X] [CTR bitflipping](https://cryptopals.com/sets/4/challenges/26)
-- [ ] [Recover the key from CBC with IV=Key](https://cryptopals.com/sets/4/challenges/27)
+- [X] [Recover the key from CBC with IV=Key](https://cryptopals.com/sets/4/challenges/27)
 - [ ] [Implement a SHA-1 keyed MAC](https://cryptopals.com/sets/4/challenges/28)
 - [ ] [Break a SHA-1 keyed MAC using length extension](https://cryptopals.com/sets/4/challenges/29)
 - [ ] [Break an MD4 keyed MAC using length extension](https://cryptopals.com/sets/4/challenges/30)
