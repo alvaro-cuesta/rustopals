@@ -257,7 +257,7 @@ mod test {
 
         for i in 0..128 {
             let oracle = |input: &[u8]| {
-                let value = [vec![0u8; i], input.to_vec(), random_bytes.to_vec()].concat();
+                let value = [&vec![0u8; i], input, random_bytes].concat();
 
                 pkcs7::pad(&value, 16)
             };
@@ -295,7 +295,7 @@ mod test {
 
         for i in 0..16 {
             let oracle = |input: &[u8]| {
-                let value = [input.to_vec(), vec![0u8; i]].concat();
+                let value = [input, &vec![0u8; i]].concat();
                 pkcs7::pad(&value, 16)
             };
 

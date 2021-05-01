@@ -183,7 +183,7 @@ mod challenge24_break_mt19937_stream_cipher {
 
         let rand_prefixed = crate::gen_random_bytes_between(5, 15);
 
-        let plaintext = [rand_prefixed, PLAINTEXT.to_vec()].concat();
+        let plaintext = [&rand_prefixed, PLAINTEXT].concat();
         let ciphertext = cipher.process(plaintext).collect::<Vec<_>>();
 
         // We are brute-forcnig this... is that what Cryptopals expects? 16-bit keys be like...
