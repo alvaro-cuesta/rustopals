@@ -1,6 +1,6 @@
 //! Utilities that generate or operate on iterators.
 
-use iter::{IntoIterator, Map, Zip};
+use iter::{Cycle, IntoIterator, Map, Zip};
 use std::collections::HashMap;
 use std::{cmp, fmt, hash, iter, num, ops, str};
 
@@ -73,7 +73,7 @@ where
         self,
         other: IB,
     ) -> Map<
-        Zip<<IA as IntoIterator>::IntoIter, iter::Cycle<<IB as IntoIterator>::IntoIter>>,
+        Zip<<IA as IntoIterator>::IntoIter, Cycle<<IB as IntoIterator>::IntoIter>>,
         fn((A, B)) -> A::Output,
     >
     where
@@ -104,7 +104,7 @@ where
         self,
         other: IB,
     ) -> Map<
-        Zip<<IA as IntoIterator>::IntoIter, iter::Cycle<<IB as IntoIterator>::IntoIter>>,
+        Zip<<IA as IntoIterator>::IntoIter, Cycle<<IB as IntoIterator>::IntoIter>>,
         fn((A, B)) -> A::Output,
     >
     where

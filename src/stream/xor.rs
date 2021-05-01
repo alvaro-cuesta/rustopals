@@ -4,6 +4,7 @@
 //! - Do not depend on `u8` scoring.
 //! - Try removing `Clone`s.
 
+use iter::Cycle;
 use num_traits::Bounded;
 use std::{iter, ops};
 
@@ -107,10 +108,8 @@ impl<K> SingleXORCipher<K> {
 /// ```
 pub struct RepeatingXORCipher<'k, K: 'k>(pub &'k [K]);
 
-impl<'k, K> StreamCipher<&'k K, iter::Cycle<::std::slice::Iter<'k, K>>>
-    for RepeatingXORCipher<'k, K>
-{
-    fn keystream(self) -> iter::Cycle<::std::slice::Iter<'k, K>> {
+impl<'k, K> StreamCipher<&'k K, Cycle<::std::slice::Iter<'k, K>>> for RepeatingXORCipher<'k, K> {
+    fn keystream(self) -> Cycle<::std::slice::Iter<'k, K>> {
         self.0.iter().cycle()
     }
 }
