@@ -28,7 +28,7 @@ fn challenge18_implement_ctr() {
 
 /// Implement the MT19937 Mersenne Twister RNG - http://cryptopals.com/sets/3/challenges/21
 #[test]
-fn mt19937() {
+fn challenge21_mt19937() {
     use rand::distributions::Standard;
     use rand::Rng;
     use rustopals::rand::MT19937;
