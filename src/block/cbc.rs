@@ -8,12 +8,12 @@
 use itertools::Itertools;
 use std::iter;
 
-use crate::block;
 use crate::util::iter::Xorable;
+use crate::BlockCipher;
 
 /// Encrypt `plaintext` in CBC mode with `key` and initialization vector `iv`
-/// using `block::Cipher`.
-pub fn encrypt<C: block::Cipher>(cipher: &C, plaintext: &[u8], key: &[u8], iv: &[u8]) -> Vec<u8> {
+/// using `BlockCipher`.
+pub fn encrypt<C: BlockCipher>(cipher: &C, plaintext: &[u8], key: &[u8], iv: &[u8]) -> Vec<u8> {
     assert_eq!(iv.len(), C::BLOCK_SIZE);
 
     let mut accum = Vec::new();
@@ -36,8 +36,8 @@ pub fn encrypt<C: block::Cipher>(cipher: &C, plaintext: &[u8], key: &[u8], iv: &
 }
 
 /// Decrypt `ciphertext` in CBC mode with `key` and initialization vector `iv`
-/// using `block::Cipher`.
-pub fn decrypt<C: block::Cipher>(cipher: &C, ciphertext: &[u8], key: &[u8], iv: &[u8]) -> Vec<u8> {
+/// using `BlockCipher`.
+pub fn decrypt<C: BlockCipher>(cipher: &C, ciphertext: &[u8], key: &[u8], iv: &[u8]) -> Vec<u8> {
     assert_eq!(iv.len(), C::BLOCK_SIZE);
 
     iter::once(iv)

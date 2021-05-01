@@ -1,8 +1,8 @@
 mod adversary {
-    use rustopals::block::aes128;
-    use rustopals::block::Cipher as BlockCipher;
-    use rustopals::stream::{ctr, Cipher};
+    use rustopals::block::AES128;
+    use rustopals::stream::CTR;
     use rustopals::util;
+    use rustopals::{BlockCipher, StreamCipher};
 
     pub struct Encryptor {
         key: Vec<u8>,
@@ -11,14 +11,14 @@ mod adversary {
     impl Encryptor {
         pub fn new() -> Encryptor {
             Encryptor {
-                key: util::generate_bytes(aes128::Cipher::BLOCK_SIZE),
+                key: util::generate_bytes(AES128::BLOCK_SIZE),
             }
         }
 
         pub fn encrypt(&self, plaintext: &[u8]) -> Vec<u8> {
-            let nonce = vec![0; aes128::Cipher::BLOCK_SIZE / 2];
+            let nonce = vec![0; AES128::BLOCK_SIZE / 2];
 
-            ctr::Cipher::from_nonce(&aes128::Cipher, &self.key, &nonce)
+            CTR::from_nonce(&AES128, &self.key, &nonce)
                 .process(plaintext)
                 .collect()
         }

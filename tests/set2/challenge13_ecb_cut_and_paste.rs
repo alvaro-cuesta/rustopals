@@ -1,5 +1,5 @@
 mod adversary {
-    use rustopals::block::{aes128, Cipher};
+    use rustopals::block::{BlockCipher, AES128};
     use std::collections::HashMap;
 
     pub struct LoginSystem {
@@ -9,18 +9,18 @@ mod adversary {
     impl LoginSystem {
         pub fn new() -> LoginSystem {
             LoginSystem {
-                key: crate::gen_random_bytes(aes128::Cipher::BLOCK_SIZE),
+                key: crate::gen_random_bytes(AES128::BLOCK_SIZE),
             }
         }
 
         pub fn generate_payload(&self, email: &str) -> Vec<u8> {
-            aes128::Cipher.encrypt_ecb_pkcs7(profile_for(email).as_bytes(), &self.key)
+            AES128.encrypt_ecb_pkcs7(profile_for(email).as_bytes(), &self.key)
         }
 
         pub fn is_admin(&self, payload: &[u8]) -> bool {
             use std::str;
 
-            match aes128::Cipher.decrypt_ecb_pkcs7(payload, &self.key) {
+            match AES128.decrypt_ecb_pkcs7(payload, &self.key) {
                 Ok(decrypted) => match str::from_utf8(&decrypted) {
                     Ok(string) => parse(string)["role"] == "admin",
                     Err(_) => false,

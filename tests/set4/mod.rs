@@ -1,7 +1,7 @@
 /// Break "random access read/write" AES CTR - https://cryptopals.com/sets/4/challenges/25
 mod challenge25_break_random_access_aes_ctr {
-  use rustopals::block::{aes128, Cipher as BlockCipher};
-  use rustopals::stream::{ctr, Cipher as StreamCipher, SeekableCipher as SeekableStreamCipher};
+  use rustopals::block::{BlockCipher, AES128};
+  use rustopals::stream::{SeekableStreamCipher, StreamCipher, CTR};
 
   const PLAINTEXT: &str = include_str!("25.txt");
 
@@ -15,7 +15,7 @@ mod challenge25_break_random_access_aes_ctr {
     let before_new_text = &ciphertext[..offset];
     let after_new_text = &ciphertext[offset + 1..];
 
-    let new_ciphertext = ctr::Cipher::from_nonce(&aes128::Cipher, &key, nonce)
+    let new_ciphertext = CTR::from_nonce(&AES128, &key, nonce)
       .process_from(offset, new_plaintext)
       .collect::<Vec<_>>();
 
@@ -26,9 +26,9 @@ mod challenge25_break_random_access_aes_ctr {
   fn crack() {
     let plaintext_no_newlines = PLAINTEXT.lines().collect::<String>();
     let plaintext = base64::decode(plaintext_no_newlines).unwrap();
-    let key = crate::gen_random_bytes(aes128::Cipher::KEY_SIZE);
+    let key = crate::gen_random_bytes(AES128::KEY_SIZE);
     let nonce = crate::gen_random_bytes(8);
-    let ciphertext = ctr::Cipher::from_nonce(&aes128::Cipher, &key, &nonce)
+    let ciphertext = CTR::from_nonce(&AES128, &key, &nonce)
       .process(&plaintext)
       .collect::<Vec<_>>();
 

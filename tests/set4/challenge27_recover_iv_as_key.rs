@@ -1,4 +1,4 @@
-use rustopals::block::{aes128, Cipher, PKCS7Error};
+use rustopals::block::{BlockCipher, PKCS7Error, AES128};
 
 pub enum AdversaryError {
     PKCS7Error(PKCS7Error),
@@ -14,16 +14,16 @@ impl Adversary {
         use crate::gen_random_bytes;
 
         Adversary {
-            key: gen_random_bytes(aes128::Cipher::KEY_SIZE),
+            key: gen_random_bytes(AES128::KEY_SIZE),
         }
     }
 
     pub fn encrypt(&self, plaintext: &[u8]) -> Vec<u8> {
-        aes128::Cipher.encrypt_cbc_pkcs7(plaintext, &self.key, &self.key)
+        AES128.encrypt_cbc_pkcs7(plaintext, &self.key, &self.key)
     }
 
     pub fn decrypt(&self, ciphertext: &[u8]) -> Result<(), AdversaryError> {
-        match aes128::Cipher.decrypt_cbc_pkcs7(ciphertext, &self.key, &self.key) {
+        match AES128.decrypt_cbc_pkcs7(ciphertext, &self.key, &self.key) {
             Ok(plaintext) => {
                 if plaintext.iter().any(|&x| x > 127) {
                     Err(AdversaryError::ASCIIError(plaintext))
@@ -37,7 +37,7 @@ impl Adversary {
 }
 
 mod test {
-    use rustopals::block::{aes128, Cipher};
+    use rustopals::block::{BlockCipher, AES128};
     use rustopals::util::iter::Xorable;
     use std::iter::repeat;
 
@@ -45,7 +45,7 @@ mod test {
     fn test_crack() {
         let adversary = super::Adversary::new();
 
-        const BLOCK_SIZE: usize = aes128::Cipher::BLOCK_SIZE;
+        const BLOCK_SIZE: usize = AES128::BLOCK_SIZE;
 
         loop {
             let plaintext = crate::gen_random_bytes(BLOCK_SIZE * 3);

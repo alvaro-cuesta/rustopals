@@ -4,8 +4,8 @@ mod challenge17_padding_oracle;
 /// Implement CTR, the stream cipher mode - http://cryptopals.com/sets/3/challenges/18
 #[test]
 fn challenge18_implement_ctr() {
-    use rustopals::block::aes128;
-    use rustopals::stream::{ctr, Cipher};
+    use rustopals::block::AES128;
+    use rustopals::stream::{StreamCipher, CTR};
 
     const BASE64_INPUT: &str =
         "L77na/nrFsKvynd6HzOoG7GHTLXsTVu9qvY/2syLXzhPweyyMTJULu/6/kXX0KSvoOLSFQ==";
@@ -15,7 +15,7 @@ fn challenge18_implement_ctr() {
 
     let input = base64::decode(BASE64_INPUT).unwrap();
 
-    let result = ctr::Cipher::from_nonce(&aes128::Cipher, KEY.as_bytes(), NONCE)
+    let result = CTR::from_nonce(&AES128, KEY.as_bytes(), NONCE)
         .process(input)
         .collect::<Vec<_>>();
 
@@ -158,7 +158,7 @@ mod challenge24_break_mt19937_stream_cipher {
     use rand::distributions::Standard;
     use rand::Rng;
     use rustopals::rand::MT19937;
-    use rustopals::stream::{rng, Cipher};
+    use rustopals::stream::{StreamCipher, RNG};
     use std::time::SystemTime;
 
     fn generate_reset_token() -> Vec<u8> {
@@ -179,7 +179,7 @@ mod challenge24_break_mt19937_stream_cipher {
         const PLAINTEXT: &[u8] = b"AAAAAAAAAAAAAA";
         const SEED: u16 = 1337;
 
-        let cipher = rng::Cipher::new(MT19937::new(SEED as u32));
+        let cipher = RNG::new(MT19937::new(SEED as u32));
 
         let rand_prefixed = crate::gen_random_bytes_between(5, 15);
 
@@ -188,7 +188,7 @@ mod challenge24_break_mt19937_stream_cipher {
 
         // We are brute-forcnig this... is that what Cryptopals expects? 16-bit keys be like...
         for guessed_seed in u16::min_value()..=u16::max_value() {
-            let guessed_cipher = rng::Cipher::new(MT19937::new(guessed_seed as u32));
+            let guessed_cipher = RNG::new(MT19937::new(guessed_seed as u32));
             let deciphered_plaintext = guessed_cipher
                 .process(ciphertext.clone())
                 .collect::<Vec<_>>();

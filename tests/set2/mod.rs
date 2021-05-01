@@ -12,7 +12,7 @@ fn challenge9_pkcs7_padding() {
 
 /// Implement CBC mode - https://cryptopals.com/sets/2/challenges/10
 mod challenge10_cbc_mode {
-    use rustopals::block::{aes128, cbc};
+    use rustopals::block::{cbc, AES128};
 
     const CIPHERTEXT: &str = include_str!("10.txt");
     const PLAINTEXT: &[u8] = include_bytes!("10.solution.txt");
@@ -25,7 +25,7 @@ mod challenge10_cbc_mode {
         let expected_ciphertext = ::base64::decode(&ciphertext_no_newlines).unwrap();
 
         assert_eq!(
-            cbc::encrypt(&aes128::Cipher, PLAINTEXT, KEY, IV),
+            cbc::encrypt(&AES128, PLAINTEXT, KEY, IV),
             expected_ciphertext,
         );
     }
@@ -35,17 +35,14 @@ mod challenge10_cbc_mode {
         let ciphertext_no_newlines = CIPHERTEXT.lines().collect::<String>();
         let ciphertext = ::base64::decode(&ciphertext_no_newlines).unwrap();
 
-        assert_eq!(
-            cbc::decrypt(&aes128::Cipher, &ciphertext, KEY, IV),
-            PLAINTEXT,
-        );
+        assert_eq!(cbc::decrypt(&AES128, &ciphertext, KEY, IV), PLAINTEXT,);
     }
 }
 
 /// An ECB/CBC detection oracle - https://cryptopals.com/sets/2/challenges/11
 mod challenge11_ecb_cbc_detection_oracle {
     use rustopals::block;
-    use rustopals::block::{aes128, Cipher};
+    use rustopals::block::{BlockCipher, AES128};
 
     /// An oracle as required by https://cryptopals.com/sets/2/ but snitching its chosen cipher mode
     fn snitch_oracle(plaintext: &[u8]) -> (block::Mode, Vec<u8>) {
@@ -61,20 +58,20 @@ mod challenge11_ecb_cbc_detection_oracle {
             .collect::<Vec<_>>();
 
         // Generate random key
-        let key = crate::gen_random_bytes(aes128::Cipher::KEY_SIZE);
+        let key = crate::gen_random_bytes(AES128::KEY_SIZE);
 
         // Choose randomly between ECB and CBC
         if ::rand::random::<bool>() {
             (
                 block::Mode::ECB,
-                aes128::Cipher.encrypt_ecb_pkcs7(&extended_plaintext, &key),
+                AES128.encrypt_ecb_pkcs7(&extended_plaintext, &key),
             )
         } else {
-            let iv = crate::gen_random_bytes(aes128::Cipher::BLOCK_SIZE);
+            let iv = crate::gen_random_bytes(AES128::BLOCK_SIZE);
 
             (
                 block::Mode::CBC,
-                aes128::Cipher.encrypt_cbc_pkcs7(&extended_plaintext, &key, &iv),
+                AES128.encrypt_cbc_pkcs7(&extended_plaintext, &key, &iv),
             )
         }
     }
@@ -94,7 +91,7 @@ mod challenge11_ecb_cbc_detection_oracle {
                     ciphertext
                 };
 
-                block::Mode::detect(wrapper, block::aes128::Cipher::BLOCK_SIZE)
+                block::Mode::detect(wrapper, AES128::BLOCK_SIZE)
             };
 
             assert_eq!(detected_mode, snitched_mode.unwrap());

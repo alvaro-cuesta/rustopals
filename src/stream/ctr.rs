@@ -1,21 +1,21 @@
 //! CTR-based stream cipher.
-use crate::{block, stream};
+use crate::{BlockCipher, SeekableStreamCipher, StreamCipher};
 
 /// CTR-based stream cipher.
 ///
 /// Generate a stream cipher from any block cipher.
-pub struct Cipher<'k, 'c, C: block::Cipher + 'c> {
+pub struct CTR<'k, 'c, C: BlockCipher + 'c> {
     block_cipher: &'c C,
     key: &'k [u8],
     nonce: Vec<u8>,
 }
 
-impl<'k, 'c, C: block::Cipher + 'c> Cipher<'k, 'c, C> {
+impl<'k, 'c, C: BlockCipher + 'c> CTR<'k, 'c, C> {
     /// Generate a stream cipher from any block cipher in CTR mode.
-    pub fn new(cipher: &'c C, key: &'k [u8]) -> Cipher<'k, 'c, C> {
+    pub fn new(cipher: &'c C, key: &'k [u8]) -> CTR<'k, 'c, C> {
         use crate::util::generate_bytes;
 
-        Cipher {
+        CTR {
             block_cipher: cipher,
             key: key,
             nonce: generate_bytes(C::BLOCK_SIZE / 2),
@@ -23,8 +23,8 @@ impl<'k, 'c, C: block::Cipher + 'c> Cipher<'k, 'c, C> {
     }
 
     /// Allows specifying the initial CTR nonce.
-    pub fn from_nonce(cipher: &'c C, key: &'k [u8], nonce: &[u8]) -> Cipher<'k, 'c, C> {
-        Cipher {
+    pub fn from_nonce(cipher: &'c C, key: &'k [u8], nonce: &[u8]) -> CTR<'k, 'c, C> {
+        CTR {
             block_cipher: cipher,
             key: key,
             nonce: nonce.to_vec(),
@@ -32,15 +32,13 @@ impl<'k, 'c, C: block::Cipher + 'c> Cipher<'k, 'c, C> {
     }
 }
 
-impl<'k, 'c, C: block::Cipher> stream::Cipher<u8, KeyStream<'k, 'c, C>> for Cipher<'k, 'c, C> {
+impl<'k, 'c, C: BlockCipher> StreamCipher<u8, KeyStream<'k, 'c, C>> for CTR<'k, 'c, C> {
     fn keystream(self) -> KeyStream<'k, 'c, C> {
         KeyStream::new(self.block_cipher, self.key, self.nonce.clone())
     }
 }
 
-impl<'k, 'c, C: block::Cipher> stream::SeekableCipher<u8, KeyStream<'k, 'c, C>>
-    for Cipher<'k, 'c, C>
-{
+impl<'k, 'c, C: BlockCipher> SeekableStreamCipher<u8, KeyStream<'k, 'c, C>> for CTR<'k, 'c, C> {
     fn keystream_from(self, offset: usize) -> KeyStream<'k, 'c, C> {
         KeyStream::new_from(self.block_cipher, self.key, self.nonce.clone(), offset)
     }
@@ -50,7 +48,7 @@ impl<'k, 'c, C: block::Cipher> stream::SeekableCipher<u8, KeyStream<'k, 'c, C>>
  *
  */
 
-pub struct KeyStream<'k, 'c, C: block::Cipher + 'c> {
+pub struct KeyStream<'k, 'c, C: BlockCipher + 'c> {
     cipher: &'c C,
     key: &'k [u8],
     nonce: Vec<u8>,
@@ -63,7 +61,7 @@ pub struct KeyStream<'k, 'c, C: block::Cipher + 'c> {
     current_block_byte: usize,
 }
 
-impl<'k, 'c, C: block::Cipher> KeyStream<'k, 'c, C> {
+impl<'k, 'c, C: BlockCipher> KeyStream<'k, 'c, C> {
     pub fn new(cipher: &'c C, key: &'k [u8], nonce: Vec<u8>) -> KeyStream<'k, 'c, C> {
         KeyStream {
             cipher: cipher,
@@ -92,7 +90,7 @@ impl<'k, 'c, C: block::Cipher> KeyStream<'k, 'c, C> {
     }
 }
 
-impl<'k, 'c, C: block::Cipher> Iterator for KeyStream<'k, 'c, C> {
+impl<'k, 'c, C: BlockCipher> Iterator for KeyStream<'k, 'c, C> {
     type Item = u8;
 
     fn next(&mut self) -> Option<u8> {

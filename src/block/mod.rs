@@ -5,12 +5,13 @@ pub mod cbc;
 pub mod ecb;
 pub mod pkcs7;
 
-pub use self::pkcs7::PKCS7Error;
+pub use aes128::AES128;
+pub use pkcs7::PKCS7Error;
 
 /// Trait for block ciphers.
 ///
 /// See [implementors](#implementors) for examples.
-pub trait Cipher: Sized {
+pub trait BlockCipher: Sized {
     const BLOCK_SIZE: usize;
     const KEY_SIZE: usize;
 

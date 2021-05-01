@@ -1,6 +1,6 @@
 mod adversary {
-    use rustopals::block::{aes128, Cipher as BlockCipher};
-    use rustopals::stream::{ctr, Cipher as StreamCipher};
+    use rustopals::block::{BlockCipher, AES128};
+    use rustopals::stream::{StreamCipher, CTR};
 
     pub struct LoginSystem {
         key: Vec<u8>,
@@ -12,8 +12,8 @@ mod adversary {
             use crate::gen_random_bytes;
 
             LoginSystem {
-                key: gen_random_bytes(aes128::Cipher::KEY_SIZE),
-                nonce: gen_random_bytes(aes128::Cipher::BLOCK_SIZE),
+                key: gen_random_bytes(AES128::KEY_SIZE),
+                nonce: gen_random_bytes(AES128::BLOCK_SIZE),
             }
         }
 
@@ -27,7 +27,7 @@ mod adversary {
             ]
             .concat();
 
-            ctr::Cipher::from_nonce(&aes128::Cipher, &self.key, &self.nonce)
+            CTR::from_nonce(&AES128, &self.key, &self.nonce)
                 .process(plaintext.bytes())
                 .collect()
         }
@@ -35,7 +35,7 @@ mod adversary {
         pub fn is_admin(&self, payload: &[u8]) -> bool {
             use std::str;
 
-            let plaintext = ctr::Cipher::from_nonce(&aes128::Cipher, &self.key, &self.nonce)
+            let plaintext = CTR::from_nonce(&AES128, &self.key, &self.nonce)
                 .process(payload)
                 .collect::<Vec<_>>();
 

@@ -23,3 +23,6 @@ pub mod block;
 pub mod rand;
 pub mod stream;
 pub mod util;
+
+pub use block::BlockCipher;
+pub use stream::{SeekableStreamCipher, StreamCipher};

@@ -8,10 +8,15 @@ pub mod ctr;
 pub mod rng;
 pub mod xor;
 
+pub use ctr::CTR;
+pub use rng::RNG;
+pub use xor::RepeatingXORCipher;
+pub use xor::SingleXORCipher;
+
 /// Trait for streaming ciphers.
 ///
 /// See [implementors](#implementors) for examples.
-pub trait Cipher<K, IK: IntoIterator<Item = K>>
+pub trait StreamCipher<K, IK: IntoIterator<Item = K>>
 where
     Self: Sized,
 {
@@ -37,7 +42,7 @@ where
 /// Trait for seekable streaming ciphers.
 ///
 /// See [implementors](#implementors) for examples.
-pub trait SeekableCipher<K, IK: IntoIterator<Item = K>>
+pub trait SeekableStreamCipher<K, IK: IntoIterator<Item = K>>
 where
     Self: Sized,
 {

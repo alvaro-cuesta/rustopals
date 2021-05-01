@@ -7,30 +7,29 @@
 use num_traits::Bounded;
 use std::{iter, ops};
 
-use crate::stream;
 use crate::util::TextScorer;
-use stream::Cipher;
+use crate::StreamCipher;
 
 /// XOR cipher with a single-item key (`AAAAAAAAAAAA...`)
 ///
 /// # Example
 ///
 /// ```
-/// use rustopals::stream::{ Cipher, xor };
+/// use rustopals::stream::{ StreamCipher, SingleXORCipher };
 ///
 /// const KEY: u8 = 1;
 /// const PLAINTEXT: &[u8] = &[1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
 /// const EXPECTED_CIPHERTEXT: &[u8] = &[0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 ///
-/// let result = xor::SingleCipher(KEY)
+/// let result = SingleXORCipher(KEY)
 ///     .process(PLAINTEXT)
 ///     .collect::<Vec<_>>();
 ///
 /// assert_eq!(result, EXPECTED_CIPHERTEXT)
 /// ```
-pub struct SingleCipher<K>(pub K);
+pub struct SingleXORCipher<K>(pub K);
 
-impl<K> stream::Cipher<K, iter::Repeat<K>> for SingleCipher<K>
+impl<K> StreamCipher<K, iter::Repeat<K>> for SingleXORCipher<K>
 where
     K: Clone,
 {
@@ -40,7 +39,7 @@ where
 }
 
 /// Single-item key XOR cipher cracking.
-impl<K> SingleCipher<K> {
+impl<K> SingleXORCipher<K> {
     /// Brute-force single-item key XOR ciphered `ciphertext` by frequency
     /// analysis.
     ///
@@ -52,7 +51,7 @@ impl<K> SingleCipher<K> {
     {
         (K::min_value()..=K::max_value())
             .filter_map(|key| {
-                let xored = SingleCipher(key.clone())
+                let xored = SingleXORCipher(key.clone())
                     .process(ciphertext)
                     .collect::<Vec<_>>();
 
@@ -94,29 +93,29 @@ impl<K> SingleCipher<K> {
 /// # Example
 ///
 /// ```
-/// use rustopals::stream::{ Cipher, xor };
+/// use rustopals::stream::{ StreamCipher, RepeatingXORCipher };
 ///
 /// const KEY: &[u8] = &[0, 1, 2, 3];
 /// const PLAINTEXT: &[u8] = &[0, 1, 2, 3, 0, 1, 2, 3, 0, 1];
 /// const EXPECTED_CIPHERTEXT: &[u8] = &[0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 ///
-/// let result = xor::RepeatingCipher(KEY)
+/// let result = RepeatingXORCipher(KEY)
 ///     .process(PLAINTEXT)
 ///     .collect::<Vec<_>>();
 ///
 /// assert_eq!(result, EXPECTED_CIPHERTEXT)
 /// ```
-pub struct RepeatingCipher<'k, K: 'k>(pub &'k [K]);
+pub struct RepeatingXORCipher<'k, K: 'k>(pub &'k [K]);
 
-impl<'k, K> stream::Cipher<&'k K, iter::Cycle<::std::slice::Iter<'k, K>>>
-    for RepeatingCipher<'k, K>
+impl<'k, K> StreamCipher<&'k K, iter::Cycle<::std::slice::Iter<'k, K>>>
+    for RepeatingXORCipher<'k, K>
 {
     fn keystream(self) -> iter::Cycle<::std::slice::Iter<'k, K>> {
         self.0.iter().cycle()
     }
 }
 
-impl<'k, K> RepeatingCipher<'k, K> {
+impl<'k, K> RepeatingXORCipher<'k, K> {
     /// Guess key size (up to `max_size`) for a given ciphertext.
     pub fn guess_keysize<'t, T>(ciphertext: &'t [T], max_keysize: usize) -> Option<usize>
     where
@@ -163,7 +162,7 @@ impl<'k, K> RepeatingCipher<'k, K> {
                     inner_vec.push(block[i].clone());
                 }
 
-                SingleCipher::crack(scorer, &inner_vec).map(|(key, _)| key)
+                SingleXORCipher::crack(scorer, &inner_vec).map(|(key, _)| key)
             })
             .collect::<Vec<_>>()
     }

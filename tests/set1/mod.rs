@@ -37,7 +37,7 @@ fn challenge2_fixed_xor() {
 #[test]
 /// Single-byte XOR cipher - https://cryptopals.com/sets/1/challenges/3
 fn challenge3_single_byte_xor_cipher() {
-  use rustopals::stream::xor::SingleCipher;
+  use rustopals::stream::SingleXORCipher;
   use rustopals::util::iter::bytes_from_hex;
 
   const INPUT: &str = "1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736";
@@ -48,7 +48,7 @@ fn challenge3_single_byte_xor_cipher() {
     .map(|x| x.unwrap())
     .collect::<Vec<_>>();
 
-  let (key, plaintext) = SingleCipher::<u8>::crack(&NaiveTextScorer, &input).unwrap();
+  let (key, plaintext) = SingleXORCipher::<u8>::crack(&NaiveTextScorer, &input).unwrap();
 
   assert_eq!(key, EXPECTED_KEY);
   assert_eq!(plaintext, EXPECTED_PLAINTEXT);
@@ -57,7 +57,7 @@ fn challenge3_single_byte_xor_cipher() {
 #[test]
 /// Detect single-character XOR - https://cryptopals.com/sets/1/challenges/4
 fn challenge4_detect_single_byte_xor() {
-  use rustopals::stream::xor::SingleCipher;
+  use rustopals::stream::SingleXORCipher;
   use rustopals::util::iter::bytes_from_hex;
 
   const INPUT: &str = include_str!("4.txt");
@@ -74,7 +74,8 @@ fn challenge4_detect_single_byte_xor() {
 
   let input_slices = input.iter().map(Vec::as_slice).collect::<Vec<_>>();
 
-  let (pos, key, plaintext) = SingleCipher::<u8>::detect(&NaiveTextScorer, &input_slices).unwrap();
+  let (pos, key, plaintext) =
+    SingleXORCipher::<u8>::detect(&NaiveTextScorer, &input_slices).unwrap();
 
   assert_eq!(pos, EXPECTED_POS);
   assert_eq!(key, EXPECTED_KEY);
@@ -84,8 +85,7 @@ fn challenge4_detect_single_byte_xor() {
 #[test]
 /// Implement repeating-key XOR - https://cryptopals.com/sets/1/challenges/5
 fn challenge5_implement_repeating_key_xor() {
-  use rustopals::stream::xor::RepeatingCipher;
-  use rustopals::stream::Cipher;
+  use rustopals::stream::{RepeatingXORCipher, StreamCipher};
   use rustopals::util::iter::ToHexable;
 
   const PLAINTEXT: &[u8] = b"Burning 'em, if you ain't quick and nimble
@@ -93,7 +93,7 @@ I go crazy when I hear a cymbal";
   const KEY: &[u8] = b"ICE";
   const EXPECTED: &str = "0b3637272a2b2e63622c2e69692a23693a2a3c6324202d623d63343c2a26226324272765272a282b2f20430a652e2c652a3124333a653e2b2027630c692b20283165286326302e27282f";
 
-  let result = RepeatingCipher(KEY).process(PLAINTEXT).to_hex();
+  let result = RepeatingXORCipher(KEY).process(PLAINTEXT).to_hex();
 
   assert_eq!(result, EXPECTED);
 }
@@ -101,8 +101,7 @@ I go crazy when I hear a cymbal";
 /// Break repeating-key XOR - https://cryptopals.com/sets/1/challenges/6
 #[test]
 fn challenge6_repeating_key_xor() {
-  use rustopals::stream::xor::RepeatingCipher;
-  use rustopals::stream::Cipher;
+  use rustopals::stream::{RepeatingXORCipher, StreamCipher};
 
   const CIPHERTEXT: &str = include_str!("6.txt");
   const MAX_KEYSIZE_GUESS: usize = 40;
@@ -115,16 +114,16 @@ fn challenge6_repeating_key_xor() {
   let ciphertext = ::base64::decode(&ciphertext_no_newlines).unwrap();
 
   let guessed_keysize =
-    RepeatingCipher::<u8>::guess_keysize(&ciphertext, MAX_KEYSIZE_GUESS).unwrap();
+    RepeatingXORCipher::<u8>::guess_keysize(&ciphertext, MAX_KEYSIZE_GUESS).unwrap();
 
   assert_eq!(guessed_keysize, EXPECTED_KEY.len());
 
   let guessed_key =
-    RepeatingCipher::<u8>::guess_key(&NaiveTextScorer, &ciphertext, guessed_keysize);
+    RepeatingXORCipher::<u8>::guess_key(&NaiveTextScorer, &ciphertext, guessed_keysize);
 
   assert_eq!(guessed_key, EXPECTED_KEY);
 
-  let plaintext = RepeatingCipher(&guessed_key)
+  let plaintext = RepeatingXORCipher(&guessed_key)
     .process(ciphertext)
     .collect::<Vec<_>>();
 
@@ -133,7 +132,7 @@ fn challenge6_repeating_key_xor() {
 
 /// AES in ECB mode - https://cryptopals.com/sets/1/challenges/7
 mod challenge7_aes_ecb {
-  use rustopals::block::{aes128, ecb};
+  use rustopals::block::{ecb, AES128};
 
   const CIPHERTEXT: &str = include_str!("7.txt");
   const PLAINTEXT: &[u8] = include_bytes!("7.solution.txt");
@@ -144,17 +143,14 @@ mod challenge7_aes_ecb {
     let ciphertext_no_newlines = CIPHERTEXT.lines().collect::<String>();
     let expected_ciphertext = ::base64::decode(&ciphertext_no_newlines).unwrap();
 
-    assert_eq!(
-      ecb::encrypt(&aes128::Cipher, PLAINTEXT, KEY),
-      expected_ciphertext,
-    );
+    assert_eq!(ecb::encrypt(&AES128, PLAINTEXT, KEY), expected_ciphertext,);
   }
 
   #[test]
   fn decrypt() {
     let ciphertext_no_newlines = CIPHERTEXT.lines().collect::<String>();
     let ciphertext = ::base64::decode(&ciphertext_no_newlines).unwrap();
-    let decrypted = ecb::decrypt(&aes128::Cipher, &ciphertext, KEY);
+    let decrypted = ecb::decrypt(&AES128, &ciphertext, KEY);
 
     assert_eq!(decrypted, PLAINTEXT,);
   }
@@ -163,7 +159,7 @@ mod challenge7_aes_ecb {
 /// Detect AES in ECB mode - https://cryptopals.com/sets/1/challenges/8
 #[test]
 fn challenge8_detect_ecb() {
-  use rustopals::block::{aes128, ecb, Cipher};
+  use rustopals::block::{ecb, BlockCipher, AES128};
   use rustopals::util::iter::bytes_from_hex;
 
   const INPUT: &str = include_str!("8.txt");
@@ -175,7 +171,7 @@ fn challenge8_detect_ecb() {
     .max_by_key(|&(_, line)| {
       let bytes = bytes_from_hex(line).collect::<Result<Vec<_>, _>>().unwrap();
 
-      ecb::score(&bytes, aes128::Cipher::BLOCK_SIZE)
+      ecb::score(&bytes, AES128::BLOCK_SIZE)
     })
     .unwrap();
 

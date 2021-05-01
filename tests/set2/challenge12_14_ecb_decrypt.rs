@@ -1,7 +1,7 @@
 const UNKNOWN_STRING: &str = "Um9sbGluJyBpbiBteSA1LjAKV2l0aCBteSByYWctdG9wIGRvd24gc28gbXkgaGFpciBjYW4gYmxvdwpUaGUgZ2lybGllcyBvbiBzdGFuZGJ5IHdhdmluZyBqdXN0IHRvIHNheSBoaQpEaWQgeW91IHN0b3A/IE5vLCBJIGp1c3QgZHJvdmUgYnkK";
 
 mod adversary {
-    use rustopals::block::{aes128, Cipher};
+    use rustopals::block::{BlockCipher, AES128};
 
     pub trait Encryptor {
         fn encrypt(&self, plaintext: &[u8]) -> Vec<u8>;
@@ -14,7 +14,7 @@ mod adversary {
     impl EasyOracle {
         pub fn new() -> EasyOracle {
             EasyOracle {
-                key: crate::gen_random_bytes(aes128::Cipher::KEY_SIZE),
+                key: crate::gen_random_bytes(AES128::KEY_SIZE),
             }
         }
     }
@@ -29,7 +29,7 @@ mod adversary {
                 .chain(decoded_base64)
                 .collect::<Vec<_>>();
 
-            aes128::Cipher.encrypt_ecb_pkcs7(&extended_plaintext, &self.key)
+            AES128.encrypt_ecb_pkcs7(&extended_plaintext, &self.key)
         }
     }
 
@@ -41,7 +41,7 @@ mod adversary {
     impl HardOracle {
         pub fn new(min: usize, max: usize) -> HardOracle {
             HardOracle {
-                key: crate::gen_random_bytes(aes128::Cipher::KEY_SIZE),
+                key: crate::gen_random_bytes(AES128::KEY_SIZE),
                 prepend: crate::gen_random_bytes_between(min, max),
             }
         }
@@ -59,7 +59,7 @@ mod adversary {
                 .chain(decoded_base64)
                 .collect::<Vec<_>>();
 
-            aes128::Cipher.encrypt_ecb_pkcs7(&extended_plaintext, &self.key)
+            AES128.encrypt_ecb_pkcs7(&extended_plaintext, &self.key)
         }
     }
 }
@@ -220,7 +220,7 @@ pub fn decrypt(oracle: impl Fn(&[u8]) -> Vec<u8>) -> Vec<u8> {
 
 mod test {
     use super::adversary::Encryptor;
-    use rustopals::block::{aes128, Cipher};
+    use rustopals::block::{BlockCipher, AES128};
 
     const TEST_MIN_PREPEND: usize = 10;
     const TEST_MAX_PREPEND: usize = 32;
@@ -232,7 +232,7 @@ mod test {
 
         assert_eq!(
             super::discover_block_size(easy_fn),
-            Some(aes128::Cipher::BLOCK_SIZE)
+            Some(AES128::BLOCK_SIZE)
         );
     }
 
@@ -243,7 +243,7 @@ mod test {
 
         assert_eq!(
             super::discover_block_size(hard_fn),
-            Some(aes128::Cipher::BLOCK_SIZE)
+            Some(AES128::BLOCK_SIZE)
         );
     }
 

@@ -2,7 +2,7 @@
 
 mod key;
 
-use crate::block;
+use crate::BlockCipher;
 use itertools::iproduct;
 
 type State = [[u8; 4]; 4];
@@ -160,9 +160,9 @@ const MULT_E: [u8; 256] = [
 ];
 
 /// [AES-128](https://en.wikipedia.org/wiki/Advanced_Encryption_Standard) block-cipher implementation.
-pub struct Cipher;
+pub struct AES128;
 
-impl Cipher {
+impl AES128 {
     fn key_from_slice(key: &[u8]) -> [u8; 16] {
         let mut key_array: [u8; 16] = [0; 16];
         key_array.copy_from_slice(&key[0..16]);
@@ -170,13 +170,13 @@ impl Cipher {
     }
 }
 
-impl block::Cipher for Cipher {
+impl BlockCipher for AES128 {
     const BLOCK_SIZE: usize = 16;
     const KEY_SIZE: usize = 16;
 
     /// Encrypt `plaintext` in AES128 with `key`.
     fn encrypt_impl(&self, plaintext: &[u8], key: &[u8]) -> Vec<u8> {
-        let expanded_key = key::expand(&Cipher::key_from_slice(key));
+        let expanded_key = key::expand(&AES128::key_from_slice(key));
 
         let mut state = [
             [plaintext[0], plaintext[1], plaintext[2], plaintext[3]],
@@ -205,7 +205,7 @@ impl block::Cipher for Cipher {
 
     /// Decrypt `ciphertext` in AES128 with `key`.
     fn decrypt_impl(&self, ciphertext: &[u8], key: &[u8]) -> Vec<u8> {
-        let expanded_key = key::expand(&Cipher::key_from_slice(key));
+        let expanded_key = key::expand(&AES128::key_from_slice(key));
 
         let mut state = [
             [ciphertext[0], ciphertext[1], ciphertext[2], ciphertext[3]],
@@ -322,7 +322,7 @@ fn inv_mix_columns(state: &mut State) {
 
 #[cfg(test)]
 mod test {
-    use crate::block::Cipher;
+    use crate::BlockCipher;
     use test::Bencher;
 
     const PLAINTEXT: [u8; 16] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -333,13 +333,13 @@ mod test {
 
     #[test]
     fn encrypt() {
-        let encrypted = super::Cipher.encrypt(&PLAINTEXT, &KEY);
+        let encrypted = super::AES128.encrypt(&PLAINTEXT, &KEY);
         assert_eq!(encrypted, CIPHERTEXT);
     }
 
     #[test]
     fn decrypt() {
-        let decrypted = super::Cipher.decrypt(&CIPHERTEXT, &KEY);
+        let decrypted = super::AES128.decrypt(&CIPHERTEXT, &KEY);
         assert_eq!(decrypted, PLAINTEXT);
     }
 
@@ -425,15 +425,15 @@ mod test {
         assert_eq!(state, MIX_COLUMNS_INPUT);
     }
 
-    const BENCH_BUFFER: [u8; super::Cipher::KEY_SIZE] = [0; super::Cipher::KEY_SIZE];
+    const BENCH_BUFFER: [u8; super::AES128::KEY_SIZE] = [0; super::AES128::KEY_SIZE];
 
     #[bench]
     fn bench_aes128_encrypt(b: &mut Bencher) {
-        b.iter(|| super::Cipher.encrypt(&BENCH_BUFFER, &BENCH_BUFFER))
+        b.iter(|| super::AES128.encrypt(&BENCH_BUFFER, &BENCH_BUFFER))
     }
 
     #[bench]
     fn bench_aes128_decrypt(b: &mut Bencher) {
-        b.iter(|| super::Cipher.decrypt(&BENCH_BUFFER, &BENCH_BUFFER))
+        b.iter(|| super::AES128.decrypt(&BENCH_BUFFER, &BENCH_BUFFER))
     }
 }
