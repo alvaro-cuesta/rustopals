@@ -74,7 +74,7 @@ serve as a real-world exercise.
 - [x] [Implement the MT19937 Mersenne Twister RNG](https://cryptopals.com/sets/3/challenges/21)
 - [x] [Crack an MT19937 seed](https://cryptopals.com/sets/3/challenges/22)
 - [x] [Clone an MT19937 RNG from its output](https://cryptopals.com/sets/3/challenges/23)
-- [ ] [Create the MT19937 stream cipher and break it](https://cryptopals.com/sets/3/challenges/24)
+- [X] [Create the MT19937 stream cipher and break it](https://cryptopals.com/sets/3/challenges/24)
 
 ### [Set 4: Stream crypto and randomness](https://cryptopals.com/sets/4)
 

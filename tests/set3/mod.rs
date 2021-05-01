@@ -154,3 +154,72 @@ fn matasano_23_clone_mt19937_state() {
 }
 
 // Create the MT19937 stream cipher and break it - http://cryptopals.com/sets/3/challenges/24
+mod matasano_24_break_mt19937_stream_cipher {
+    use rand::distributions::Standard;
+    use rand::Rng;
+    use rustopals::rand::MT19937;
+    use rustopals::stream::{rng, Cipher};
+    use std::time::SystemTime;
+
+    fn generate_reset_token() -> Vec<u8> {
+        let time = SystemTime::now()
+            .duration_since(SystemTime::UNIX_EPOCH)
+            .unwrap()
+            .as_secs()
+            % 0xffff;
+
+        MT19937::new(time as u32)
+            .sample_iter(&Standard)
+            .take(16)
+            .collect()
+    }
+
+    #[test]
+    fn recover_key_from_ciphertext() {
+        const PLAINTEXT: &[u8] = b"AAAAAAAAAAAAAA";
+        const SEED: u16 = 1337;
+
+        let cipher = rng::Cipher::new(MT19937::new(SEED as u32));
+
+        let rand_prefixed = crate::gen_random_bytes_between(5, 15);
+
+        let plaintext = [rand_prefixed, PLAINTEXT.to_vec()].concat();
+        let ciphertext = cipher.process(plaintext).collect::<Vec<_>>();
+
+        // We are brute-forcnig this... is that what Cryptopals expects? 16-bit keys be like...
+        for guessed_seed in u16::min_value()..=u16::max_value() {
+            let guessed_cipher = rng::Cipher::new(MT19937::new(guessed_seed as u32));
+            let deciphered_plaintext = guessed_cipher
+                .process(ciphertext.clone())
+                .collect::<Vec<_>>();
+
+            let should_be_plaintext =
+                &deciphered_plaintext[deciphered_plaintext.len() - PLAINTEXT.len()..];
+
+            if should_be_plaintext == PLAINTEXT {
+                assert_eq!(SEED, guessed_seed);
+                return;
+            }
+        }
+
+        panic!("MT19937 key should have been found by now.");
+    }
+
+    #[test]
+    fn detect_token() {
+        let token = generate_reset_token();
+
+        for guessed_seed in u16::min_value()..=u16::max_value() {
+            let guessed_token = MT19937::new(guessed_seed as u32)
+                .sample_iter(&Standard)
+                .take(16)
+                .collect::<Vec<u8>>();
+
+            if guessed_token == token {
+                return;
+            }
+        }
+
+        panic!("Token should have matched by now.");
+    }
+}
