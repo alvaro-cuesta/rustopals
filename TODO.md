@@ -9,6 +9,9 @@
 - Lots of doc-comments and doc-tests lost :/
 - Make `Padding` and `Mode` parameters for block cipher
 - Remove warnings
+- Nonce (`BLOCK_SIZE / 2`) and counter (`u64`) in CTR mode assume 128-bit `BLOCK_SIZE`
+- Explicit `BlockCipher` and `StreamCipher` names?
+- Make `ctr` nonce `&[u8]`
 
 ## Bugs
 

@@ -33,3 +33,31 @@ where
         text.xor(self.keystream())
     }
 }
+
+/// Trait for seekable streaming ciphers.
+///
+/// See [implementors](#implementors) for examples.
+pub trait SeekableCipher<K, IK: IntoIterator<Item = K>>
+where
+    Self: Sized,
+{
+    /// Generates a keystream (an iterator over elements of type `K`) from `offset`.
+    fn keystream_from(self, offset: usize) -> IK;
+
+    /// En/decrypts a plain/ciphertext iterator (an iterator over elements of type `T`)
+    /// from `offset`.
+    fn process_from<T, IT>(
+        self,
+        offset: usize,
+        text: IT,
+    ) -> Map<
+        Zip<<IT as IntoIterator>::IntoIter, <IK as IntoIterator>::IntoIter>,
+        fn((T, K)) -> T::Output,
+    >
+    where
+        T: BitXor<K>,
+        IT: IntoIterator<Item = T>,
+    {
+        text.xor(self.keystream_from(offset))
+    }
+}

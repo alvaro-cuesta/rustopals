@@ -38,6 +38,14 @@ impl<'k, 'c, C: block::Cipher> stream::Cipher<u8, KeyStream<'k, 'c, C>> for Ciph
     }
 }
 
+impl<'k, 'c, C: block::Cipher> stream::SeekableCipher<u8, KeyStream<'k, 'c, C>>
+    for Cipher<'k, 'c, C>
+{
+    fn keystream_from(self, offset: usize) -> KeyStream<'k, 'c, C> {
+        KeyStream::new_from(self.block_cipher, self.key, self.nonce.clone(), offset)
+    }
+}
+
 /*
  *
  */
@@ -46,11 +54,13 @@ pub struct KeyStream<'k, 'c, C: block::Cipher + 'c> {
     cipher: &'c C,
     key: &'k [u8],
     nonce: Vec<u8>,
+    /// Index of current block
     counter: u64,
 
-    // iterator cache
-    current_block: Vec<u8>,
-    cursor: usize,
+    /// Cached current block (cache for iterator)
+    current_block: Option<Vec<u8>>,
+    /// Byte in current block
+    current_block_byte: usize,
 }
 
 impl<'k, 'c, C: block::Cipher> KeyStream<'k, 'c, C> {
@@ -59,9 +69,25 @@ impl<'k, 'c, C: block::Cipher> KeyStream<'k, 'c, C> {
             cipher: cipher,
             key: key,
             nonce: nonce,
-            current_block: vec![],
-            cursor: 16,
             counter: 0,
+            current_block: None,
+            current_block_byte: 0,
+        }
+    }
+
+    pub fn new_from(
+        cipher: &'c C,
+        key: &'k [u8],
+        nonce: Vec<u8>,
+        offset: usize,
+    ) -> KeyStream<'k, 'c, C> {
+        KeyStream {
+            cipher: cipher,
+            key: key,
+            nonce: nonce,
+            counter: (offset / C::BLOCK_SIZE) as u64,
+            current_block: None,
+            current_block_byte: offset % C::BLOCK_SIZE,
         }
     }
 }
@@ -77,22 +103,25 @@ impl<'k, 'c, C: block::Cipher> Iterator for KeyStream<'k, 'c, C> {
             return None;
         }
 
-        if self.cursor == C::BLOCK_SIZE {
-            //let bytes = as_bytes_le!(u64, self.counter);
-            let mut bytes = [0; 8];
-            LittleEndian::write_u64(&mut bytes, self.counter);
-            let bytes = bytes;
+        if self.current_block.is_none() || self.current_block_byte == 0 {
+            let mut counter_bytes = [0; 8];
+            LittleEndian::write_u64(&mut counter_bytes, self.counter);
 
-            let block: Vec<u8> = self.nonce.iter().chain(&bytes).cloned().collect();
-
-            self.current_block = self.cipher.encrypt_ecb_pkcs7(&block, self.key);
-            self.cursor = 1;
-            self.counter += 1;
-            Some(self.current_block[0])
-        } else {
-            let val = self.current_block[self.cursor];
-            self.cursor += 1;
-            Some(val)
+            let plaintext_block: Vec<u8> = [self.nonce.as_slice(), &counter_bytes].concat();
+            let block = self.cipher.encrypt_ecb_pkcs7(&plaintext_block, self.key);
+            self.current_block = Some(block);
         }
+
+        let current_block = self.current_block.as_ref().unwrap();
+        let val = current_block[self.current_block_byte];
+
+        if self.current_block_byte == C::BLOCK_SIZE - 1 {
+            self.current_block_byte = 0;
+            self.counter += 1;
+        } else {
+            self.current_block_byte += 1;
+        };
+
+        Some(val)
     }
 }
