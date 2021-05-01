@@ -1,9 +1,9 @@
 /// The CBC padding oracle - http://cryptopals.com/sets/3/challenges/17
-mod matasano_17_padding_oracle;
+mod challenge17_padding_oracle;
 
 /// Implement CTR, the stream cipher mode - http://cryptopals.com/sets/3/challenges/18
 #[test]
-fn matasano_18_implement_ctr() {
+fn challenge18_implement_ctr() {
     use rustopals::block::aes128;
     use rustopals::stream::{ctr, Cipher};
 
@@ -24,7 +24,7 @@ fn matasano_18_implement_ctr() {
 
 /// Break fixed-nonce CTR mode using substitions - http://cryptopals.com/sets/3/challenges/19
 /// Break fixed-nonce CTR statistically - http://cryptopals.com/sets/3/challenges/20
-//mod matasano_19_20_break_fixed_nonce_ctr;
+//mod challenge19_20_break_fixed_nonce_ctr;
 
 /// Implement the MT19937 Mersenne Twister RNG - http://cryptopals.com/sets/3/challenges/21
 #[test]
@@ -80,7 +80,7 @@ fn mt19937() {
 }
 
 /// Crack an MT19937 seed - http://cryptopals.com/sets/3/challenges/22
-mod matasano_22_crack_mt19937_seed {
+mod challenge22_crack_mt19937_seed {
     use rand::Rng;
     use rustopals::rand::MT19937;
 
@@ -124,7 +124,7 @@ mod matasano_22_crack_mt19937_seed {
 
 /// Clone an MT19937 RNG from its output - http://cryptopals.com/sets/3/challenges/23
 #[test]
-fn matasano_23_clone_mt19937_state() {
+fn challenge23_clone_mt19937_state() {
     use rand::distributions::Standard;
     use rand::{thread_rng, Rng, SeedableRng};
     use rustopals::rand::MT19937;
@@ -154,7 +154,7 @@ fn matasano_23_clone_mt19937_state() {
 }
 
 // Create the MT19937 stream cipher and break it - http://cryptopals.com/sets/3/challenges/24
-mod matasano_24_break_mt19937_stream_cipher {
+mod challenge24_break_mt19937_stream_cipher {
     use rand::distributions::Standard;
     use rand::Rng;
     use rustopals::rand::MT19937;
