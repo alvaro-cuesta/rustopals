@@ -77,7 +77,9 @@ impl MT19937 {
 
     state[0] = seed;
     for i in 1..624 {
-      state[i] = (0x6c078965u32).wrapping_mul(state[i - 1] ^ (state[i - 1] >> 30)) + i as u32;
+      state[i] = (0x6c078965u32)
+        .wrapping_mul(state[i - 1] ^ (state[i - 1] >> 30))
+        .wrapping_add(i as u32);
     }
 
     state
