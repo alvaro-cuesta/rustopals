@@ -82,7 +82,7 @@ serve as a real-world exercise.
 ### [Set 4: Stream crypto and randomness](https://cryptopals.com/sets/4)
 
 - [X] [Break "random access read/write" AES CTR](https://cryptopals.com/sets/4/challenges/25)
-- [ ] [CTR bitflipping](https://cryptopals.com/sets/4/challenges/26)
+- [X] [CTR bitflipping](https://cryptopals.com/sets/4/challenges/26)
 - [ ] [Recover the key from CBC with IV=Key](https://cryptopals.com/sets/4/challenges/27)
 - [ ] [Implement a SHA-1 keyed MAC](https://cryptopals.com/sets/4/challenges/28)
 - [ ] [Break a SHA-1 keyed MAC using length extension](https://cryptopals.com/sets/4/challenges/29)

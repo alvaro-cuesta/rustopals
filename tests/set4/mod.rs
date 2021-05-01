@@ -1,3 +1,4 @@
+/// Break "random access read/write" AES CTR - https://cryptopals.com/sets/4/challenges/25
 mod challenge25_break_random_access_aes_ctr {
   use rustopals::block::{aes128, Cipher as BlockCipher};
   use rustopals::stream::{ctr, Cipher as StreamCipher, SeekableCipher as SeekableStreamCipher};
@@ -49,3 +50,6 @@ mod challenge25_break_random_access_aes_ctr {
     assert_eq!(recovered_plaintext, plaintext)
   }
 }
+
+/// CTR bitflipping - https://cryptopals.com/sets/4/challenges/26
+mod challenge26_ctr_bitflip;
