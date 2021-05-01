@@ -24,7 +24,7 @@ fn matasano_18_implement_ctr() {
 
 /// Break fixed-nonce CTR mode using substitions - http://cryptopals.com/sets/3/challenges/19
 /// Break fixed-nonce CTR statistically - http://cryptopals.com/sets/3/challenges/20
-mod matasano_19_20_break_fixed_nonce_ctr;
+//mod matasano_19_20_break_fixed_nonce_ctr;
 
 /// Implement the MT19937 Mersenne Twister RNG - http://cryptopals.com/sets/3/challenges/21
 #[test]

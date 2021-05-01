@@ -247,6 +247,8 @@ mod test {
         );
     }
 
+    /*
+
     #[test]
     fn test_discover_prepended_length_repeated() {
         use rustopals::block::pkcs7;
@@ -263,6 +265,8 @@ mod test {
             assert_eq!(super::discover_prepended_length(oracle, 16), Some(i));
         }
     }
+
+    */
 
     #[test]
     fn test_discover_prepended_length_easy() {
