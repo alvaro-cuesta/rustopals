@@ -7,7 +7,8 @@
 - Fix matasano_18 keystream hack (wut? is it being pub?)
 - Use `Block`, `Key`, etc. instead of `&[u8]` in `stream` and `block` modules (requires full `const_generics`)
 - Lots of doc-comments and doc-tests lost :/
-- Make padding and mode parameters for block cipher
+- Make `Padding` and `Mode` parameters for block cipher
+- Remove warnings
 
 ## Bugs
 
