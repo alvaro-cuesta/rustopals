@@ -1,5 +1,5 @@
 mod adversary {
-    use rustopals::block::{BlockCipher, AES128};
+    use rustopals::block::{BlockCipher, BlockMode, AES128, CBC};
 
     pub struct LoginSystem {
         key: Vec<u8>,
@@ -26,13 +26,13 @@ mod adversary {
             ]
             .concat();
 
-            AES128.encrypt_cbc_pkcs7(plaintext.as_bytes(), &self.key, &self.iv)
+            CBC::new(&self.iv).encrypt(&AES128, plaintext.as_bytes(), &self.key)
         }
 
         pub fn is_admin(&self, payload: &[u8]) -> bool {
             use std::str;
 
-            match AES128.decrypt_cbc_pkcs7(payload, &self.key, &self.iv) {
+            match CBC::new(&self.iv).decrypt(&AES128, payload, &self.key) {
                 Ok(decrypted) => {
                     // Whoopsies! Rust is so cool I had to mark this as unsafe
                     // Forced to use unsafe because String::from_utf8 detected wrong UTF-8 in the garbage block

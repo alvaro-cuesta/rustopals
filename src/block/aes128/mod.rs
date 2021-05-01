@@ -2,7 +2,7 @@
 
 mod key;
 
-use crate::BlockCipher;
+use crate::block::BlockCipher;
 use itertools::iproduct;
 
 type State = [[u8; 4]; 4];
@@ -322,7 +322,7 @@ fn inv_mix_columns(state: &mut State) {
 
 #[cfg(test)]
 mod test {
-    use crate::BlockCipher;
+    use crate::block::BlockCipher;
     use test::Bencher;
 
     const PLAINTEXT: [u8; 16] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -333,13 +333,13 @@ mod test {
 
     #[test]
     fn encrypt() {
-        let encrypted = super::AES128.encrypt(&PLAINTEXT, &KEY);
+        let encrypted = super::AES128.encrypt_block(&PLAINTEXT, &KEY);
         assert_eq!(encrypted, CIPHERTEXT);
     }
 
     #[test]
     fn decrypt() {
-        let decrypted = super::AES128.decrypt(&CIPHERTEXT, &KEY);
+        let decrypted = super::AES128.decrypt_block(&CIPHERTEXT, &KEY);
         assert_eq!(decrypted, PLAINTEXT);
     }
 
@@ -429,11 +429,11 @@ mod test {
 
     #[bench]
     fn bench_aes128_encrypt(b: &mut Bencher) {
-        b.iter(|| super::AES128.encrypt(&BENCH_BUFFER, &BENCH_BUFFER))
+        b.iter(|| super::AES128.encrypt_block(&BENCH_BUFFER, &BENCH_BUFFER))
     }
 
     #[bench]
     fn bench_aes128_decrypt(b: &mut Bencher) {
-        b.iter(|| super::AES128.decrypt(&BENCH_BUFFER, &BENCH_BUFFER))
+        b.iter(|| super::AES128.decrypt_block(&BENCH_BUFFER, &BENCH_BUFFER))
     }
 }

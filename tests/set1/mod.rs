@@ -132,7 +132,7 @@ fn challenge6_repeating_key_xor() {
 
 /// AES in ECB mode - https://cryptopals.com/sets/1/challenges/7
 mod challenge7_aes_ecb {
-  use rustopals::block::{ecb, AES128};
+  use rustopals::block::{BlockMode, AES128, ECB};
 
   const CIPHERTEXT: &str = include_str!("7.txt");
   const PLAINTEXT: &[u8] = include_bytes!("7.solution.txt");
@@ -143,23 +143,26 @@ mod challenge7_aes_ecb {
     let ciphertext_no_newlines = CIPHERTEXT.lines().collect::<String>();
     let expected_ciphertext = ::base64::decode(&ciphertext_no_newlines).unwrap();
 
-    assert_eq!(ecb::encrypt(&AES128, PLAINTEXT, KEY), expected_ciphertext,);
+    assert_eq!(
+      ECB.encrypt_impl(&AES128, PLAINTEXT, KEY),
+      expected_ciphertext,
+    );
   }
 
   #[test]
   fn decrypt() {
     let ciphertext_no_newlines = CIPHERTEXT.lines().collect::<String>();
     let ciphertext = ::base64::decode(&ciphertext_no_newlines).unwrap();
-    let decrypted = ecb::decrypt(&AES128, &ciphertext, KEY);
+    let decrypted = ECB.decrypt_impl(&AES128, &ciphertext, KEY);
 
-    assert_eq!(decrypted, PLAINTEXT,);
+    assert_eq!(decrypted, PLAINTEXT);
   }
 }
 
 /// Detect AES in ECB mode - https://cryptopals.com/sets/1/challenges/8
 #[test]
 fn challenge8_detect_ecb() {
-  use rustopals::block::{ecb, BlockCipher, AES128};
+  use rustopals::block::{BlockCipher, AES128, ECB};
   use rustopals::util::iter::bytes_from_hex;
 
   const INPUT: &str = include_str!("8.txt");
@@ -171,7 +174,7 @@ fn challenge8_detect_ecb() {
     .max_by_key(|&(_, line)| {
       let bytes = bytes_from_hex(line).collect::<Result<Vec<_>, _>>().unwrap();
 
-      ecb::score(&bytes, AES128::BLOCK_SIZE)
+      ECB::score(&bytes, AES128::BLOCK_SIZE)
     })
     .unwrap();
 

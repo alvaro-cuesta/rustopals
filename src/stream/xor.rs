@@ -7,8 +7,8 @@
 use num_traits::Bounded;
 use std::{iter, ops};
 
+use crate::stream::StreamCipher;
 use crate::util::TextScorer;
-use crate::StreamCipher;
 
 /// XOR cipher with a single-item key (`AAAAAAAAAAAA...`)
 ///

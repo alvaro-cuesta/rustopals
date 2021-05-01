@@ -1,6 +1,6 @@
 //! RNG-based stream cipher.
 
-use crate::StreamCipher;
+use crate::stream::StreamCipher;
 use rand::distributions::{DistIter, Standard};
 use rand::{Rng, SeedableRng};
 

@@ -3,7 +3,7 @@ use rustopals::block::{BlockCipher, AES128};
 const STRINGS: &str = include_str!("17.txt");
 
 mod adversary {
-    use rustopals::block::{BlockCipher, AES128};
+    use rustopals::block::{BlockCipher, BlockMode, AES128, CBC};
     use rustopals::util::generate_bytes;
 
     pub struct PaddingOracle {
@@ -27,13 +27,13 @@ mod adversary {
             let iv = generate_bytes(AES128::BLOCK_SIZE);
 
             let encrypted =
-                AES128.encrypt_cbc_pkcs7(&base64::decode(chosen_string).unwrap(), &self.key, &iv);
+                CBC::new(&iv).encrypt(&AES128, &base64::decode(chosen_string).unwrap(), &self.key);
 
             (encrypted, iv)
         }
 
         pub fn is_correct_padding(&self, ciphertext: &[u8], iv: &[u8]) -> bool {
-            AES128.decrypt_cbc_pkcs7(ciphertext, &self.key, iv).is_ok()
+            CBC::new(iv).decrypt(&AES128, ciphertext, &self.key).is_ok()
         }
     }
 }

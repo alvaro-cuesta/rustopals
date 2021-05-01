@@ -1,4 +1,4 @@
-use rustopals::block::{BlockCipher, PKCS7Error, AES128};
+use rustopals::block::{BlockCipher, BlockMode, PKCS7Error, AES128, CBC};
 
 pub enum AdversaryError {
     PKCS7Error(PKCS7Error),
@@ -19,11 +19,11 @@ impl Adversary {
     }
 
     pub fn encrypt(&self, plaintext: &[u8]) -> Vec<u8> {
-        AES128.encrypt_cbc_pkcs7(plaintext, &self.key, &self.key)
+        CBC::new(&self.key).encrypt(&AES128, plaintext, &self.key)
     }
 
     pub fn decrypt(&self, ciphertext: &[u8]) -> Result<(), AdversaryError> {
-        match AES128.decrypt_cbc_pkcs7(ciphertext, &self.key, &self.key) {
+        match CBC::new(&self.key).decrypt(&AES128, ciphertext, &self.key) {
             Ok(plaintext) => {
                 if plaintext.iter().any(|&x| x > 127) {
                     Err(AdversaryError::ASCIIError(plaintext))

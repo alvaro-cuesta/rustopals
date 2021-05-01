@@ -7,7 +7,8 @@
 - Fix challenge18 keystream hack (wut? is it being pub?)
 - Use `Block`, `Key`, etc. instead of `&[u8]` in `stream` and `block` modules (requires full `const_generics`)
 - Lots of doc-comments and doc-tests lost :/
-- Make `Padding` and `Mode` parameters for block cipher
+- Make `Padding` parameter for block modes
+- Abstract `CTR` from a block mode?
 - Remove warnings
 - Nonce (`BLOCK_SIZE / 2`) and counter (`u64`) in CTR mode assume 128-bit `BLOCK_SIZE`
 - Make `ctr` nonce `&[u8]`

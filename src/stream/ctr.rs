@@ -1,5 +1,6 @@
 //! CTR-based stream cipher.
-use crate::{BlockCipher, SeekableStreamCipher, StreamCipher};
+use crate::block::{BlockCipher, BlockMode, ECB};
+use crate::stream::{SeekableStreamCipher, StreamCipher};
 
 /// CTR-based stream cipher.
 ///
@@ -106,7 +107,7 @@ impl<'k, 'c, C: BlockCipher> Iterator for KeyStream<'k, 'c, C> {
             LittleEndian::write_u64(&mut counter_bytes, self.counter);
 
             let plaintext_block: Vec<u8> = [self.nonce.as_slice(), &counter_bytes].concat();
-            let block = self.cipher.encrypt_ecb_pkcs7(&plaintext_block, self.key);
+            let block = ECB.encrypt(self.cipher, &plaintext_block, self.key);
             self.current_block = Some(block);
         }
 

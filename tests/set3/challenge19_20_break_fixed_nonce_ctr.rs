@@ -1,8 +1,7 @@
 mod adversary {
-    use rustopals::block::AES128;
-    use rustopals::stream::CTR;
+    use rustopals::block::{BlockCipher, AES128};
+    use rustopals::stream::{StreamCipher, CTR};
     use rustopals::util;
-    use rustopals::{BlockCipher, StreamCipher};
 
     pub struct Encryptor {
         key: Vec<u8>,

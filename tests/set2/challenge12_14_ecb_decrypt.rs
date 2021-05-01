@@ -1,7 +1,7 @@
 const UNKNOWN_STRING: &str = "Um9sbGluJyBpbiBteSA1LjAKV2l0aCBteSByYWctdG9wIGRvd24gc28gbXkgaGFpciBjYW4gYmxvdwpUaGUgZ2lybGllcyBvbiBzdGFuZGJ5IHdhdmluZyBqdXN0IHRvIHNheSBoaQpEaWQgeW91IHN0b3A/IE5vLCBJIGp1c3QgZHJvdmUgYnkK";
 
 mod adversary {
-    use rustopals::block::{BlockCipher, AES128};
+    use rustopals::block::{BlockCipher, BlockMode, AES128, ECB};
 
     pub trait Encryptor {
         fn encrypt(&self, plaintext: &[u8]) -> Vec<u8>;
@@ -29,7 +29,7 @@ mod adversary {
                 .chain(decoded_base64)
                 .collect::<Vec<_>>();
 
-            AES128.encrypt_ecb_pkcs7(&extended_plaintext, &self.key)
+            ECB.encrypt(&AES128, &extended_plaintext, &self.key)
         }
     }
 
@@ -59,7 +59,7 @@ mod adversary {
                 .chain(decoded_base64)
                 .collect::<Vec<_>>();
 
-            AES128.encrypt_ecb_pkcs7(&extended_plaintext, &self.key)
+            ECB.encrypt(&AES128, &extended_plaintext, &self.key)
         }
     }
 }

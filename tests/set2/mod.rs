@@ -12,7 +12,7 @@ fn challenge9_pkcs7_padding() {
 
 /// Implement CBC mode - https://cryptopals.com/sets/2/challenges/10
 mod challenge10_cbc_mode {
-    use rustopals::block::{cbc, AES128};
+    use rustopals::block::{BlockMode, AES128, CBC};
 
     const CIPHERTEXT: &str = include_str!("10.txt");
     const PLAINTEXT: &[u8] = include_bytes!("10.solution.txt");
@@ -25,7 +25,7 @@ mod challenge10_cbc_mode {
         let expected_ciphertext = ::base64::decode(&ciphertext_no_newlines).unwrap();
 
         assert_eq!(
-            cbc::encrypt(&AES128, PLAINTEXT, KEY, IV),
+            CBC::new(IV).encrypt_impl(&AES128, PLAINTEXT, KEY,),
             expected_ciphertext,
         );
     }
@@ -33,16 +33,19 @@ mod challenge10_cbc_mode {
     #[test]
     fn decrypt() {
         let ciphertext_no_newlines = CIPHERTEXT.lines().collect::<String>();
-        let ciphertext = ::base64::decode(&ciphertext_no_newlines).unwrap();
+        let ciphertext = base64::decode(&ciphertext_no_newlines).unwrap();
 
-        assert_eq!(cbc::decrypt(&AES128, &ciphertext, KEY, IV), PLAINTEXT,);
+        assert_eq!(
+            CBC::new(IV).decrypt_impl(&AES128, &ciphertext, KEY),
+            PLAINTEXT,
+        );
     }
 }
 
 /// An ECB/CBC detection oracle - https://cryptopals.com/sets/2/challenges/11
 mod challenge11_ecb_cbc_detection_oracle {
     use rustopals::block;
-    use rustopals::block::{BlockCipher, AES128};
+    use rustopals::block::{BlockCipher, BlockMode, AES128, CBC, ECB};
 
     /// An oracle as required by https://cryptopals.com/sets/2/ but snitching its chosen cipher mode
     fn snitch_oracle(plaintext: &[u8]) -> (block::Mode, Vec<u8>) {
@@ -61,17 +64,17 @@ mod challenge11_ecb_cbc_detection_oracle {
         let key = crate::gen_random_bytes(AES128::KEY_SIZE);
 
         // Choose randomly between ECB and CBC
-        if ::rand::random::<bool>() {
+        if rand::random::<bool>() {
             (
                 block::Mode::ECB,
-                AES128.encrypt_ecb_pkcs7(&extended_plaintext, &key),
+                ECB.encrypt(&AES128, &extended_plaintext, &key),
             )
         } else {
             let iv = crate::gen_random_bytes(AES128::BLOCK_SIZE);
 
             (
                 block::Mode::CBC,
-                AES128.encrypt_cbc_pkcs7(&extended_plaintext, &key, &iv),
+                CBC::new(&iv).encrypt(&AES128, &extended_plaintext, &key),
             )
         }
     }
