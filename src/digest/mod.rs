@@ -1,8 +1,10 @@
 //! [Message digest](https://en.wikipedia.org/wiki/Message_digest) implementations
 //! and utilities.
 
+pub mod md4;
 pub mod sha1;
 
+pub use md4::MD4;
 pub use sha1::SHA1;
 
 /// Trait for [message digest](https://en.wikipedia.org/wiki/Message_digest) implementations.
