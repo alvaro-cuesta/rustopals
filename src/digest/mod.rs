@@ -3,9 +3,11 @@
 
 pub mod md4;
 pub mod sha1;
+pub mod sha256;
 
 pub use md4::MD4;
 pub use sha1::SHA1;
+pub use sha256::SHA256;
 
 /// Trait for [message digest](https://en.wikipedia.org/wiki/Message_digest) implementations.
 pub trait Digest {
