@@ -56,7 +56,7 @@ where
         let (cracked_digest, cracked_padding) =
             <D as ExtensibleDigest>::extend_digest(good_mac, guessed_payload_length);
 
-        let cracked_mac = cracked_digest.digest(TARGET);
+        let cracked_mac = cracked_digest.chain(TARGET).finalize();
         let cracked_payload = [good_payload, &cracked_padding, TARGET].concat();
 
         if adversary.is_admin(&cracked_payload, cracked_mac.as_ref()) {

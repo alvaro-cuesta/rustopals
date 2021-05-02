@@ -29,14 +29,13 @@ pub trait Digest {
         self
     }
 
-    /// Convenience method to update the digest with `message` bytes and
-    /// immediately finalize it
-    fn digest(mut self, message: &[u8]) -> Self::Output
+    /// Convenience method to create, update and finalize the digest with `message` bytes
+    #[must_use]
+    fn digest(message: &[u8]) -> Self::Output
     where
-        Self: Sized,
+        Self: Default,
     {
-        self.update(message);
-        self.finalize()
+        Self::default().chain(message).finalize()
     }
 }
 

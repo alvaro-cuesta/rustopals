@@ -197,6 +197,6 @@ impl DHSession {
         D: Digest + Default,
     {
         let bytes = self.shared_secret.to_bytes_be();
-        D::default().digest(&bytes).as_ref().to_vec()
+        D::digest(&bytes).as_ref().to_vec()
     }
 }

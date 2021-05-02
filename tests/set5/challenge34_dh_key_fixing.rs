@@ -198,7 +198,7 @@ fn eve(
         .unwrap();
 
     // Okay, let's see if your nefarious deeds were successful...
-    let expected_key_material = &SHA1::new().digest(&BigUint::zero().to_bytes_be())[0..16];
+    let expected_key_material = &SHA1::digest(&BigUint::zero().to_bytes_be())[0..16];
 
     let alice_message = CBC::new(&alice_iv)
         .decrypt(&AES128, &alice_encrypted_message, expected_key_material)

@@ -10,7 +10,5 @@ pub fn bad_mac<D>(digest: D, key: &[u8], message: &[u8]) -> D::Output
 where
     D: Digest,
 {
-    let keyed_message = [key, message].concat();
-
-    digest.digest(&keyed_message)
+    digest.chain(key).chain(message).finalize()
 }
