@@ -10,7 +10,7 @@ pub use sha1::SHA1;
 pub use sha256::SHA256;
 
 /// Trait for [message digest](https://en.wikipedia.org/wiki/Message_digest) implementations.
-pub trait Digest {
+pub trait Digest: Default {
     type Output: AsRef<[u8]>;
 
     /// Update the digest with `message` bytes

@@ -7,10 +7,7 @@ use crate::digest::Digest;
 ///
 /// Prefixes the `message` with the provided `key` and hashes it.
 #[must_use]
-pub fn bad_mac<D>(key: &[u8], message: &[u8]) -> D::Output
-where
-    D: Digest + Default,
-{
+pub fn bad_mac<D: Digest>(key: &[u8], message: &[u8]) -> D::Output {
     <D as Default>::default()
         .chain(key)
         .chain(message)

@@ -192,10 +192,7 @@ impl DHSession {
 
     /// Establish some key material from the shared secret using `D` as a digest.
     #[must_use]
-    pub fn to_key_material<D>(&self) -> Vec<u8>
-    where
-        D: Digest + Default,
-    {
+    pub fn to_key_material<D: Digest>(&self) -> Vec<u8> {
         let bytes = self.shared_secret.to_bytes_be();
         D::digest(&bytes).as_ref().to_vec()
     }

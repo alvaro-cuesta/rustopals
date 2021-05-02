@@ -8,15 +8,12 @@ mod adversary {
     use rustopals::mac::bad_mac;
     use std::marker::PhantomData;
 
-    pub struct LoginSystem<D: Digest + Default> {
+    pub struct LoginSystem<D: Digest> {
         key: Vec<u8>,
         phantom: PhantomData<D>,
     }
 
-    impl<'a, D> LoginSystem<D>
-    where
-        D: Digest + Default,
-    {
+    impl<'a, D: Digest> LoginSystem<D> {
         pub fn new() -> LoginSystem<D> {
             LoginSystem {
                 key: crate::gen_random_bytes_between(16, 32),
@@ -43,7 +40,7 @@ mod adversary {
 
 fn crack<D>()
 where
-    D: Digest + ExtensibleDigest + Default,
+    D: Digest + ExtensibleDigest,
     D::Output: Copy,
 {
     let adversary = adversary::LoginSystem::<D>::new();
