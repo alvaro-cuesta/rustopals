@@ -86,7 +86,7 @@ serve as a real-world exercise.
 - [X] [Recover the key from CBC with IV=Key](https://cryptopals.com/sets/4/challenges/27)
 - [X] [Implement a SHA-1 keyed MAC](https://cryptopals.com/sets/4/challenges/28)
 - [X] [Break a SHA-1 keyed MAC using length extension](https://cryptopals.com/sets/4/challenges/29)
-- [ ] [Break an MD4 keyed MAC using length extension](https://cryptopals.com/sets/4/challenges/30)
+- [X] [Break an MD4 keyed MAC using length extension](https://cryptopals.com/sets/4/challenges/30)
 - [ ] [Implement and break HMAC-SHA1 with an artificial timing leak](https://cryptopals.com/sets/4/challenges/31)
 - [ ] [Break HMAC-SHA1 with a slightly less artificial timing leak](https://cryptopals.com/sets/4/challenges/32)
 

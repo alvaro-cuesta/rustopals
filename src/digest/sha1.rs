@@ -1,6 +1,6 @@
 //! [SHA-1](https://en.wikipedia.org/wiki/SHA-1) hash function.
 
-use crate::digest::Digest;
+use crate::digest::{Digest, ExtensibleDigest};
 use byteorder::{BigEndian, ByteOrder};
 
 const BLOCK_LENGTH: usize = 64;
@@ -17,7 +17,7 @@ pub struct SHA1 {
 }
 
 impl SHA1 {
-  /// Create a reset SHA1 instance (initial values)
+  /// Create a reset SHA1 instance (initial values).
   pub fn new() -> SHA1 {
     SHA1 {
       h0: 0x67452301,
@@ -30,7 +30,7 @@ impl SHA1 {
     }
   }
 
-  /// Create a SHA1 from specific internal-state values
+  /// Create a SHA1 from specific internal-state values.
   pub fn new_from_state(
     h0: u32,
     h1: u32,
@@ -52,8 +52,8 @@ impl SHA1 {
   }
 
   /// Create a SHA1 instance from a previous hash value (the value obtained
-  /// after calling `.finalize()` on it)
-  pub fn new_from_hash(hash: [u8; 20], block_count: u64) -> SHA1 {
+  /// after calling `.finalize()` on it).
+  fn new_from_hash(hash: [u8; 20], block_count: u64) -> SHA1 {
     SHA1 {
       h0: BigEndian::read_u32(&hash[0..4]),
       h1: BigEndian::read_u32(&hash[4..8]),
@@ -63,6 +63,12 @@ impl SHA1 {
       block_count,
       current_block: vec![],
     }
+  }
+}
+
+impl Default for SHA1 {
+  fn default() -> Self {
+    SHA1::new()
   }
 }
 
@@ -156,6 +162,22 @@ impl Digest for SHA1 {
     BigEndian::write_u32(&mut hh[16..20], self.h4);
 
     hh
+  }
+}
+
+impl ExtensibleDigest for SHA1 {
+  fn extend_digest(digest_output: [u8; 20], guessed_payload_length: usize) -> (Self, Vec<u8>) {
+    let mut ml = [0; 8];
+    BigEndian::write_u64(&mut ml, 8 * guessed_payload_length as u64);
+
+    let guessed_padding_len =
+      BLOCK_LENGTH - ((1 + ml.len() + guessed_payload_length) % BLOCK_LENGTH);
+    let guessed_block_len = 1 + guessed_payload_length as u64 / BLOCK_LENGTH as u64;
+
+    let cracked_digest = SHA1::new_from_hash(digest_output, guessed_block_len);
+    let cracked_payload = [[0x80].as_ref(), &vec![0; guessed_padding_len], &ml].concat();
+
+    (cracked_digest, cracked_payload)
   }
 }
 

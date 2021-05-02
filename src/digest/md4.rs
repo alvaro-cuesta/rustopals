@@ -1,7 +1,8 @@
 //! [MD4](https://en.wikipedia.org/wiki/MD4) hash function.
 
-use crate::digest::Digest;
+use crate::digest::{Digest, ExtensibleDigest};
 use byteorder::{ByteOrder, LittleEndian};
+use std::default::Default;
 
 const BLOCK_LENGTH: usize = 64;
 
@@ -51,7 +52,7 @@ pub struct MD4 {
 }
 
 impl MD4 {
-  /// Create a reset MD4 instance (initial values)
+  /// Create a reset MD4 instance (initial values).
   pub fn new() -> MD4 {
     MD4 {
       h0: 0x67452301,
@@ -63,7 +64,7 @@ impl MD4 {
     }
   }
 
-  /// Create a MD4 from specific internal-state values
+  /// Create a MD4 from specific internal-state values.
   pub fn new_from_state(
     h0: u32,
     h1: u32,
@@ -83,8 +84,8 @@ impl MD4 {
   }
 
   /// Create a MD4 instance from a previous hash value (the value obtained
-  /// after calling `.finalize()` on it)
-  pub fn new_from_hash(hash: [u8; 16], block_count: u64) -> MD4 {
+  /// after calling `.finalize()` on it).
+  fn new_from_hash(hash: [u8; 16], block_count: u64) -> MD4 {
     MD4 {
       h0: LittleEndian::read_u32(&hash[0..4]),
       h1: LittleEndian::read_u32(&hash[4..8]),
@@ -93,6 +94,12 @@ impl MD4 {
       block_count,
       current_block: vec![],
     }
+  }
+}
+
+impl Default for MD4 {
+  fn default() -> Self {
+    MD4::new()
   }
 }
 
@@ -219,6 +226,22 @@ impl Digest for MD4 {
     LittleEndian::write_u32(&mut hh[12..16], self.h3);
 
     hh
+  }
+}
+
+impl ExtensibleDigest for MD4 {
+  fn extend_digest(digest_output: [u8; 16], guessed_payload_length: usize) -> (Self, Vec<u8>) {
+    let mut ml = [0; 8];
+    LittleEndian::write_u64(&mut ml, 8 * guessed_payload_length as u64);
+
+    let guessed_padding_len =
+      BLOCK_LENGTH - ((1 + ml.len() + guessed_payload_length) % BLOCK_LENGTH);
+    let guessed_block_len = 1 + guessed_payload_length as u64 / BLOCK_LENGTH as u64;
+
+    let cracked_digest = MD4::new_from_hash(digest_output, guessed_block_len);
+    let cracked_payload = [[0x80].as_ref(), &vec![0; guessed_padding_len], &ml].concat();
+
+    (cracked_digest, cracked_payload)
   }
 }
 

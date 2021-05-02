@@ -74,4 +74,5 @@ fn challenge28_implement_sha1_keyed_mac() {
 }
 
 // Break a SHA-1 keyed MAC using length extension - https://cryptopals.com/sets/4/challenges/29
-mod challenge29_break_sha1_keyed_mac;
+// Break an MD4 keyed MAC using length extension - https://cryptopals.com/sets/4/challenges/30
+mod challenge29_30_break_keyed_mac;
