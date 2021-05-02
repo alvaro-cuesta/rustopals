@@ -28,13 +28,13 @@ mod adversary {
             let plaintext =
                 b"comment1=cooking%20MCs;userdata=foo;comment2=%20like%20a%20pound%20of%20bacon";
 
-            let mac = bad_mac(D::default(), &self.key, plaintext);
+            let mac = bad_mac::<D>(&self.key, plaintext);
 
             (plaintext, mac)
         }
 
         pub fn is_admin(&self, payload: &[u8], mac: &[u8]) -> bool {
-            let calculated_mac = bad_mac(D::default(), &self.key, payload);
+            let calculated_mac = bad_mac::<D>(&self.key, payload);
 
             (mac == calculated_mac.as_ref()) && (&payload[payload.len() - 11..] == TARGET)
         }

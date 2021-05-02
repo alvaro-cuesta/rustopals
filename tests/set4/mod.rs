@@ -68,8 +68,8 @@ fn challenge28_implement_sha1_keyed_mac() {
     const TAMPERED_MESSAGE: &[u8] = b"This is a random message! And it has been tampered with.";
 
     assert_ne!(
-        bad_mac(SHA1::new(), KEY, MESSAGE),
-        bad_mac(SHA1::new(), KEY, TAMPERED_MESSAGE)
+        bad_mac::<SHA1>(KEY, MESSAGE),
+        bad_mac::<SHA1>(KEY, TAMPERED_MESSAGE)
     )
 }
 
