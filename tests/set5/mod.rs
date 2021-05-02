@@ -24,3 +24,6 @@ fn challenge33_implement_diffie_hellman() {
 
 // Implement a MITM key-fixing attack on Diffie-Hellman with parameter injection - https://cryptopals.com/sets/5/challenges/34
 mod challenge34_dh_key_fixing;
+
+// Implement DH with negotiated groups, and break with malicious "g" parameters - https://cryptopals.com/sets/5/challenges/35
+mod challenge35_dh_negotiated_groups;

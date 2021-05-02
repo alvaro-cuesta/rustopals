@@ -40,7 +40,7 @@ fffffffffffff";
 pub const NIST_BASE: usize = 2;
 
 /// A Diffie-Hellman local offer.
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 #[must_use]
 pub struct DHOffer {
     modulus: BigUint,
@@ -147,6 +147,7 @@ impl Default for DHOffer {
 }
 
 /// A Diffie-Hellman already-established session.
+#[derive(Clone, Debug)]
 #[must_use]
 pub struct DHSession {
     modulus: BigUint,
