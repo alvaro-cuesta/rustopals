@@ -8,9 +8,9 @@ use crate::digest::Digest;
 /// Prefixes the `message` with the provided `key` and hashes it.
 pub fn bad_mac<D>(digest: D, key: &[u8], message: &[u8]) -> D::Output
 where
-  D: Digest,
+    D: Digest,
 {
-  let keyed_message = [key, message].concat();
+    let keyed_message = [key, message].concat();
 
-  digest.digest(&keyed_message)
+    digest.digest(&keyed_message)
 }
