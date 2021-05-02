@@ -14,7 +14,7 @@ pub use pkcs7::PKCS7Error;
 /// Trait for block ciphers.
 ///
 /// See [implementors](#implementors) for examples.
-pub trait BlockCipher: Sized {
+pub trait BlockCipher {
     const BLOCK_SIZE: usize;
     const KEY_SIZE: usize;
 
