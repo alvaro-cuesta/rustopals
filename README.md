@@ -93,7 +93,7 @@ serve as a real-world exercise.
 ### [Set 5: Diffie-Hellman and friends](https://cryptopals.com/sets/5)
 
 - [X] [Implement Diffie-Hellman](https://cryptopals.com/sets/5/challenges/33)
-- [ ] [Implement a MITM key-fixing attack on Diffie-Hellman with parameter injection](https://cryptopals.com/sets/5/challenges/34)
+- [X] [Implement a MITM key-fixing attack on Diffie-Hellman with parameter injection](https://cryptopals.com/sets/5/challenges/34)
 - [ ] [Implement DH with negotiated groups, and break with malicious "g" parameters](https://cryptopals.com/sets/5/challenges/35)
 - [ ] [Implement Secure Remote Password (SRP)](https://cryptopals.com/sets/5/challenges/36)
 - [ ] [Break SRP with a zero key](https://cryptopals.com/sets/5/challenges/37)

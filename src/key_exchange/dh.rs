@@ -22,11 +22,12 @@
 //! )
 //! ```
 
+use crate::digest::Digest;
 use num_bigint::{BigUint, RandBigInt};
 use num_traits::Zero;
 use rand::thread_rng;
 
-const NIST_MODULUS: &str = "\
+pub const NIST_MODULUS: &str = "\
 ffffffffffffffffc90fdaa22168c234c4c6628b80dc1cd129024\
 e088a67cc74020bbea63b139b22514a08798e3404ddef9519b3cd\
 3a431b302b0a6df25f14374fe1356d6d51c245e485b576625e7ec\
@@ -36,7 +37,7 @@ c55d39a69163fa8fd24cf5f83655d23dca3ad961c62f356208552\
 bb9ed529077096966d670c354e4abc9804f1746c08ca237327fff\
 fffffffffffff";
 
-const NIST_BASE: usize = 2;
+pub const NIST_BASE: usize = 2;
 
 /// A Diffie-Hellman local offer.
 #[derive(Clone)]
@@ -84,9 +85,14 @@ impl DHOffer {
         base: &BigUint,
         my_private: BigUint,
     ) -> Option<DHOffer> {
+        /*
+        HACK: I had to remove this for challenge 34 to be effective.
+              Turns out validating untrusted input IS useful.
+
         if my_private >= modulus {
             return None;
         }
+        */
 
         let my_public = base.modpow(&my_private, &modulus);
 
@@ -106,9 +112,14 @@ impl DHOffer {
     /// Establish a DH session by passing the other party's public key.
     #[must_use]
     pub fn establish(self, their_public: &BigUint) -> Option<DHSession> {
+        /*
+        HACK: I had to remove this for challenge 34 to be effective.
+              Turns out validating untrusted input IS useful.
+
         if their_public >= &self.modulus {
             return None;
         }
+        */
 
         let shared_secret = their_public.modpow(&self.my_private, &self.modulus);
 
@@ -176,5 +187,15 @@ impl DHSession {
             my_private: self.my_private.clone(),
             my_public: self.my_public.clone(),
         }
+    }
+
+    /// Establish some key material from the shared secret using `D` as a digest.
+    #[must_use]
+    pub fn to_key_material<D>(&self) -> Vec<u8>
+    where
+        D: Digest + Default,
+    {
+        let bytes = self.shared_secret.to_bytes_be();
+        D::default().digest(&bytes).as_ref().to_vec()
     }
 }

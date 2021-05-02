@@ -21,3 +21,6 @@ fn challenge33_implement_diffie_hellman() {
         bob_session.get_shared_secret(),
     )
 }
+
+// Implement a MITM key-fixing attack on Diffie-Hellman with parameter injection - https://cryptopals.com/sets/5/challenges/34
+mod challenge34_dh_key_fixing;
