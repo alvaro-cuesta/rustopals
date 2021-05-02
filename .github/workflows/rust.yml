@@ -35,6 +35,19 @@ jobs:
     - name: Run documentation tests
       run: cargo test --verbose
 
+    - name: Clippy lints
+      uses: actions-rs/clippy-check@v1
+      with:
+        name: Library
+        token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Clippy lints (tests)
+      uses: actions-rs/clippy-check@v1
+      with:
+        name: Tests
+        token: ${{ secrets.GITHUB_TOKEN }}
+        args: --tests
+
     - name: Build Documentation
       run: cargo doc
 
