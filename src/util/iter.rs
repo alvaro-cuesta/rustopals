@@ -164,7 +164,7 @@ where
 ///
 /// let result = INPUT
 ///     .iter()
-///     .to_hex();
+///     .into_hex();
 ///
 /// assert_eq!(result, EXPECTED);
 /// ```
