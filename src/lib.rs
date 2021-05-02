@@ -20,6 +20,8 @@
 extern crate test;
 
 pub mod block;
+pub mod digest;
+pub mod mac;
 pub mod rand;
 pub mod stream;
 pub mod util;

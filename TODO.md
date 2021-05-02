@@ -12,6 +12,7 @@
 - Remove warnings
 - Nonce (`BLOCK_SIZE / 2`) and counter (`u64`) in CTR mode assume 128-bit `BLOCK_SIZE`
 - Make `ctr` nonce `&[u8]`
+- Constain `Digest` outputs to `[u8; Self::OUTPUT_SIZE]` (requires full `const_generics`)
 
 ## Bugs
 

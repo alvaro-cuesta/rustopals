@@ -56,3 +56,19 @@ mod challenge26_ctr_bitflip;
 
 // Recover the key from CBC with IV=Key - https://cryptopals.com/sets/4/challenges/27
 mod challenge27_recover_iv_as_key;
+
+// Implement a SHA-1 keyed MAC - https://cryptopals.com/sets/4/challenges/28
+#[test]
+fn challenge28_implement_sha1_keyed_mac() {
+  use rustopals::digest::SHA1;
+  use rustopals::mac::bad_mac;
+
+  const KEY: &[u8] = b"YELLLOW SUBMARINE";
+  const MESSAGE: &[u8] = b"This is a random message!";
+  const TAMPERED_MESSAGE: &[u8] = b"This is a random message! And it has been tampered with.";
+
+  assert_ne!(
+    bad_mac(SHA1::new(), KEY, MESSAGE),
+    bad_mac(SHA1::new(), KEY, TAMPERED_MESSAGE)
+  )
+}
