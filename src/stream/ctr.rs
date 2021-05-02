@@ -1,8 +1,8 @@
-//! CTR-based stream cipher.
+//! [CTR](https://en.wikipedia.org/wiki/Counter_mode)-based stream cipher.
 use crate::block::{BlockCipher, BlockMode, ECB};
 use crate::stream::{SeekableStreamCipher, StreamCipher};
 
-/// CTR-based stream cipher.
+/// [CTR](https://en.wikipedia.org/wiki/Counter_mode)-based stream cipher.
 ///
 /// Generate a stream cipher from any block cipher.
 pub struct CTR<'k, 'c, C: BlockCipher + 'c> {

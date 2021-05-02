@@ -1,5 +1,5 @@
 //! [Message digest](https://en.wikipedia.org/wiki/Message_digest) implementations
-//! and utilities.
+//! and related utilities.
 
 pub mod md4;
 pub mod sha1;

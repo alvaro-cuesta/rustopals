@@ -1,4 +1,5 @@
-//! Block ciphers and utilities.
+//! [Block ciphers](https://en.wikipedia.org/wiki/Block_cipher) implementations
+//! and related utilities.
 
 pub mod aes128;
 pub mod cbc;

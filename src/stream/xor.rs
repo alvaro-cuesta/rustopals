@@ -1,4 +1,4 @@
-//! XOR-based streaming ciphers.
+//! [XOR](https://en.wikipedia.org/wiki/XOR_cipher)-based stream ciphers.
 //!
 //! **TODO:**
 //! - Do not depend on `u8` scoring.
@@ -11,7 +11,8 @@ use std::{iter, ops};
 use crate::stream::StreamCipher;
 use crate::util::TextScorer;
 
-/// XOR cipher with a single-item key (`AAAAAAAAAAAA...`)
+/// [XOR](https://en.wikipedia.org/wiki/XOR_cipher) cipher with a single-item key
+/// (`AAAAAAAAAAAA...`)
 ///
 /// # Example
 ///
@@ -89,7 +90,8 @@ impl<K> SingleXORCipher<K> {
     }
 }
 
-/// Xor cipher with a repeating multi-item key (`ABCDABCDABCD...`)
+/// [XOR](https://en.wikipedia.org/wiki/XOR_cipher) cipher with a repeating multi-item key
+/// (`ABCDABCDABCD...`)
 ///
 /// # Example
 ///

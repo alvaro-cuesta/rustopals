@@ -1,5 +1,5 @@
 //! [Message authentication code](https://en.wikipedia.org/wiki/Message_authentication_code)
-//! implementations and utilities.
+//! implementations and related utilities.
 
 use crate::digest::Digest;
 

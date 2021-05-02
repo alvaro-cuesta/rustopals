@@ -1,11 +1,12 @@
-//! Pseudo-random generators.
+//! [Pseudo-random number generators](https://en.wikipedia.org/wiki/Pseudorandom_number_generator)
+//! and related utilities.
 
 use rand::{RngCore, SeedableRng};
 
 const MERSENNE_TEMPER_MASK_1: u32 = 0x9d2c5680;
 const MERSENNE_TEMPER_MASK_2: u32 = 0xefc60000;
 
-/// Mersenne Twister (MT19937) over 32 bits.
+/// [Mersenne Twister](https://en.wikipedia.org/wiki/Mersenne_Twister) (MT19937) over 32 bits.
 #[derive(Clone)]
 pub struct MT19937 {
   state: [u32; 624],

@@ -1,4 +1,4 @@
-//! Various utilities.
+//! Various convenience utilities.
 
 pub mod iter;
 

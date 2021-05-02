@@ -1,4 +1,4 @@
-//! Streaming ciphers and utilities.
+//! [Stream ciphers](https://en.wikipedia.org/wiki/Stream_cipher) and related utilities.
 
 use crate::util::iter::Xorable;
 use std::iter::{IntoIterator, Map, Zip};
@@ -13,7 +13,7 @@ pub use rng::RNG;
 pub use xor::RepeatingXORCipher;
 pub use xor::SingleXORCipher;
 
-/// Trait for streaming ciphers.
+/// Trait for stream ciphers.
 ///
 /// See [implementors](#implementors) for examples.
 pub trait StreamCipher<K, IK: IntoIterator<Item = K>>
@@ -39,7 +39,7 @@ where
     }
 }
 
-/// Trait for seekable streaming ciphers.
+/// Trait for seekable stream ciphers, which allow seeking into any position of the stream.
 ///
 /// See [implementors](#implementors) for examples.
 pub trait SeekableStreamCipher<K, IK: IntoIterator<Item = K>>
