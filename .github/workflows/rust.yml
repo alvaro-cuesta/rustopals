@@ -48,6 +48,12 @@ jobs:
         token: ${{ secrets.GITHUB_TOKEN }}
         args: --tests
 
+    - name: Rustfmt
+      uses: actions-rs/cargo@v1
+      with:
+        command: fmt
+        args: --all -- --check
+
     - name: Build Docs
       uses: actions-rs/cargo@v1
       with:
