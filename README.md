@@ -2,7 +2,7 @@
 
 [![Rust](https://github.com/alvaro-cuesta/rustopals/actions/workflows/rust.yml/badge.svg)](https://github.com/alvaro-cuesta/rustopals/actions/workflows/rust.yml) [![Rust docs](https://img.shields.io/badge/Rust-docs-blue)](https://alvaro-cuesta.github.io/rustopals/rustopals/)
 
-Solutions for [Matasano Crypto Challenges](https://cryptopals.com/) implemented
+Solutions for [Cryptopals Crypto Challenges](https://cryptopals.com/) implemented
 in [Rust](https://www.rust-lang.org/).
 
 The final product should be a library of cryptographic primitives (see
