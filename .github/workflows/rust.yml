@@ -29,17 +29,11 @@ jobs:
     - name: Build
       run: cargo build --verbose
 
-    - name: Test (library + tests)
+    - name: Test
       uses: actions-rs/cargo@v1
       with:
         command: test
         args: --verbose
-
-    - name: Test (docs)
-      uses: actions-rs/cargo@v1
-      with:
-        command: test
-        args: --docs --verbose
 
     - name: Clippy (library)
       uses: actions-rs/clippy-check@v1
