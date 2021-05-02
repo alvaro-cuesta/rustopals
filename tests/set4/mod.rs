@@ -72,3 +72,6 @@ fn challenge28_implement_sha1_keyed_mac() {
     bad_mac(SHA1::new(), KEY, TAMPERED_MESSAGE)
   )
 }
+
+// Break a SHA-1 keyed MAC using length extension - https://cryptopals.com/sets/4/challenges/29
+mod challenge29_break_sha1_keyed_mac;
