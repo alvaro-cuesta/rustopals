@@ -60,8 +60,10 @@ jobs:
           override: true
           components: rustfmt, clippy
 
-    - name: Build
-      run: cargo build --verbose
+    - name: Check
+      uses: actions-rs/cargo@v1
+      with:
+        command: check
 
     - name: Test
       uses: actions-rs/cargo@v1

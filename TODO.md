@@ -15,8 +15,6 @@
 - Constain `Digest` outputs to `[u8; Self::OUTPUT_SIZE]` (requires full `const_generics`)
 - Move adversaries to library
 - Think about `clippy::use_self`
-- Organize GH Actions better
-- rustfmt on GH action
 
 ## Bugs
 
