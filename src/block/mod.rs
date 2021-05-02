@@ -85,6 +85,10 @@ pub trait BlockMode {
     }
 
     /// Decrypt `ciphertext` in ECB mode with `key` using `BlockCipher`.
+    ///
+    /// # Errors
+    ///
+    /// Only due to wrong padding. See `PKCS7Error`.
     fn decrypt<C: BlockCipher>(
         &self,
         cipher: &C,
@@ -133,6 +137,7 @@ impl Mode {
 }
 
 /// Count repeated `block_size` bocks in `data`.
+#[must_use]
 pub fn count_repeated(data: &[u8], block_size: usize) -> usize {
     let mut chunks: Vec<&[u8]> = data.chunks(block_size).collect();
 

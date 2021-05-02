@@ -23,7 +23,7 @@ pub fn expand(key: &[u8; 16]) -> ExpandedKey {
         let previous = unsafe { (*expanded.as_ptr())[i - 1] };
 
         let mut current = [
-            key_core(&previous[3], i),
+            key_core(previous[3], i),
             [0, 0, 0, 0],
             [0, 0, 0, 0],
             [0, 0, 0, 0],
@@ -49,8 +49,8 @@ pub fn expand(key: &[u8; 16]) -> ExpandedKey {
     unsafe { expanded.assume_init() }
 }
 
-fn key_core(input: &[u8; 4], iteration: usize) -> [u8; 4] {
-    let mut output = *input;
+fn key_core(input: [u8; 4], iteration: usize) -> [u8; 4] {
+    let mut output = input;
 
     let temp = output[0];
 

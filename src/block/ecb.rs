@@ -23,8 +23,7 @@ impl<'a> BlockMode for ECB {
     fn encrypt_impl<C: BlockCipher>(&self, cipher: &C, plaintext: &[u8], key: &[u8]) -> Vec<u8> {
         plaintext
             .chunks(C::BLOCK_SIZE)
-            .map(|chunk| cipher.encrypt_block(chunk, key))
-            .flatten()
+            .flat_map(|chunk| cipher.encrypt_block(chunk, key))
             .collect()
     }
 
@@ -32,8 +31,7 @@ impl<'a> BlockMode for ECB {
     fn decrypt_impl<C: BlockCipher>(&self, cipher: &C, ciphertext: &[u8], key: &[u8]) -> Vec<u8> {
         ciphertext
             .chunks(C::BLOCK_SIZE)
-            .map(|chunk| cipher.decrypt_block(chunk, key))
-            .flatten()
+            .flat_map(|chunk| cipher.decrypt_block(chunk, key))
             .collect()
     }
 }

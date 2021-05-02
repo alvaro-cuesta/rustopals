@@ -6,10 +6,11 @@ use std::default::Default;
 
 const BLOCK_LENGTH: usize = 64;
 
-fn f(x: u32, y: u32, z: u32) -> u32 {
+const fn f(x: u32, y: u32, z: u32) -> u32 {
     (x & y) | ((!x) & z)
 }
 
+#[allow(clippy::many_single_char_names)]
 fn ff(x: &[u32], a: &mut u32, b: u32, c: u32, d: u32, k: usize, s: u32) {
     *a = (*a)
         .wrapping_add(f(b, c, d))
@@ -17,10 +18,11 @@ fn ff(x: &[u32], a: &mut u32, b: u32, c: u32, d: u32, k: usize, s: u32) {
         .rotate_left(s)
 }
 
-fn g(x: u32, y: u32, z: u32) -> u32 {
+const fn g(x: u32, y: u32, z: u32) -> u32 {
     (x & y) | (x & z) | (y & z)
 }
 
+#[allow(clippy::many_single_char_names)]
 fn gg(x: &[u32], a: &mut u32, b: u32, c: u32, d: u32, k: usize, s: u32) {
     *a = (*a)
         .wrapping_add(g(b, c, d))
@@ -29,10 +31,11 @@ fn gg(x: &[u32], a: &mut u32, b: u32, c: u32, d: u32, k: usize, s: u32) {
         .rotate_left(s)
 }
 
-fn h(x: u32, y: u32, z: u32) -> u32 {
+const fn h(x: u32, y: u32, z: u32) -> u32 {
     x ^ y ^ z
 }
 
+#[allow(clippy::many_single_char_names)]
 fn hh(x: &[u32], a: &mut u32, b: u32, c: u32, d: u32, k: usize, s: u32) {
     *a = (*a)
         .wrapping_add(h(b, c, d))
@@ -42,6 +45,7 @@ fn hh(x: &[u32], a: &mut u32, b: u32, c: u32, d: u32, k: usize, s: u32) {
 }
 
 /// [MD4](https://en.wikipedia.org/wiki/MD4) hash implementation.
+#[must_use]
 pub struct MD4 {
     h0: u32,
     h1: u32,
@@ -53,7 +57,7 @@ pub struct MD4 {
 
 impl MD4 {
     /// Create a reset MD4 instance (initial values).
-    pub fn new() -> MD4 {
+    pub const fn new() -> MD4 {
         MD4 {
             h0: 0x67452301,
             h1: 0xefcdab89,
@@ -106,6 +110,7 @@ impl Default for MD4 {
 impl Digest for MD4 {
     type Output = [u8; 16];
 
+    #[allow(clippy::many_single_char_names)]
     fn update(&mut self, message: &[u8]) {
         let blocks = [&self.current_block, message].concat();
 
@@ -117,7 +122,7 @@ impl Digest for MD4 {
                 break;
             }
 
-            let mut w = [0u32; 16];
+            let mut w = [0_u32; 16];
 
             for i in 0..16 {
                 w[i] = LittleEndian::read_u32(&chunk[4 * i..4 * (i + 1)]);
@@ -272,31 +277,25 @@ mod test {
         assert_eq!(MD4::new().finalize(), EMPTY_STRING_MD4);
 
         let mut digest = MD4::new();
-        digest.update("".as_bytes());
+        digest.update(b"");
         assert_eq!(digest.finalize(), EMPTY_STRING_MD4);
 
-        assert_eq!(MD4::new().chain("".as_bytes()).finalize(), EMPTY_STRING_MD4);
+        assert_eq!(MD4::new().chain(b"").finalize(), EMPTY_STRING_MD4);
 
         // "abc"
         let mut digest = MD4::new();
-        digest.update("abc".as_bytes());
+        digest.update(b"abc");
         assert_eq!(digest.finalize(), ABC_STRING_MD4);
 
         let mut digest = MD4::new();
-        digest.update("ab".as_bytes());
-        digest.update("c".as_bytes());
+        digest.update(b"ab");
+        digest.update(b"c");
         assert_eq!(digest.finalize(), ABC_STRING_MD4);
 
-        assert_eq!(
-            MD4::new().chain("abc".as_bytes()).finalize(),
-            ABC_STRING_MD4
-        );
+        assert_eq!(MD4::new().chain(b"abc").finalize(), ABC_STRING_MD4);
 
         assert_eq!(
-            MD4::new()
-                .chain("ab".as_bytes())
-                .chain("c".as_bytes())
-                .finalize(),
+            MD4::new().chain(b"ab").chain(b"c").finalize(),
             ABC_STRING_MD4
         );
 

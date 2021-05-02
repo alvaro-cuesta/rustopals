@@ -36,7 +36,7 @@ where
     K: Clone,
 {
     fn keystream(self) -> iter::Repeat<K> {
-        iter::repeat(self.0.clone())
+        iter::repeat(self.0)
     }
 }
 
@@ -61,7 +61,11 @@ impl<K> SingleXORCipher<K> {
                     .ok()
                     .map(|plaintext| (key, scorer.score(&plaintext), plaintext))
             })
-            .max_by(|(_, a_score, _), (_, b_score, _)| a_score.partial_cmp(b_score).unwrap())
+            .max_by(|(_, a_score, _), (_, b_score, _)| {
+                a_score
+                    .partial_cmp(b_score)
+                    .expect("Where did this NaN come from?")
+            })
             .map(|(key, _, plaintext)| (key, plaintext))
     }
 
@@ -79,13 +83,17 @@ impl<K> SingleXORCipher<K> {
         K: Bounded + iter::Step,
     {
         ciphertexts
-            .into_iter()
+            .iter()
             .enumerate()
             .filter_map(|(pos, ciphertext)| {
-                Self::crack(scorer, &ciphertext).map(|(key, plaintext)| (pos, key, plaintext))
+                Self::crack(scorer, ciphertext).map(|(key, plaintext)| (pos, key, plaintext))
             })
             .map(|(pos, key, plaintext)| (pos, key, scorer.score(&plaintext), plaintext))
-            .max_by(|(_, _, a_score, _), (_, _, b_score, _)| a_score.partial_cmp(b_score).unwrap())
+            .max_by(|(_, _, a_score, _), (_, _, b_score, _)| {
+                a_score
+                    .partial_cmp(b_score)
+                    .expect("Where did this NaN come from?")
+            })
             .map(|(pos, key, _, plaintext)| (pos, key, plaintext))
     }
 }
@@ -139,7 +147,7 @@ impl<'k, K> RepeatingXORCipher<'k, K> {
 
                 (keysize, distance as f32 / keysize as f32)
             })
-            .min_by(|(_, a), (_, b)| a.partial_cmp(b).unwrap())
+            .min_by(|(_, a), (_, b)| a.partial_cmp(b).expect("Where did this NaN come from?"))
             .map(|(keysize, _)| keysize)
     }
 
@@ -159,7 +167,7 @@ impl<'k, K> RepeatingXORCipher<'k, K> {
             .filter_map(|i| {
                 let mut inner_vec = Vec::new();
 
-                for block in chunks.iter() {
+                for block in &chunks {
                     inner_vec.push(block[i].clone());
                 }
 

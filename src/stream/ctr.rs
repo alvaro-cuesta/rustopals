@@ -18,7 +18,7 @@ impl<'k, 'c, C: BlockCipher + 'c> CTR<'k, 'c, C> {
 
         CTR {
             block_cipher: cipher,
-            key: key,
+            key,
             nonce: generate_bytes(C::BLOCK_SIZE / 2),
         }
     }
@@ -27,7 +27,7 @@ impl<'k, 'c, C: BlockCipher + 'c> CTR<'k, 'c, C> {
     pub fn from_nonce(cipher: &'c C, key: &'k [u8], nonce: &[u8]) -> CTR<'k, 'c, C> {
         CTR {
             block_cipher: cipher,
-            key: key,
+            key,
             nonce: nonce.to_vec(),
         }
     }
@@ -65,9 +65,9 @@ pub struct KeyStream<'k, 'c, C: BlockCipher + 'c> {
 impl<'k, 'c, C: BlockCipher> KeyStream<'k, 'c, C> {
     pub fn new(cipher: &'c C, key: &'k [u8], nonce: Vec<u8>) -> KeyStream<'k, 'c, C> {
         KeyStream {
-            cipher: cipher,
-            key: key,
-            nonce: nonce,
+            cipher,
+            key,
+            nonce,
             counter: 0,
             current_block: None,
             current_block_byte: 0,
@@ -81,9 +81,9 @@ impl<'k, 'c, C: BlockCipher> KeyStream<'k, 'c, C> {
         offset: usize,
     ) -> KeyStream<'k, 'c, C> {
         KeyStream {
-            cipher: cipher,
-            key: key,
-            nonce: nonce,
+            cipher,
+            key,
+            nonce,
             counter: (offset / C::BLOCK_SIZE) as u64,
             current_block: None,
             current_block_byte: offset % C::BLOCK_SIZE,

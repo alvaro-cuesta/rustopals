@@ -1,10 +1,15 @@
 [package]
 name = "rustopals"
 version = "0.1.0"
+description = "Solutions for Cryptopals Crypto Challenges (https://cryptopals.com/)"
+keywords = ["crypto", "cryptography", "cryptopals", "challenge"]
+categories = ["cryptography"]
+repository = "https://github.com/alvaro-cuesta/rustopals/"
+documentation = "https://alvaro-cuesta.github.io/rustopals/rustopals/"
+readme = "README.md"
 authors = ["Álvaro Cuesta <1827495+alvaro-cuesta@users.noreply.github.com>"]
 edition = "2018"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+publish = false
 
 [dependencies]
 hex = "0.4.3"

@@ -6,10 +6,12 @@ use ::std::cmp::Ordering;
 
 /// A probability, in the [0, 1] range (although no check is enforced).
 #[derive(PartialEq, PartialOrd)]
+#[must_use]
 pub struct Probability(pub f32);
 
 impl Eq for Probability {}
 
+#[allow(clippy::derive_ord_xor_partial_ord)] // SUE ME
 impl Ord for Probability {
     fn cmp(&self, other: &Probability) -> Ordering {
         let &Probability(x) = self;
@@ -28,6 +30,7 @@ impl Ord for Probability {
 }
 
 /// Generate `n` random bytes.
+#[must_use]
 pub fn generate_bytes(n: usize) -> Vec<u8> {
     use rand::distributions::Standard;
     use rand::Rng;

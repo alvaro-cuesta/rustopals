@@ -40,6 +40,7 @@ const NIST_BASE: usize = 2;
 
 /// A Diffie-Hellman local offer.
 #[derive(Clone)]
+#[must_use]
 pub struct DHOffer {
     modulus: BigUint,
     my_private: BigUint,
@@ -59,6 +60,7 @@ impl DHOffer {
     /// Create a new Diffie-Hellman offer specifying its private key.
     ///
     /// Uses the NIST-recommended parameters.
+    #[must_use]
     pub fn new_from_private(my_private: BigUint) -> Option<DHOffer> {
         let (modulus, base) = DHOffer::get_nist_params();
 
@@ -70,11 +72,13 @@ impl DHOffer {
     pub fn new_custom(modulus: BigUint, base: &BigUint) -> DHOffer {
         let my_private = thread_rng().gen_biguint_range(&BigUint::zero(), &modulus);
 
-        DHOffer::new_custom_from_private(modulus, base, my_private).unwrap()
+        DHOffer::new_custom_from_private(modulus, base, my_private)
+            .expect("Private key should have been valid")
     }
 
     /// Create a new Diffie-Hellman offer specifying its private key,
     /// specifying custom DH parameters.
+    #[must_use]
     pub fn new_custom_from_private(
         modulus: BigUint,
         base: &BigUint,
@@ -94,11 +98,13 @@ impl DHOffer {
     }
 
     /// Get the offer's public key.
-    pub fn get_public(&self) -> &BigUint {
+    #[must_use]
+    pub const fn get_public(&self) -> &BigUint {
         &self.my_public
     }
 
     /// Establish a DH session by passing the other party's public key.
+    #[must_use]
     pub fn establish(self, their_public: &BigUint) -> Option<DHSession> {
         if their_public >= &self.modulus {
             return None;
@@ -123,7 +129,14 @@ impl DHOffer {
     }
 }
 
+impl Default for DHOffer {
+    fn default() -> DHOffer {
+        DHOffer::new()
+    }
+}
+
 /// A Diffie-Hellman already-established session.
+#[must_use]
 pub struct DHSession {
     modulus: BigUint,
     my_private: BigUint,
@@ -137,17 +150,20 @@ impl DHSession {
     ///
     /// Once a session is established by both parties (after exchanging their
     /// public keys) this value should be the same in both sessions.
-    pub fn get_shared_secret(&self) -> &BigUint {
+    #[must_use]
+    pub const fn get_shared_secret(&self) -> &BigUint {
         &self.shared_secret
     }
 
     /// Get my public key.
-    pub fn get_public(&self) -> &BigUint {
+    #[must_use]
+    pub const fn get_public(&self) -> &BigUint {
         &self.my_public
     }
 
     /// Get the other party's public key.
-    pub fn get_their_public(&self) -> &BigUint {
+    #[must_use]
+    pub const fn get_their_public(&self) -> &BigUint {
         &self.their_public
     }
 

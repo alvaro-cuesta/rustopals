@@ -6,6 +6,7 @@ use byteorder::{BigEndian, ByteOrder};
 const BLOCK_LENGTH: usize = 64;
 
 /// [SHA-1](https://en.wikipedia.org/wiki/SHA-1) hash implementation.
+#[must_use]
 pub struct SHA1 {
     h0: u32,
     h1: u32,
@@ -18,7 +19,7 @@ pub struct SHA1 {
 
 impl SHA1 {
     /// Create a reset SHA1 instance (initial values).
-    pub fn new() -> SHA1 {
+    pub const fn new() -> SHA1 {
         SHA1 {
             h0: 0x67452301,
             h1: 0xEFCDAB89,
@@ -75,6 +76,7 @@ impl Default for SHA1 {
 impl Digest for SHA1 {
     type Output = [u8; 20];
 
+    #[allow(clippy::many_single_char_names)]
     fn update(&mut self, message: &[u8]) {
         let blocks = [&self.current_block, message].concat();
 
@@ -86,7 +88,7 @@ impl Digest for SHA1 {
                 break;
             }
 
-            let mut w = [0u32; 80];
+            let mut w = [0_u32; 80];
 
             for i in 0..16 {
                 w[i] = BigEndian::read_u32(&chunk[4 * i..4 * (i + 1)]);
@@ -208,34 +210,25 @@ mod test {
         assert_eq!(SHA1::new().finalize(), EMPTY_STRING_SHA1);
 
         let mut digest = SHA1::new();
-        digest.update("".as_bytes());
+        digest.update(b"");
         assert_eq!(digest.finalize(), EMPTY_STRING_SHA1);
 
-        assert_eq!(
-            SHA1::new().chain("".as_bytes()).finalize(),
-            EMPTY_STRING_SHA1
-        );
+        assert_eq!(SHA1::new().chain(b"").finalize(), EMPTY_STRING_SHA1);
 
         // "asdf"
         let mut digest = SHA1::new();
-        digest.update("asdf".as_bytes());
+        digest.update(b"asdf");
         assert_eq!(digest.finalize(), ASDF_STRING_SHA1);
 
         let mut digest = SHA1::new();
-        digest.update("as".as_bytes());
-        digest.update("df".as_bytes());
+        digest.update(b"as");
+        digest.update(b"df");
         assert_eq!(digest.finalize(), ASDF_STRING_SHA1);
 
-        assert_eq!(
-            SHA1::new().chain("asdf".as_bytes()).finalize(),
-            ASDF_STRING_SHA1
-        );
+        assert_eq!(SHA1::new().chain(b"asdf").finalize(), ASDF_STRING_SHA1);
 
         assert_eq!(
-            SHA1::new()
-                .chain("as".as_bytes())
-                .chain("df".as_bytes())
-                .finalize(),
+            SHA1::new().chain(b"as").chain(b"df").finalize(),
             ASDF_STRING_SHA1
         );
 

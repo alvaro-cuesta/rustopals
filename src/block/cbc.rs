@@ -20,7 +20,8 @@ pub struct CBC<'a> {
 impl<'a> CBC<'a> {
     /// Create a [CBC block mode](https://en.wikipedia.org/wiki/Block_cipher_mode_of_operation#Cipher_Block_Chaining_\(CBC\))
     /// with initialization vector `iv`.
-    pub fn new(iv: &'a [u8]) -> CBC<'a> {
+    #[must_use]
+    pub const fn new(iv: &'a [u8]) -> CBC<'a> {
         CBC { iv }
     }
 }
@@ -39,10 +40,10 @@ impl<'a> BlockMode for CBC<'a> {
 
         for block in plaintext.chunks(C::BLOCK_SIZE) {
             let xored = {
-                let prev = if !accum.is_empty() {
-                    &accum[accum.len() - C::BLOCK_SIZE..]
-                } else {
+                let prev = if accum.is_empty() {
                     self.iv
+                } else {
+                    &accum[accum.len() - C::BLOCK_SIZE..]
                 };
 
                 block.xor_repeating(prev).collect::<Vec<_>>()
@@ -66,8 +67,7 @@ impl<'a> BlockMode for CBC<'a> {
         iter::once(self.iv)
             .chain(ciphertext.chunks(C::BLOCK_SIZE))
             .tuple_windows()
-            .map(|(prev, block)| cipher.decrypt_block(block, key).xor_repeating(prev))
-            .flatten()
+            .flat_map(|(prev, block)| cipher.decrypt_block(block, key).xor_repeating(prev))
             .collect()
     }
 }

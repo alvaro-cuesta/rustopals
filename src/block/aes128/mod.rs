@@ -263,7 +263,7 @@ fn inv_sub_bytes(state: &mut State) {
 }
 
 fn shift_rows(state: &mut State) {
-    let old_state = state.clone();
+    let old_state = *state;
 
     for col in 0..4 {
         for row in 0..4 {
@@ -273,7 +273,7 @@ fn shift_rows(state: &mut State) {
 }
 
 fn inv_shift_rows(state: &mut State) {
-    let old_state = state.clone();
+    let old_state = *state;
 
     for col in 0..4 {
         for row in 0..4 {
@@ -359,7 +359,7 @@ mod test {
 
     #[test]
     fn sub_bytes() {
-        let mut state = SUB_BYTES_INPUT.clone();
+        let mut state = SUB_BYTES_INPUT;
         super::sub_bytes(&mut state);
 
         assert_eq!(state, SUB_BYTES_OUTPUT);
@@ -367,7 +367,7 @@ mod test {
 
     #[test]
     fn inv_sub_bytes() {
-        let mut state = SUB_BYTES_OUTPUT.clone();
+        let mut state = SUB_BYTES_OUTPUT;
         super::inv_sub_bytes(&mut state);
 
         assert_eq!(state, SUB_BYTES_INPUT);
@@ -381,7 +381,7 @@ mod test {
 
     #[test]
     fn shift_rows() {
-        let mut state = SHIFT_ROWS_INPUT.clone();
+        let mut state = SHIFT_ROWS_INPUT;
         super::shift_rows(&mut state);
 
         assert_eq!(state, SHIFT_ROWS_OUTPUT);
@@ -389,7 +389,7 @@ mod test {
 
     #[test]
     fn inv_shift_rows() {
-        let mut state = SHIFT_ROWS_OUTPUT.clone();
+        let mut state = SHIFT_ROWS_OUTPUT;
         super::inv_shift_rows(&mut state);
 
         assert_eq!(state, SHIFT_ROWS_INPUT);
@@ -411,7 +411,7 @@ mod test {
 
     #[test]
     fn mix_columns() {
-        let mut state = MIX_COLUMNS_INPUT.clone();
+        let mut state = MIX_COLUMNS_INPUT;
         super::mix_columns(&mut state);
 
         assert_eq!(state, MIX_COLUMNS_OUTPUT);
@@ -419,7 +419,7 @@ mod test {
 
     #[test]
     fn inv_mix_columns() {
-        let mut state = MIX_COLUMNS_OUTPUT.clone();
+        let mut state = MIX_COLUMNS_OUTPUT;
         super::inv_mix_columns(&mut state);
 
         assert_eq!(state, MIX_COLUMNS_INPUT);

@@ -24,6 +24,7 @@ where
     fn keystream(self) -> IK;
 
     /// En/decrypts a plain/ciphertext iterator (an iterator over elements of type `T`).
+    #[allow(clippy::type_complexity)]
     fn process<T, IT>(
         self,
         text: IT,
@@ -51,6 +52,7 @@ where
 
     /// En/decrypts a plain/ciphertext iterator (an iterator over elements of type `T`)
     /// from `offset`.
+    #[allow(clippy::type_complexity)]
     fn process_from<T, IT>(
         self,
         offset: usize,

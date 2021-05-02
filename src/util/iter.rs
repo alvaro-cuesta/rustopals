@@ -5,9 +5,7 @@ use std::collections::HashMap;
 use std::{cmp, fmt, hash, iter, num, ops, str};
 
 /// Iterator generator. Produces bytes (`u8`) from a `hex` string.
-pub fn bytes_from_hex<'a>(
-    hex: &'a str,
-) -> impl Iterator<Item = Result<u8, num::ParseIntError>> + 'a {
+pub fn bytes_from_hex(hex: &str) -> impl Iterator<Item = Result<u8, num::ParseIntError>> + '_ {
     hex.as_bytes()
         .chunks(2)
         .map(|b| u8::from_str_radix(unsafe { str::from_utf8_unchecked(b) }, 16))
@@ -41,6 +39,7 @@ where
     ///
     /// assert_eq!(result, EXPECTED);
     /// ```
+    #[allow(clippy::type_complexity)]
     fn xor(
         self,
         other: IB,
@@ -69,6 +68,7 @@ where
     ///
     /// assert_eq!(result, EXPECTED);
     /// ```
+    #[allow(clippy::type_complexity)]
     fn xor_repeating(
         self,
         other: IB,
@@ -90,6 +90,7 @@ where
     IA: IntoIterator<Item = A>,
     IB: IntoIterator<Item = B>,
 {
+    #[allow(clippy::type_complexity)]
     fn xor(
         self,
         other: IB,
@@ -100,6 +101,7 @@ where
         self.into_iter().zip(other.into_iter()).map(xor)
     }
 
+    #[allow(clippy::type_complexity)]
     fn xor_repeating(
         self,
         other: IB,
@@ -167,7 +169,7 @@ where
 /// assert_eq!(result, EXPECTED);
 /// ```
 pub trait ToHexable {
-    fn to_hex(self) -> String;
+    fn into_hex(self) -> String;
 }
 
 // TODO: {:02x} is only valid for u8. Abstract for any LoweHex type.
@@ -176,7 +178,7 @@ where
     A: fmt::LowerHex,
     IA: IntoIterator<Item = A>,
 {
-    fn to_hex(self) -> String {
+    fn into_hex(self) -> String {
         self.into_iter().map(|x| format!("{:02x}", x)).collect()
     }
 }

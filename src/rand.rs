@@ -8,6 +8,7 @@ const MERSENNE_TEMPER_MASK_2: u32 = 0xefc60000;
 
 /// [Mersenne Twister](https://en.wikipedia.org/wiki/Mersenne_Twister) (MT19937) over 32 bits.
 #[derive(Clone)]
+#[must_use]
 pub struct MT19937 {
     state: [u32; 624],
     index: usize,
@@ -32,14 +33,14 @@ impl MT19937 {
 
         let now = SystemTime::now()
             .duration_since(SystemTime::UNIX_EPOCH)
-            .unwrap()
+            .expect("Who invented a time machine!?")
             .as_secs();
 
         MT19937::new(now as u32)
     }
 
     pub fn from_tap(tap: &[u32]) -> MT19937 {
-        let mut state = [0u32; 624];
+        let mut state = [0_u32; 624];
 
         for i in 0..624 {
             let mut y = tap[i];
@@ -63,10 +64,7 @@ impl MT19937 {
             state[i] = y;
         }
 
-        MT19937 {
-            state: state,
-            index: 0,
-        }
+        MT19937 { state, index: 0 }
     }
 
     fn initial_state(seed: [u8; 4]) -> [u32; 624] {
@@ -74,11 +72,11 @@ impl MT19937 {
 
         let seed = NativeEndian::read_u32(&seed);
 
-        let mut state = [0u32; 624];
+        let mut state = [0_u32; 624];
 
         state[0] = seed;
         for i in 1..624 {
-            state[i] = (0x6c078965u32)
+            state[i] = (0x6c078965_u32)
                 .wrapping_mul(state[i - 1] ^ (state[i - 1] >> 30))
                 .wrapping_add(i as u32);
         }
@@ -93,7 +91,7 @@ impl MT19937 {
             self.state[i] = self.state[(i + 397) % 624] ^ (y >> 1);
 
             if (y % 2) != 0 {
-                self.state[i] = self.state[i] ^ 0x9908b0df;
+                self.state[i] ^= 0x9908b0df;
             }
         }
     }
@@ -126,7 +124,8 @@ impl RngCore for MT19937 {
     }
 
     fn try_fill_bytes(&mut self, dest: &mut [u8]) -> Result<(), rand::Error> {
-        Ok(rand_core::impls::fill_bytes_via_next(self, dest))
+        rand_core::impls::fill_bytes_via_next(self, dest);
+        Ok(())
     }
 }
 

@@ -71,6 +71,7 @@ fn get_padding_length(payload: &[u8], block_length: u8) -> Result<usize, PKCS7Er
 ///         b"YELLOW SUBMARINE\x10\x10\x10\x10\x10\x10\x10\x10\x10\x10\x10\x10\x10\x10\x10\x10",
 ///     );
 ///     ```
+#[must_use]
 pub fn pad(payload: &[u8], block_length: u8) -> Vec<u8> {
     let pad_byte = block_length - (payload.len() % block_length as usize) as u8;
     let pad_len = if pad_byte == 0 {
@@ -158,6 +159,8 @@ pub fn pad_vec(payload: &mut Vec<u8>, block_length: u8) {
 ///     );
 ///     ```
 ///
+/// # Errors
+///
 /// - Unpadding an empty string is an error (expects a block of padding).
 ///
 ///     ```
@@ -233,6 +236,8 @@ pub fn unpad(payload: &[u8], block_length: u8) -> Result<&[u8], PKCS7Error> {
 ///
 ///     assert_eq!(buffer, b"YELLOW SUBMARINE");
 ///     ```
+///
+/// # Errors
 ///
 /// - Unpadding an empty string is an error (expects a block of padding).
 ///

@@ -29,7 +29,7 @@ fn challenge2_fixed_xor() {
     let bytes_a = bytes_from_hex(INPUT_A).map(|x| x.unwrap());
     let bytes_b = bytes_from_hex(INPUT_B).map(|x| x.unwrap());
 
-    let result = bytes_a.xor(bytes_b).to_hex();
+    let result = bytes_a.xor(bytes_b).into_hex();
 
     assert_eq!(result, EXPECTED);
 }
@@ -93,7 +93,7 @@ I go crazy when I hear a cymbal";
     const KEY: &[u8] = b"ICE";
     const EXPECTED: &str = "0b3637272a2b2e63622c2e69692a23693a2a3c6324202d623d63343c2a26226324272765272a282b2f20430a652e2c652a3124333a653e2b2027630c692b20283165286326302e27282f";
 
-    let result = RepeatingXORCipher(KEY).process(PLAINTEXT).to_hex();
+    let result = RepeatingXORCipher(KEY).process(PLAINTEXT).into_hex();
 
     assert_eq!(result, EXPECTED);
 }
