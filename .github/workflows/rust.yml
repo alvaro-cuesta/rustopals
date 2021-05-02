@@ -35,6 +35,14 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-cargo-index-
 
+    - name: Cache Cargo installs
+      uses: actions/cache@v2
+      with:
+        path: ~/.cargo/bin
+        key: ${{ runner.os }}-cargo-bin-${{ hashFiles('**/Cargo.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-cargo-bin-
+
     - name: Cache Rustup toolchains
       uses: actions/cache@v2
       with:
