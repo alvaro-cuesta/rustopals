@@ -4,11 +4,11 @@ fn challenge33_implement_diffie_hellman() {
     use num_bigint::BigUint;
     use rustopals::key_exchange::DHOffer;
 
-    let p = BigUint::from(37usize);
-    let g = BigUint::from(5usize);
+    let p = BigUint::from(37_usize);
+    let g = BigUint::from(5_usize);
 
     let alice_offer = DHOffer::new_custom(p.clone(), &g);
-    let bob_offer = DHOffer::new_custom(p.clone(), &g);
+    let bob_offer = DHOffer::new_custom(p, &g);
 
     let alice_session = alice_offer
         .clone()

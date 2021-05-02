@@ -26,8 +26,8 @@ fn challenge2_fixed_xor() {
     const INPUT_B: &str = "686974207468652062756c6c277320657965";
     const EXPECTED: &str = "746865206b696420646f6e277420706c6179";
 
-    let bytes_a = bytes_from_hex(INPUT_A).map(|x| x.unwrap());
-    let bytes_b = bytes_from_hex(INPUT_B).map(|x| x.unwrap());
+    let bytes_a = bytes_from_hex(INPUT_A).map(Result::unwrap);
+    let bytes_b = bytes_from_hex(INPUT_B).map(Result::unwrap);
 
     let result = bytes_a.xor(bytes_b).into_hex();
 
@@ -45,7 +45,7 @@ fn challenge3_single_byte_xor_cipher() {
     const EXPECTED_PLAINTEXT: &str = "Cooking MC's like a pound of bacon";
 
     let input = bytes_from_hex(INPUT)
-        .map(|x| x.unwrap())
+        .map(Result::unwrap)
         .collect::<Vec<_>>();
 
     let (key, plaintext) = SingleXORCipher::<u8>::crack(&NaiveTextScorer, &input).unwrap();

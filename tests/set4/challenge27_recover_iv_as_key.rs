@@ -43,9 +43,9 @@ mod test {
 
     #[test]
     fn test_crack() {
-        let adversary = super::Adversary::new();
-
         const BLOCK_SIZE: usize = AES128::BLOCK_SIZE;
+
+        let adversary = super::Adversary::new();
 
         loop {
             let plaintext = crate::gen_random_bytes(BLOCK_SIZE * 3);

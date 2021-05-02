@@ -56,7 +56,7 @@ mod challenge11_ecb_cbc_detection_oracle {
         // Extend plaintext and pad it
         let extended_plaintext = prepend
             .into_iter()
-            .chain(plaintext.iter().cloned())
+            .chain(plaintext.iter().copied())
             .chain(append.into_iter())
             .collect::<Vec<_>>();
 
@@ -117,20 +117,20 @@ mod challenge15_pkcs7_validation {
     #[test]
     fn correct_padding() {
         assert_eq!(
-            pkcs7::unpad("ICE ICE BABY\x04\x04\x04\x04".as_bytes(), 16).unwrap(),
-            "ICE ICE BABY".as_bytes()
+            pkcs7::unpad(b"ICE ICE BABY\x04\x04\x04\x04", 16).unwrap(),
+            b"ICE ICE BABY"
         );
     }
 
     #[test]
     fn wrong_padding() {
         assert_eq!(
-            pkcs7::unpad("ICE ICE BABY\x05\x05\x05\x05".as_bytes(), 16),
+            pkcs7::unpad(b"ICE ICE BABY\x05\x05\x05\x05", 16),
             Err(PKCS7Error::BadPadding)
         );
 
         assert_eq!(
-            pkcs7::unpad("ICE ICE BABY\x01\x02\x03\x04".as_bytes(), 16),
+            pkcs7::unpad(b"ICE ICE BABY\x01\x02\x03\x04", 16),
             Err(PKCS7Error::BadPadding)
         );
     }

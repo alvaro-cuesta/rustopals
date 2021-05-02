@@ -95,7 +95,7 @@ mod challenge22_crack_mt19937_seed {
             .as_secs();
 
         let mut rng = thread_rng();
-        let wait_secs = (40u64..1000).sample_single(&mut rng);
+        let wait_secs = (40_u64..1000).sample_single(&mut rng);
 
         let mut rng = MT19937::new(starting_time as u32);
 
@@ -179,7 +179,7 @@ mod challenge24_break_mt19937_stream_cipher {
         const PLAINTEXT: &[u8] = b"AAAAAAAAAAAAAA";
         const SEED: u16 = 1337;
 
-        let cipher = RNG::new(MT19937::new(SEED as u32));
+        let cipher = RNG::new(MT19937::new(u32::from(SEED)));
 
         let rand_prefixed = crate::gen_random_bytes_between(5, 15);
 
@@ -188,7 +188,7 @@ mod challenge24_break_mt19937_stream_cipher {
 
         // We are brute-forcnig this... is that what Cryptopals expects? 16-bit keys be like...
         for guessed_seed in u16::min_value()..=u16::max_value() {
-            let guessed_cipher = RNG::new(MT19937::new(guessed_seed as u32));
+            let guessed_cipher = RNG::new(MT19937::new(u32::from(guessed_seed)));
             let deciphered_plaintext = guessed_cipher
                 .process(ciphertext.clone())
                 .collect::<Vec<_>>();
@@ -210,7 +210,7 @@ mod challenge24_break_mt19937_stream_cipher {
         let token = generate_reset_token();
 
         for guessed_seed in u16::min_value()..=u16::max_value() {
-            let guessed_token = MT19937::new(guessed_seed as u32)
+            let guessed_token = MT19937::new(u32::from(guessed_seed))
                 .sample_iter(&Standard)
                 .take(16)
                 .collect::<Vec<u8>>();

@@ -15,7 +15,7 @@ mod challenge25_break_random_access_aes_ctr {
         let before_new_text = &ciphertext[..offset];
         let after_new_text = &ciphertext[offset + 1..];
 
-        let new_ciphertext = CTR::from_nonce(&AES128, &key, nonce)
+        let new_ciphertext = CTR::from_nonce(&AES128, key, nonce)
             .process_from(offset, new_plaintext)
             .collect::<Vec<_>>();
 

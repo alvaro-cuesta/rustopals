@@ -45,7 +45,7 @@ fn decrypt_block(oracle: &adversary::PaddingOracle, block: &[u8], iv: &[u8]) -> 
     let mut known: Vec<u8> = vec![];
 
     'next: while known.len() != 16 {
-        for possible_byte in 0u8..=Bounded::max_value() {
+        for possible_byte in 0_u8..=Bounded::max_value() {
             let mut my_block = vec![0; AES128::BLOCK_SIZE - known.len() - 1];
             my_block.push(possible_byte);
 
@@ -61,27 +61,27 @@ fn decrypt_block(oracle: &adversary::PaddingOracle, block: &[u8], iv: &[u8]) -> 
             let my_iv = my_block.iter().xor(iv.iter()).collect::<Vec<u8>>();
 
             if oracle.is_correct_padding(block, &my_iv) {
-                if known.len() == 0 {
-                    for corrupt_len in 1..=AES128::BLOCK_SIZE {
-                        let corrupting = vec![1; corrupt_len];
-                        let keeping = vec![0u8; AES128::BLOCK_SIZE - (corrupt_len as usize)];
-                        let mask = [corrupting, keeping].concat();
-
-                        let masked_iv = my_iv.iter().xor(mask.iter()).collect::<Vec<u8>>();
-
-                        let result = oracle.is_correct_padding(block, &masked_iv);
-
-                        if !result {
-                            let length = (AES128::BLOCK_SIZE - corrupt_len + 1) as u8;
-                            for _ in 0..length {
-                                known.insert(0, possible_byte ^ length);
-                            }
-                            continue 'next;
-                        }
-                    }
-                } else {
+                if !known.is_empty() {
                     known.insert(0, possible_byte ^ padding_len_goal);
                     continue 'next;
+                }
+
+                for corrupt_len in 1..=AES128::BLOCK_SIZE {
+                    let corrupting = vec![1; corrupt_len];
+                    let keeping = vec![0_u8; AES128::BLOCK_SIZE - (corrupt_len as usize)];
+                    let mask = [corrupting, keeping].concat();
+
+                    let masked_iv = my_iv.iter().xor(mask.iter()).collect::<Vec<u8>>();
+
+                    let result = oracle.is_correct_padding(block, &masked_iv);
+
+                    if !result {
+                        let length = (AES128::BLOCK_SIZE - corrupt_len + 1) as u8;
+                        for _ in 0..length {
+                            known.insert(0, possible_byte ^ length);
+                        }
+                        continue 'next;
+                    }
                 }
             }
         }
@@ -116,7 +116,7 @@ mod test {
         let in_string = super::STRINGS
             .lines()
             .map(|x| base64::decode(x).unwrap())
-            .find(|x| x == &unpadded);
+            .find(|x| x == unpadded);
 
         if in_string == None {
             panic!("Decrypted is not found in STRINGS")

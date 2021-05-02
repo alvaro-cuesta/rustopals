@@ -25,7 +25,7 @@ mod adversary {
 
             let extended_plaintext = plaintext
                 .iter()
-                .cloned()
+                .copied()
                 .chain(decoded_base64)
                 .collect::<Vec<_>>();
 
@@ -54,8 +54,8 @@ mod adversary {
             let extended_plaintext = self
                 .prepend
                 .iter()
-                .cloned()
-                .chain(plaintext.iter().cloned())
+                .copied()
+                .chain(plaintext.iter().copied())
                 .chain(decoded_base64)
                 .collect::<Vec<_>>();
 
@@ -95,11 +95,11 @@ fn discover_prepended_length(
 
     let random_block = gen_random_bytes(block_size);
 
-    (0usize..empty.len() + 1)
+    (0_usize..=empty.len())
         .filter_map(|guessed_size| {
             let mut guessed_bytes = gen_random_bytes(guessed_size);
 
-            for _ in 0usize..100 {
+            for _ in 0_usize..100 {
                 guessed_bytes.extend_from_slice(&random_block);
             }
 
@@ -131,11 +131,11 @@ fn discover_prepended_length(
 }
 
 fn max_continuous_repeated_blocks_and_idx(input: &[u8], block_size: usize) -> (usize, usize) {
-    let mut contiguous_blocks = 0usize;
-    let mut max_contiguous_blocks = 1usize;
+    let mut contiguous_blocks = 0_usize;
+    let mut max_contiguous_blocks = 1_usize;
 
-    let mut last_start_idx = 0usize;
-    let mut max_contiguous_idx = 0usize;
+    let mut last_start_idx = 0_usize;
+    let mut max_contiguous_idx = 0_usize;
 
     let mut last_block = &input[..block_size];
 
@@ -164,8 +164,8 @@ fn discover_payload_length_without_padding(
 ) -> Option<usize> {
     let mut last_out_length = oracle(&[]).len();
 
-    for in_length in 1..block_size + 1 {
-        let input = vec![0u8; in_length];
+    for in_length in 1..=block_size {
+        let input = vec![0_u8; in_length];
         let out_length = oracle(&input).len();
 
         if out_length != last_out_length {
@@ -196,11 +196,11 @@ pub fn decrypt(oracle: impl Fn(&[u8]) -> Vec<u8>) -> Vec<u8> {
     for decrypting_pos in prepeneded_length..payload_length {
         let cur_block = decrypting_pos / block_size;
 
-        let plaintext = vec![0u8; block_size - 1 - decrypting_pos % block_size];
+        let plaintext = vec![0_u8; block_size - 1 - decrypting_pos % block_size];
         let encrypted = oracle(&plaintext);
         let block = &encrypted[cur_block * block_size..(cur_block + 1) * block_size];
 
-        for last_byte in 0u8..=255 {
+        for last_byte in 0_u8..=255 {
             let new_plaintext = &[plaintext.clone(), decrypted.clone(), vec![last_byte]].concat();
             let new_encrypted = oracle(new_plaintext);
             let new_block = &new_encrypted[cur_block * block_size..(cur_block + 1) * block_size];
@@ -257,7 +257,7 @@ mod test {
 
         for i in 0..128 {
             let oracle = |input: &[u8]| {
-                let value = [&vec![0u8; i], input, random_bytes].concat();
+                let value = [&vec![0_u8; i], input, random_bytes].concat();
 
                 pkcs7::pad(&value, 16)
             };
@@ -295,7 +295,7 @@ mod test {
 
         for i in 0..16 {
             let oracle = |input: &[u8]| {
-                let value = [input, &vec![0u8; i]].concat();
+                let value = [input, &vec![0_u8; i]].concat();
                 pkcs7::pad(&value, 16)
             };
 

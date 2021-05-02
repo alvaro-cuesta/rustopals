@@ -58,8 +58,8 @@ fn crack(login: &adversary::LoginSystem) -> Vec<u8> {
 
     let mut payload = login.generate_payload("!admin!true");
 
-    payload[0x20] ^= ';' as u8 ^ '!' as u8;
-    payload[0x20 + 0x06] ^= '=' as u8 ^ '!' as u8;
+    payload[0x20] ^= b';' ^ b'!';
+    payload[0x20 + 0x06] ^= b'=' ^ b'!';
 
     payload
 }
