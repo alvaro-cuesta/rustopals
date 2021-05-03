@@ -29,4 +29,5 @@ mod challenge34_dh_key_fixing;
 mod challenge35_dh_negotiated_groups;
 
 // Implement Secure Remote Password (SRP) - https://cryptopals.com/sets/5/challenges/36
-mod challenge36_srp;
+// Break SRP with a zero key - https://cryptopals.com/sets/5/challenges/367
+mod challenge36_37_srp;

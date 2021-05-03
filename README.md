@@ -96,7 +96,7 @@ serve as a real-world exercise.
 - [X] [Implement a MITM key-fixing attack on Diffie-Hellman with parameter injection](https://cryptopals.com/sets/5/challenges/34)
 - [X] [Implement DH with negotiated groups, and break with malicious "g" parameters](https://cryptopals.com/sets/5/challenges/35)
 - [X] [Implement Secure Remote Password (SRP)](https://cryptopals.com/sets/5/challenges/36)
-- [ ] [Break SRP with a zero key](https://cryptopals.com/sets/5/challenges/37)
+- [X] [Break SRP with a zero key](https://cryptopals.com/sets/5/challenges/37)
 - [ ] [Offline dictionary attack on simplified SRP](https://cryptopals.com/sets/5/challenges/38)
 - [ ] [Implement RSA](https://cryptopals.com/sets/5/challenges/39)
 - [ ] [Implement an E=3 RSA Broadcast attack](https://cryptopals.com/sets/5/challenges/40)

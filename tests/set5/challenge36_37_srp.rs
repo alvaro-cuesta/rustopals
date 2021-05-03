@@ -116,7 +116,7 @@ impl Client {
         let x_h = SHA256::new().chain(salt).chain(password).finalize();
         let x = BigUint::from_bytes_be(&x_h);
 
-        let s = (server_public_key.clone() - k * g.modpow(&x, &n))
+        let s = (server_public_key.clone() - (k * g.modpow(&x, &n)) % &n)
             .modpow(&(self.private_key.clone() + u * x), &n);
         let k = SHA256::digest(&s.to_bytes_be());
 
@@ -125,7 +125,7 @@ impl Client {
 }
 
 #[test]
-fn srp() {
+fn test_normal_operation_ok() {
     let server = Server::new();
     let client = Client::new();
 
@@ -136,4 +136,50 @@ fn srp() {
         client.get_data_for_server(PASSWORD, salt, server_public_key);
 
     assert!(server.check_client_mac(EMAIL, &client_public_key, &client_mac))
+}
+
+#[test]
+fn test_normal_operation_fail() {
+    let server = Server::new();
+    let client = Client::new();
+
+    let salt = server.get_salt();
+    let server_public_key = server.get_public();
+
+    let (client_public_key, client_mac) =
+        client.get_data_for_server(b"NOT THE CORRECT PASSWORD", salt, server_public_key);
+
+    assert!(!server.check_client_mac(EMAIL, &client_public_key, &client_mac))
+}
+
+#[test]
+fn test_zero_key() {
+    let server = Server::new();
+    let zero = BigUint::from(0_usize);
+    assert!(server.check_client_mac(
+        EMAIL,
+        &zero,
+        &hmac::<SHA256>(&SHA256::digest(&zero.to_bytes_be()), server.get_salt())
+    ))
+}
+
+#[test]
+fn test_n_key() {
+    let n_bytes = base64::decode(NIST_MODULUS).unwrap();
+    let n = BigUint::from_bytes_be(&n_bytes);
+
+    let server = Server::new();
+    let zero = BigUint::from(0_usize);
+
+    assert!(server.check_client_mac(
+        EMAIL,
+        &n,
+        &hmac::<SHA256>(&SHA256::digest(&zero.to_bytes_be()), server.get_salt())
+    ));
+
+    assert!(server.check_client_mac(
+        EMAIL,
+        &(BigUint::from(2_usize) * n),
+        &hmac::<SHA256>(&SHA256::digest(&zero.to_bytes_be()), server.get_salt())
+    ));
 }
