@@ -44,7 +44,7 @@ serve as a real-world exercise.
     cargo doc --open
     ```
 
-## Progress
+## Progress (33/64)
 
 ### [Set 1: Basics](https://cryptopals.com/sets/1)
 
