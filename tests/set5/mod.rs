@@ -27,3 +27,6 @@ mod challenge34_dh_key_fixing;
 
 // Implement DH with negotiated groups, and break with malicious "g" parameters - https://cryptopals.com/sets/5/challenges/35
 mod challenge35_dh_negotiated_groups;
+
+// Implement Secure Remote Password (SRP) - https://cryptopals.com/sets/5/challenges/36
+mod challenge36_srp;
