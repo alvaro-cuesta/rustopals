@@ -30,7 +30,7 @@ impl Server {
         let v = G.modpow(&x, &NIST_MODULUS);
 
         let private_key = thread_rng().gen_biguint_range(&BigUint::from(0_usize), &NIST_MODULUS);
-        let public_key = (&K as &BigUint) * v.clone() + G.modpow(&private_key, &NIST_MODULUS);
+        let public_key = &*K * v.clone() + G.modpow(&private_key, &NIST_MODULUS);
 
         Server {
             salt,
@@ -105,8 +105,7 @@ impl Client {
         let x_h = SHA256::new().chain(salt).chain(password).finalize();
         let x = BigUint::from_bytes_be(&x_h);
 
-        let s = (server_public_key.clone()
-            - ((&K as &BigUint) * G.modpow(&x, &NIST_MODULUS)) % (&NIST_MODULUS as &BigUint))
+        let s = (server_public_key.clone() - (&*K * G.modpow(&x, &NIST_MODULUS)) % &*NIST_MODULUS)
             .modpow(&(self.private_key.clone() + u * x), &NIST_MODULUS);
         let k = SHA256::digest(&s.to_bytes_be());
 
@@ -166,7 +165,7 @@ fn test_n_key() {
 
     assert!(server.check_client_mac(
         EMAIL,
-        &(BigUint::from(2_usize) * (&NIST_MODULUS as &BigUint)),
+        &(BigUint::from(2_usize) * &*NIST_MODULUS),
         &hmac::<SHA256>(&SHA256::digest(&zero.to_bytes_be()), server.get_salt())
     ));
 }

@@ -31,3 +31,6 @@ mod challenge35_dh_negotiated_groups;
 // Implement Secure Remote Password (SRP) - https://cryptopals.com/sets/5/challenges/36
 // Break SRP with a zero key - https://cryptopals.com/sets/5/challenges/37
 mod challenge36_37_srp;
+
+// Offline dictionary attack on simplified SRP - https://cryptopals.com/sets/5/challenges/38
+mod challenge38_offline_dictionary_srp;
