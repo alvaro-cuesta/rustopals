@@ -155,7 +155,7 @@ fn eve_g_1(
     // (1B) Send g = 1 to Bob instead
     bob_tx
         .send(Message::Negotiate {
-            modulus: modulus.clone(),
+            modulus,
             base: BigUint::from(1_usize),
         })
         .unwrap();
@@ -265,7 +265,7 @@ fn eve_g_p(
     bob_tx
         .send(Message::Negotiate {
             modulus: modulus.clone(),
-            base: modulus.clone(),
+            base: modulus,
         })
         .unwrap();
 
@@ -397,7 +397,7 @@ fn eve_g_p_minus_1(
     bob_tx
         .send(Message::Negotiate {
             modulus: modulus.clone(),
-            base: modulus.clone() - BigUint::from(1_usize),
+            base: modulus - BigUint::from(1_usize),
         })
         .unwrap();
 
