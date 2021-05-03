@@ -15,14 +15,9 @@ enum Message {
 
 fn alice(tx: SyncSender<Message>, rx: Receiver<Message>) -> Vec<u8> {
     // (1) A->B -- Send "p", "g"
-    let bytes = base64::decode(NIST_MODULUS).unwrap();
-
-    let modulus = BigUint::from_bytes_be(&bytes);
-    let base = BigUint::from(NIST_BASE);
-
     tx.send(Message::Negotiate {
-        modulus: modulus.clone(),
-        base: base.clone(),
+        modulus: NIST_MODULUS.clone(),
+        base: NIST_BASE.clone(),
     })
     .unwrap();
 
@@ -33,7 +28,7 @@ fn alice(tx: SyncSender<Message>, rx: Receiver<Message>) -> Vec<u8> {
     };
 
     // (3) A->B -- Send "A"
-    let dh_offer = DHOffer::new_custom(modulus, &base);
+    let dh_offer = DHOffer::new_custom(NIST_MODULUS.clone(), &NIST_BASE);
 
     tx.send(Message::Offer {
         public_key: dh_offer.get_public().clone(),

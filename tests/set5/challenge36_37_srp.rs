@@ -1,10 +1,14 @@
 #![allow(clippy::many_single_char_names)]
 
 use num_bigint::{BigUint, RandBigInt};
+use once_cell::sync::Lazy;
 use rand::thread_rng;
 use rustopals::digest::{Digest, SHA256};
 use rustopals::key_exchange::dh::NIST_MODULUS;
 use rustopals::mac::hmac;
+
+static G: Lazy<BigUint> = Lazy::new(|| BigUint::from(2_usize));
+static K: Lazy<BigUint> = Lazy::new(|| BigUint::from(3_usize));
 
 const EMAIL: &[u8] = b"will@example.com";
 const PASSWORD: &[u8] = b"In west Philadelphia, born and raised";
@@ -18,20 +22,15 @@ struct Server {
 
 impl Server {
     fn new() -> Server {
-        let n_bytes = base64::decode(NIST_MODULUS).unwrap();
-        let n = BigUint::from_bytes_be(&n_bytes);
-        let g = BigUint::from(2_usize);
-        let k = BigUint::from(3_usize);
-
         let salt = crate::gen_random_bytes(32);
 
         let x_h = SHA256::new().chain(&salt).chain(PASSWORD).finalize();
         let x = BigUint::from_bytes_be(&x_h);
 
-        let v = g.modpow(&x, &n);
+        let v = G.modpow(&x, &NIST_MODULUS);
 
-        let private_key = thread_rng().gen_biguint_range(&BigUint::from(0_usize), &n);
-        let public_key = k * v.clone() + g.modpow(&private_key, &n);
+        let private_key = thread_rng().gen_biguint_range(&BigUint::from(0_usize), &NIST_MODULUS);
+        let public_key = (&K as &BigUint) * v.clone() + G.modpow(&private_key, &NIST_MODULUS);
 
         Server {
             salt,
@@ -51,17 +50,14 @@ impl Server {
             return false;
         }
 
-        let n_bytes = base64::decode(NIST_MODULUS).unwrap();
-        let n = BigUint::from_bytes_be(&n_bytes);
-
         let u_h = SHA256::new()
             .chain(&client_public_key.to_bytes_be())
             .chain(&self.public_key.to_bytes_be())
             .finalize();
         let u = BigUint::from_bytes_be(&u_h);
 
-        let s = (client_public_key.clone() * self.v.clone().modpow(&u, &n))
-            .modpow(&self.private_key, &n);
+        let s = (client_public_key.clone() * self.v.clone().modpow(&u, &NIST_MODULUS))
+            .modpow(&self.private_key, &NIST_MODULUS);
         let k = SHA256::digest(&s.to_bytes_be());
 
         let my_mac = &hmac::<SHA256>(&k, &self.salt);
@@ -85,12 +81,8 @@ struct Client {
 
 impl Client {
     fn new() -> Client {
-        let n_bytes = base64::decode(NIST_MODULUS).unwrap();
-        let n = BigUint::from_bytes_be(&n_bytes);
-        let g = BigUint::from(2_usize);
-
-        let private_key = thread_rng().gen_biguint_range(&BigUint::from(0_usize), &n);
-        let public_key = g.modpow(&private_key, &n);
+        let private_key = thread_rng().gen_biguint_range(&BigUint::from(0_usize), &NIST_MODULUS);
+        let public_key = G.modpow(&private_key, &NIST_MODULUS);
 
         Client {
             private_key,
@@ -104,11 +96,6 @@ impl Client {
         salt: &[u8],
         server_public_key: &BigUint,
     ) -> (BigUint, <SHA256 as Digest>::Output) {
-        let n_bytes = base64::decode(NIST_MODULUS).unwrap();
-        let n = BigUint::from_bytes_be(&n_bytes);
-        let g = BigUint::from(2_usize);
-        let k = BigUint::from(3_usize);
-
         let u_h = SHA256::new()
             .chain(&self.public_key.to_bytes_be())
             .chain(&server_public_key.to_bytes_be())
@@ -118,8 +105,9 @@ impl Client {
         let x_h = SHA256::new().chain(salt).chain(password).finalize();
         let x = BigUint::from_bytes_be(&x_h);
 
-        let s = (server_public_key.clone() - (k * g.modpow(&x, &n)) % &n)
-            .modpow(&(self.private_key.clone() + u * x), &n);
+        let s = (server_public_key.clone()
+            - ((&K as &BigUint) * G.modpow(&x, &NIST_MODULUS)) % (&NIST_MODULUS as &BigUint))
+            .modpow(&(self.private_key.clone() + u * x), &NIST_MODULUS);
         let k = SHA256::digest(&s.to_bytes_be());
 
         (self.public_key, hmac::<SHA256>(&k, salt))
@@ -167,21 +155,18 @@ fn test_zero_key() {
 
 #[test]
 fn test_n_key() {
-    let n_bytes = base64::decode(NIST_MODULUS).unwrap();
-    let n = BigUint::from_bytes_be(&n_bytes);
-
     let server = Server::new();
     let zero = BigUint::from(0_usize);
 
     assert!(server.check_client_mac(
         EMAIL,
-        &n,
+        &NIST_MODULUS,
         &hmac::<SHA256>(&SHA256::digest(&zero.to_bytes_be()), server.get_salt())
     ));
 
     assert!(server.check_client_mac(
         EMAIL,
-        &(BigUint::from(2_usize) * n),
+        &(BigUint::from(2_usize) * (&NIST_MODULUS as &BigUint)),
         &hmac::<SHA256>(&SHA256::digest(&zero.to_bytes_be()), server.get_salt())
     ));
 }

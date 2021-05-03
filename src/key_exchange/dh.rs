@@ -25,19 +25,29 @@
 use crate::digest::Digest;
 use num_bigint::{BigUint, RandBigInt};
 use num_traits::Zero;
+use once_cell::sync::Lazy;
 use rand::thread_rng;
 
-pub const NIST_MODULUS: &str = "\
-ffffffffffffffffc90fdaa22168c234c4c6628b80dc1cd129024\
-e088a67cc74020bbea63b139b22514a08798e3404ddef9519b3cd\
-3a431b302b0a6df25f14374fe1356d6d51c245e485b576625e7ec\
-6f44c42e9a637ed6b0bff5cb6f406b7edee386bfb5a899fa5ae9f\
-24117c4b1fe649286651ece45b3dc2007cb8a163bf0598da48361\
-c55d39a69163fa8fd24cf5f83655d23dca3ad961c62f356208552\
-bb9ed529077096966d670c354e4abc9804f1746c08ca237327fff\
-fffffffffffff";
+/// NIST-recommended modulus for DH.
+pub static NIST_MODULUS: Lazy<BigUint> = Lazy::new(|| {
+    let bytes = base64::decode(
+        "\
+        ffffffffffffffffc90fdaa22168c234c4c6628b80dc1cd129024\
+        e088a67cc74020bbea63b139b22514a08798e3404ddef9519b3cd\
+        3a431b302b0a6df25f14374fe1356d6d51c245e485b576625e7ec\
+        6f44c42e9a637ed6b0bff5cb6f406b7edee386bfb5a899fa5ae9f\
+        24117c4b1fe649286651ece45b3dc2007cb8a163bf0598da48361\
+        c55d39a69163fa8fd24cf5f83655d23dca3ad961c62f356208552\
+        bb9ed529077096966d670c354e4abc9804f1746c08ca237327fff\
+        fffffffffffff",
+    )
+    .unwrap();
 
-pub const NIST_BASE: usize = 2;
+    BigUint::from_bytes_be(&bytes)
+});
+
+/// NIST-recommended base for DH.
+pub static NIST_BASE: Lazy<BigUint> = Lazy::new(|| BigUint::from(2_usize));
 
 /// A Diffie-Hellman local offer.
 #[derive(Clone, Debug)]
@@ -53,9 +63,7 @@ impl DHOffer {
     ///
     /// Uses the NIST-recommended parameters.
     pub fn new() -> DHOffer {
-        let (modulus, base) = DHOffer::get_nist_params();
-
-        DHOffer::new_custom(modulus, &base)
+        DHOffer::new_custom(NIST_MODULUS.clone(), &NIST_BASE)
     }
 
     /// Create a new Diffie-Hellman offer specifying its private key.
@@ -63,9 +71,7 @@ impl DHOffer {
     /// Uses the NIST-recommended parameters.
     #[must_use]
     pub fn new_from_private(my_private: BigUint) -> Option<DHOffer> {
-        let (modulus, base) = DHOffer::get_nist_params();
-
-        DHOffer::new_custom_from_private(modulus, &base, my_private)
+        DHOffer::new_custom_from_private(NIST_MODULUS.clone(), &NIST_BASE, my_private)
     }
 
     /// Create a new Diffie-Hellman offer with a random private key,
@@ -130,13 +136,6 @@ impl DHOffer {
             their_public: their_public.clone(),
             shared_secret,
         })
-    }
-
-    /// Get the recommended DH NIST params.
-    fn get_nist_params() -> (BigUint, BigUint) {
-        let bytes = base64::decode(NIST_MODULUS).unwrap();
-
-        (BigUint::from_bytes_be(&bytes), BigUint::from(NIST_BASE))
     }
 }
 

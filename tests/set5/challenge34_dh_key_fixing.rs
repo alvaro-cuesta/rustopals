@@ -23,16 +23,11 @@ enum Message {
 
 fn alice(tx: SyncSender<Message>, rx: Receiver<Message>) -> Vec<u8> {
     // (1) A->B -- Send "p", "g", "A"
-    let bytes = base64::decode(NIST_MODULUS).unwrap();
-
-    let modulus = BigUint::from_bytes_be(&bytes);
-    let base = BigUint::from(NIST_BASE);
-
-    let dh_offer = DHOffer::new_custom(modulus.clone(), &base);
+    let dh_offer = DHOffer::new_custom(NIST_MODULUS.clone(), &NIST_BASE);
 
     tx.send(Message::Offer {
-        modulus,
-        base,
+        modulus: NIST_MODULUS.clone(),
+        base: NIST_BASE.clone(),
         public_key: dh_offer.get_public().clone(),
     })
     .unwrap();
