@@ -1,6 +1,7 @@
 mod adversary {
-    use rustopals::block::{BlockCipher, BlockMode, AES128, ECB};
     use std::collections::HashMap;
+
+    use rustopals::block::{BlockCipher, BlockMode, AES128, ECB};
 
     pub struct LoginSystem {
         key: Vec<u8>,

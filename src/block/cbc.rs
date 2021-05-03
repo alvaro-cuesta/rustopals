@@ -5,8 +5,9 @@
 //! Each ciphertext block depends on all previous blocks. An IV (initialization
 //! vector) is used as a pseudo-0th-block to make each message unique.
 
-use itertools::Itertools;
 use std::iter;
+
+use itertools::Itertools;
 
 use crate::block::{BlockCipher, BlockMode};
 use crate::util::iter::Xorable;

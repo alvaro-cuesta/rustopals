@@ -1,8 +1,9 @@
 //! [RNG](https://en.wikipedia.org/wiki/Pseudorandom_number_generator)-based stream cipher.
 
-use crate::stream::StreamCipher;
 use rand::distributions::{DistIter, Standard};
 use rand::{Rng, SeedableRng};
+
+use crate::stream::StreamCipher;
 
 /// [RNG](https://en.wikipedia.org/wiki/Pseudorandom_number_generator)-based stream cipher.
 /// The RNG seed is the key.

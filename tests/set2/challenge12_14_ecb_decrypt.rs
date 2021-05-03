@@ -87,8 +87,9 @@ fn discover_prepended_length(
     oracle: impl Fn(&[u8]) -> Vec<u8>,
     block_size: usize,
 ) -> Option<usize> {
-    use crate::gen_random_bytes;
     use rustopals::block::count_repeated;
+
+    use crate::gen_random_bytes;
 
     let empty = oracle(&[]);
     let repeats_in_empty = count_repeated(&empty, block_size);
@@ -219,8 +220,9 @@ pub fn decrypt(oracle: impl Fn(&[u8]) -> Vec<u8>) -> Vec<u8> {
 }
 
 mod test {
-    use super::adversary::Encryptor;
     use rustopals::block::{BlockCipher, AES128};
+
+    use super::adversary::Encryptor;
 
     const TEST_MIN_PREPEND: usize = 10;
     const TEST_MAX_PREPEND: usize = 32;

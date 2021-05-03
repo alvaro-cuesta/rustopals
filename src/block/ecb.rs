@@ -1,9 +1,10 @@
 //! [ECB block mode](https://en.wikipedi.org/wiki/Block_cipher_mode_of_operation#Electronic_Codebook_\(ECB\)),
 //! where each block is encrypted separately.
 
+use itertools::Itertools;
+
 use crate::block::{BlockCipher, BlockMode};
 use crate::util::Probability;
-use itertools::Itertools;
 
 /// [ECB block mode](https://en.wikipedi.org/wiki/Block_cipher_mode_of_operation#Electronic_Codebook_\(ECB\))
 pub struct ECB;

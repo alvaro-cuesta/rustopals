@@ -1,9 +1,10 @@
 //! [Message authentication code](https://en.wikipedia.org/wiki/Message_authentication_code)
 //! implementations and related utilities.
 
+use std::iter;
+
 use crate::digest::Digest;
 use crate::util::iter::Xorable;
-use std::iter;
 
 /// A very bad MAC implementation that nobody should use.
 ///

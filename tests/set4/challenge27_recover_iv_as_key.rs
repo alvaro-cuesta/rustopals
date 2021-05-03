@@ -37,9 +37,10 @@ impl Adversary {
 }
 
 mod test {
+    use std::iter::repeat;
+
     use rustopals::block::{BlockCipher, AES128};
     use rustopals::util::iter::Xorable;
-    use std::iter::repeat;
 
     #[test]
     fn test_crack() {

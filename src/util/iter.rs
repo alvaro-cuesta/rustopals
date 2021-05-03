@@ -1,8 +1,9 @@
 //! Utilities that generate or operate on iterators.
 
-use iter::{Cycle, IntoIterator, Map, Zip};
 use std::collections::HashMap;
 use std::{cmp, fmt, hash, iter, num, ops, str};
+
+use iter::{Cycle, IntoIterator, Map, Zip};
 
 /// Iterator generator. Produces bytes (`u8`) from a `hex` string.
 pub fn bytes_from_hex(hex: &str) -> impl Iterator<Item = Result<u8, num::ParseIntError>> + '_ {

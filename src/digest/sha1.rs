@@ -1,7 +1,8 @@
 //! [SHA-1](https://en.wikipedia.org/wiki/SHA-1) hash function.
 
-use crate::digest::{Digest, ExtensibleDigest};
 use byteorder::{BigEndian, ByteOrder};
+
+use crate::digest::{Digest, ExtensibleDigest};
 
 /// [SHA-1](https://en.wikipedia.org/wiki/SHA-1) hash implementation.
 #[must_use]

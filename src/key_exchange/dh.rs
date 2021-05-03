@@ -22,11 +22,12 @@
 //! )
 //! ```
 
-use crate::digest::Digest;
 use num_bigint::{BigUint, RandBigInt};
 use num_traits::Zero;
 use once_cell::sync::Lazy;
 use rand::thread_rng;
+
+use crate::digest::Digest;
 
 /// NIST-recommended modulus for DH.
 pub static NIST_MODULUS: Lazy<BigUint> = Lazy::new(|| {

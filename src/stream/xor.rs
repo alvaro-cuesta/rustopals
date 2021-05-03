@@ -4,9 +4,10 @@
 //! - Do not depend on `u8` scoring.
 //! - Try removing `Clone`s.
 
+use std::{iter, ops};
+
 use iter::Cycle;
 use num_traits::Bounded;
-use std::{iter, ops};
 
 use crate::stream::StreamCipher;
 use crate::util::TextScorer;

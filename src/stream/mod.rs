@@ -1,8 +1,9 @@
 //! [Stream ciphers](https://en.wikipedia.org/wiki/Stream_cipher) and related utilities.
 
-use crate::util::iter::Xorable;
 use std::iter::{IntoIterator, Map, Zip};
 use std::ops::BitXor;
+
+use crate::util::iter::Xorable;
 
 pub mod ctr;
 pub mod rng;
@@ -10,8 +11,7 @@ pub mod xor;
 
 pub use ctr::CTR;
 pub use rng::RNG;
-pub use xor::RepeatingXORCipher;
-pub use xor::SingleXORCipher;
+pub use xor::{RepeatingXORCipher, SingleXORCipher};
 
 /// Trait for stream ciphers.
 ///

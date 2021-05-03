@@ -1,9 +1,10 @@
+use std::sync::mpsc::{sync_channel, Receiver, SyncSender};
+use std::thread;
+
 use num_bigint::BigUint;
 use rustopals::block::{BlockCipher, BlockMode, AES128, CBC};
 use rustopals::digest::{Digest, SHA1};
 use rustopals::key_exchange::dh::{DHOffer, NIST_BASE, NIST_MODULUS};
-use std::sync::mpsc::{sync_channel, Receiver, SyncSender};
-use std::thread;
 
 enum Message {
     Negotiate { modulus: BigUint, base: BigUint },

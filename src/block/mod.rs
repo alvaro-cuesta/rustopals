@@ -117,8 +117,9 @@ impl Mode {
     where
         O: FnMut(&[u8]) -> Vec<u8>,
     {
-        use crate::util::Probability;
         use std::iter;
+
+        use crate::util::Probability;
 
         let empty_blocks = 1 + oracle(b"").len() / block_size;
 

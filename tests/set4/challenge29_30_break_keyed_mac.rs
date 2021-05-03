@@ -3,10 +3,12 @@ use rustopals::digest::{Digest, ExtensibleDigest, MD4, SHA1};
 const TARGET: &[u8] = b";admin=true";
 
 mod adversary {
-    use super::TARGET;
+    use std::marker::PhantomData;
+
     use rustopals::digest::Digest;
     use rustopals::mac::bad_mac;
-    use std::marker::PhantomData;
+
+    use super::TARGET;
 
     pub struct LoginSystem<D: Digest> {
         key: Vec<u8>,

@@ -1,8 +1,10 @@
 //! [MD4](https://en.wikipedia.org/wiki/MD4) hash function.
 
-use crate::digest::{Digest, ExtensibleDigest};
-use byteorder::{ByteOrder, LittleEndian};
 use std::default::Default;
+
+use byteorder::{ByteOrder, LittleEndian};
+
+use crate::digest::{Digest, ExtensibleDigest};
 
 const fn f(x: u32, y: u32, z: u32) -> u32 {
     (x & y) | ((!x) & z)

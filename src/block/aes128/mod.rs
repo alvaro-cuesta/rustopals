@@ -2,8 +2,9 @@
 
 mod key;
 
-use crate::block::BlockCipher;
 use itertools::iproduct;
+
+use crate::block::BlockCipher;
 
 type State = [[u8; 4]; 4];
 
@@ -322,8 +323,9 @@ fn inv_mix_columns(state: &mut State) {
 
 #[cfg(test)]
 mod test {
-    use crate::block::BlockCipher;
     use test::Bencher;
+
+    use crate::block::BlockCipher;
 
     const PLAINTEXT: [u8; 16] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     const KEY: [u8; 16] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
