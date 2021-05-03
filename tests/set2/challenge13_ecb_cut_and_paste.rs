@@ -53,13 +53,14 @@ mod adversary {
         fn parse() {
             use std::collections::HashMap;
 
-            let expected = vec![
+            let expected = [
                 ("foo", "bar"),
                 ("baz", "qux"),
                 ("zap", "zazzle"),
                 ("inga", "true"),
             ]
-            .into_iter()
+            .iter()
+            .copied()
             .collect::<HashMap<_, _>>();
 
             assert_eq!(super::parse("foo=bar&baz=qux&zap=zazzle&inga"), expected)

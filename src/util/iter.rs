@@ -195,7 +195,7 @@ where
 ///
 /// const INPUT: &str = "Hello world!";
 ///
-/// let expected = HashMap::<_, _>::from_iter(IntoIter::new([
+/// let expected = [
 ///     ('H', 1),
 ///     ('e', 1),
 ///     ('l', 3),
@@ -205,7 +205,10 @@ where
 ///     ('r', 1),
 ///     ('d', 1),
 ///     ('!', 1),
-/// ]));
+/// ]
+///     .into_iter()
+///     .copied()
+///     .collect::<HashMap<_, _>>();
 ///
 /// let result = INPUT
 ///     .chars()
