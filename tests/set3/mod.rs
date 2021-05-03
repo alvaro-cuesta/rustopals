@@ -83,16 +83,13 @@ fn challenge21_mt19937() {
 mod challenge22_crack_mt19937_seed {
     use rand::Rng;
     use rustopals::rand::MT19937;
+    use rustopals::util::get_unix_time;
 
     fn get_random() -> (u64, u32) {
         use rand::distributions::uniform::SampleRange;
         use rand::thread_rng;
-        use std::time::SystemTime;
 
-        let starting_time = SystemTime::now()
-            .duration_since(SystemTime::UNIX_EPOCH)
-            .unwrap()
-            .as_secs();
+        let starting_time = get_unix_time();
 
         let mut rng = thread_rng();
         let wait_secs = (40_u64..1000).sample_single(&mut rng);
@@ -159,14 +156,10 @@ mod challenge24_break_mt19937_stream_cipher {
     use rand::Rng;
     use rustopals::rand::MT19937;
     use rustopals::stream::{StreamCipher, RNG};
-    use std::time::SystemTime;
+    use rustopals::util::get_unix_time;
 
     fn generate_reset_token() -> Vec<u8> {
-        let time = SystemTime::now()
-            .duration_since(SystemTime::UNIX_EPOCH)
-            .unwrap()
-            .as_secs()
-            % 0xffff;
+        let time = get_unix_time() % 0xffff;
 
         MT19937::new(time as u32)
             .sample_iter(&Standard)

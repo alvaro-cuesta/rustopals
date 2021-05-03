@@ -67,3 +67,18 @@ impl TextScorer for NaiveTextScorer {
         occurrences as f32 / ENGLISH_COMMON_LETTERS.len() as f32
     }
 }
+
+/// Get Unix time (seconds since Unix epoch).
+///
+/// # Panics
+///
+/// If run before Unix epoch.
+#[must_use]
+pub fn get_unix_time() -> u64 {
+    use std::time::SystemTime;
+
+    SystemTime::now()
+        .duration_since(SystemTime::UNIX_EPOCH)
+        .expect("Who invented a time machine!?")
+        .as_secs()
+}

@@ -3,6 +3,8 @@
 
 use rand::{RngCore, SeedableRng};
 
+use crate::util::get_unix_time;
+
 const MERSENNE_TEMPER_MASK_1: u32 = 0x9d2c5680;
 const MERSENNE_TEMPER_MASK_2: u32 = 0xefc60000;
 
@@ -29,14 +31,7 @@ impl MT19937 {
     }
 
     pub fn new_unseeded() -> MT19937 {
-        use std::time::SystemTime;
-
-        let now = SystemTime::now()
-            .duration_since(SystemTime::UNIX_EPOCH)
-            .expect("Who invented a time machine!?")
-            .as_secs();
-
-        MT19937::new(now as u32)
+        MT19937::new(get_unix_time() as u32)
     }
 
     pub fn from_tap(tap: &[u32]) -> MT19937 {
