@@ -43,8 +43,6 @@ mod adversary {
             // Forced to use unsafe because String::from_utf8 detected wrong UTF-8 in the garbage block
             let credentials = unsafe { str::from_utf8_unchecked(&plaintext) };
 
-            println!("{:?}", credentials);
-
             credentials.contains(";admin=true;")
         }
     }
