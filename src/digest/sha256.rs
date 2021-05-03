@@ -3,8 +3,6 @@
 use crate::digest::{Digest, ExtensibleDigest};
 use byteorder::{BigEndian, ByteOrder};
 
-const BLOCK_LENGTH: usize = 64;
-
 const K: [u32; 64] = [
     0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5,
     0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3, 0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174,
@@ -101,7 +99,10 @@ impl Default for SHA256 {
 }
 
 impl Digest for SHA256 {
-    type Output = [u8; 32];
+    const OUTPUT_LENGTH: usize = 32;
+    const BLOCK_LENGTH: usize = 64;
+
+    type Output = [u8; Self::OUTPUT_LENGTH];
 
     #[allow(clippy::many_single_char_names)]
     fn update(&mut self, message: &[u8]) {
@@ -109,8 +110,8 @@ impl Digest for SHA256 {
 
         self.current_block = vec![];
 
-        for chunk in blocks.chunks(BLOCK_LENGTH) {
-            if chunk.len() != BLOCK_LENGTH {
+        for chunk in blocks.chunks(Self::BLOCK_LENGTH) {
+            if chunk.len() != Self::BLOCK_LENGTH {
                 self.current_block = chunk.to_vec();
                 break;
             }
@@ -174,8 +175,9 @@ impl Digest for SHA256 {
         }
     }
 
-    fn finalize(mut self) -> [u8; 32] {
-        let message_len = self.block_count * BLOCK_LENGTH as u64 + self.current_block.len() as u64;
+    fn finalize(mut self) -> Self::Output {
+        let message_len =
+            self.block_count * Self::BLOCK_LENGTH as u64 + self.current_block.len() as u64;
         let mut ml = [0; 8];
         BigEndian::write_u64(&mut ml, 8 * message_len as u64);
 
@@ -183,8 +185,8 @@ impl Digest for SHA256 {
         self.update(&[0x80]);
 
         // Add zero-padding
-        let padding_len =
-            BLOCK_LENGTH - ((1 + ml.len() as u64 + message_len) % BLOCK_LENGTH as u64) as usize;
+        let padding_len = Self::BLOCK_LENGTH
+            - ((1 + ml.len() as u64 + message_len) % Self::BLOCK_LENGTH as u64) as usize;
         self.update(&vec![0; padding_len as usize]);
 
         // Add message length
@@ -193,7 +195,7 @@ impl Digest for SHA256 {
         // Output
         assert_eq!(self.current_block, &[]);
 
-        let mut hh = [0; 32];
+        let mut hh = [0; Self::OUTPUT_LENGTH];
 
         BigEndian::write_u32(&mut hh[0..4], self.h0);
         BigEndian::write_u32(&mut hh[4..8], self.h1);
@@ -209,13 +211,16 @@ impl Digest for SHA256 {
 }
 
 impl ExtensibleDigest for SHA256 {
-    fn extend_digest(digest_output: [u8; 32], guessed_payload_length: usize) -> (Self, Vec<u8>) {
+    fn extend_digest(
+        digest_output: Self::Output,
+        guessed_payload_length: usize,
+    ) -> (Self, Vec<u8>) {
         let mut ml = [0; 8];
         BigEndian::write_u64(&mut ml, 8 * guessed_payload_length as u64);
 
         let guessed_padding_len =
-            BLOCK_LENGTH - ((1 + ml.len() + guessed_payload_length) % BLOCK_LENGTH);
-        let guessed_block_len = 1 + guessed_payload_length as u64 / BLOCK_LENGTH as u64;
+            Self::BLOCK_LENGTH - ((1 + ml.len() + guessed_payload_length) % Self::BLOCK_LENGTH);
+        let guessed_block_len = 1 + guessed_payload_length as u64 / Self::BLOCK_LENGTH as u64;
 
         let cracked_digest = SHA256::new_from_hash(digest_output, guessed_block_len);
         let cracked_payload = [[0x80].as_ref(), &vec![0; guessed_padding_len], &ml].concat();

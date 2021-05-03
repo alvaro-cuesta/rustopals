@@ -4,8 +4,6 @@ use crate::digest::{Digest, ExtensibleDigest};
 use byteorder::{ByteOrder, LittleEndian};
 use std::default::Default;
 
-const BLOCK_LENGTH: usize = 64;
-
 const fn f(x: u32, y: u32, z: u32) -> u32 {
     (x & y) | ((!x) & z)
 }
@@ -108,7 +106,10 @@ impl Default for MD4 {
 }
 
 impl Digest for MD4 {
-    type Output = [u8; 16];
+    const OUTPUT_LENGTH: usize = 16;
+    const BLOCK_LENGTH: usize = 64;
+
+    type Output = [u8; Self::OUTPUT_LENGTH];
 
     #[allow(clippy::many_single_char_names)]
     fn update(&mut self, message: &[u8]) {
@@ -116,15 +117,15 @@ impl Digest for MD4 {
 
         self.current_block = vec![];
 
-        for chunk in blocks.chunks(BLOCK_LENGTH) {
-            if chunk.len() != BLOCK_LENGTH {
+        for chunk in blocks.chunks(Self::BLOCK_LENGTH) {
+            if chunk.len() != Self::BLOCK_LENGTH {
                 self.current_block = chunk.to_vec();
                 break;
             }
 
-            let mut w = [0_u32; 16];
+            let mut w = [0_u32; Self::OUTPUT_LENGTH];
 
-            for i in 0..16 {
+            for i in 0..Self::OUTPUT_LENGTH {
                 w[i] = LittleEndian::read_u32(&chunk[4 * i..4 * (i + 1)]);
             }
 
@@ -204,8 +205,9 @@ impl Digest for MD4 {
         }
     }
 
-    fn finalize(mut self) -> [u8; 16] {
-        let message_len = self.block_count * BLOCK_LENGTH as u64 + self.current_block.len() as u64;
+    fn finalize(mut self) -> Self::Output {
+        let message_len =
+            self.block_count * Self::BLOCK_LENGTH as u64 + self.current_block.len() as u64;
         let mut ml = [0; 8];
         LittleEndian::write_u64(&mut ml, 8 * message_len as u64);
 
@@ -213,8 +215,8 @@ impl Digest for MD4 {
         self.update(&[0x80]);
 
         // Add zero-padding
-        let padding_len =
-            BLOCK_LENGTH - ((1 + ml.len() as u64 + message_len) % BLOCK_LENGTH as u64) as usize;
+        let padding_len = Self::BLOCK_LENGTH
+            - ((1 + ml.len() as u64 + message_len) % Self::BLOCK_LENGTH as u64) as usize;
         self.update(&vec![0; padding_len as usize]);
 
         // Add message length
@@ -223,7 +225,7 @@ impl Digest for MD4 {
         // Output
         assert_eq!(self.current_block, &[]);
 
-        let mut hh = [0; 16];
+        let mut hh = [0; Self::OUTPUT_LENGTH];
 
         LittleEndian::write_u32(&mut hh[0..4], self.h0);
         LittleEndian::write_u32(&mut hh[4..8], self.h1);
@@ -235,13 +237,16 @@ impl Digest for MD4 {
 }
 
 impl ExtensibleDigest for MD4 {
-    fn extend_digest(digest_output: [u8; 16], guessed_payload_length: usize) -> (Self, Vec<u8>) {
+    fn extend_digest(
+        digest_output: Self::Output,
+        guessed_payload_length: usize,
+    ) -> (Self, Vec<u8>) {
         let mut ml = [0; 8];
         LittleEndian::write_u64(&mut ml, 8 * guessed_payload_length as u64);
 
         let guessed_padding_len =
-            BLOCK_LENGTH - ((1 + ml.len() + guessed_payload_length) % BLOCK_LENGTH);
-        let guessed_block_len = 1 + guessed_payload_length as u64 / BLOCK_LENGTH as u64;
+            Self::BLOCK_LENGTH - ((1 + ml.len() + guessed_payload_length) % Self::BLOCK_LENGTH);
+        let guessed_block_len = 1 + guessed_payload_length as u64 / Self::BLOCK_LENGTH as u64;
 
         let cracked_digest = MD4::new_from_hash(digest_output, guessed_block_len);
         let cracked_payload = [[0x80].as_ref(), &vec![0; guessed_padding_len], &ml].concat();

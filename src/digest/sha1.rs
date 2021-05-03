@@ -3,8 +3,6 @@
 use crate::digest::{Digest, ExtensibleDigest};
 use byteorder::{BigEndian, ByteOrder};
 
-const BLOCK_LENGTH: usize = 64;
-
 /// [SHA-1](https://en.wikipedia.org/wiki/SHA-1) hash implementation.
 #[must_use]
 pub struct SHA1 {
@@ -74,7 +72,10 @@ impl Default for SHA1 {
 }
 
 impl Digest for SHA1 {
-    type Output = [u8; 20];
+    const OUTPUT_LENGTH: usize = 20;
+    const BLOCK_LENGTH: usize = 64;
+
+    type Output = [u8; Self::OUTPUT_LENGTH];
 
     #[allow(clippy::many_single_char_names)]
     fn update(&mut self, message: &[u8]) {
@@ -82,8 +83,8 @@ impl Digest for SHA1 {
 
         self.current_block = vec![];
 
-        for chunk in blocks.chunks(BLOCK_LENGTH) {
-            if chunk.len() != BLOCK_LENGTH {
+        for chunk in blocks.chunks(Self::BLOCK_LENGTH) {
+            if chunk.len() != Self::BLOCK_LENGTH {
                 self.current_block = chunk.to_vec();
                 break;
             }
@@ -136,8 +137,9 @@ impl Digest for SHA1 {
         }
     }
 
-    fn finalize(mut self) -> [u8; 20] {
-        let message_len = self.block_count * BLOCK_LENGTH as u64 + self.current_block.len() as u64;
+    fn finalize(mut self) -> Self::Output {
+        let message_len =
+            self.block_count * Self::BLOCK_LENGTH as u64 + self.current_block.len() as u64;
         let mut ml = [0; 8];
         BigEndian::write_u64(&mut ml, 8 * message_len as u64);
 
@@ -145,8 +147,8 @@ impl Digest for SHA1 {
         self.update(&[0x80]);
 
         // Add zero-padding
-        let padding_len =
-            BLOCK_LENGTH - ((1 + ml.len() as u64 + message_len) % BLOCK_LENGTH as u64) as usize;
+        let padding_len = Self::BLOCK_LENGTH
+            - ((1 + ml.len() as u64 + message_len) % Self::BLOCK_LENGTH as u64) as usize;
         self.update(&vec![0; padding_len as usize]);
 
         // Add message length
@@ -155,7 +157,7 @@ impl Digest for SHA1 {
         // Output
         assert_eq!(self.current_block, &[]);
 
-        let mut hh = [0; 20];
+        let mut hh = [0; Self::OUTPUT_LENGTH];
 
         BigEndian::write_u32(&mut hh[0..4], self.h0);
         BigEndian::write_u32(&mut hh[4..8], self.h1);
@@ -168,13 +170,16 @@ impl Digest for SHA1 {
 }
 
 impl ExtensibleDigest for SHA1 {
-    fn extend_digest(digest_output: [u8; 20], guessed_payload_length: usize) -> (Self, Vec<u8>) {
+    fn extend_digest(
+        digest_output: Self::Output,
+        guessed_payload_length: usize,
+    ) -> (Self, Vec<u8>) {
         let mut ml = [0; 8];
         BigEndian::write_u64(&mut ml, 8 * guessed_payload_length as u64);
 
         let guessed_padding_len =
-            BLOCK_LENGTH - ((1 + ml.len() + guessed_payload_length) % BLOCK_LENGTH);
-        let guessed_block_len = 1 + guessed_payload_length as u64 / BLOCK_LENGTH as u64;
+            Self::BLOCK_LENGTH - ((1 + ml.len() + guessed_payload_length) % Self::BLOCK_LENGTH);
+        let guessed_block_len = 1 + guessed_payload_length as u64 / Self::BLOCK_LENGTH as u64;
 
         let cracked_digest = SHA1::new_from_hash(digest_output, guessed_block_len);
         let cracked_payload = [[0x80].as_ref(), &vec![0; guessed_padding_len], &ml].concat();
