@@ -64,7 +64,9 @@ impl Server {
             .modpow(&self.private_key, &n);
         let k = SHA256::digest(&s.to_bytes_be());
 
-        their_mac == &hmac::<SHA256>(&k, &self.salt)
+        let my_mac = &hmac::<SHA256>(&k, &self.salt);
+
+        their_mac == my_mac
     }
 
     fn get_salt(&self) -> &[u8] {
