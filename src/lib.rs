@@ -39,5 +39,6 @@ pub mod digest;
 pub mod key_exchange;
 pub mod mac;
 pub mod rand;
+pub mod rsa;
 pub mod stream;
 pub mod util;

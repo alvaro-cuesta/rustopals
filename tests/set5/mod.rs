@@ -34,3 +34,17 @@ mod challenge36_37_srp;
 
 // Offline dictionary attack on simplified SRP - https://cryptopals.com/sets/5/challenges/38
 mod challenge38_offline_dictionary_srp;
+
+// Implement RSA - https://cryptopals.com/sets/5/challenges/39
+#[test]
+fn challenge39_rsa() {
+    use num_bigint::BigUint;
+    use rustopals::rsa::{generate_rsa_keypair, E};
+
+    let (public_key, private_key) = generate_rsa_keypair(1024, &E);
+
+    let plaintext = BigUint::from(42_usize);
+    let ciphertext = public_key.textbook_process(&plaintext).unwrap();
+
+    assert_eq!(private_key.textbook_process(&ciphertext), Some(plaintext));
+}
