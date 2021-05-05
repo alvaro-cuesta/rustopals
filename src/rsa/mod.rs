@@ -130,6 +130,27 @@ pub fn e_3_broadcast_attack(input: [(&RSAPublicKey, &BigUint); 3]) -> BigUint {
     crt_result.cbrt()
 }
 
+/// Malleates a ciphertext to make it look different to an `oracle`, and later
+/// recovers the original plaintext for the oracle's response.
+///
+/// This works because RSA is homomorphic under multiplication.
+pub fn unpadded_message_recovery<O>(
+    public_key: &RSAPublicKey,
+    s: &BigUint,
+    ciphertext: &BigUint,
+    oracle: O,
+) -> BigUint
+where
+    O: FnOnce(&BigUint) -> BigUint,
+{
+    let malleated_ciphertext =
+        (s.modpow(&public_key.e, &public_key.n) * ciphertext) % &public_key.n;
+
+    let almost_recovered_plaintext = oracle(&malleated_ciphertext);
+
+    (almost_recovered_plaintext * inv_mod(s.clone(), &public_key.n).unwrap()) % &public_key.n
+}
+
 #[cfg(test)]
 mod test {
     use num_bigint::{BigUint, RandBigInt};
