@@ -66,8 +66,8 @@ impl RSAPrivateKey {
 #[must_use]
 pub fn generate_rsa_keypair(bits: u64, e: &BigUint) -> (RSAPublicKey, RSAPrivateKey) {
     loop {
-        let p = gen_rsa_prime(bits, e);
-        let q = gen_rsa_prime(bits, e);
+        let p = gen_rsa_prime(bits / 2, e);
+        let q = gen_rsa_prime(bits / 2, e);
 
         match generate_rsa_keypair_from_primes(e.clone(), &p, &q) {
             Some(x) => return x,
