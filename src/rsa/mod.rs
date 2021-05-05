@@ -64,7 +64,7 @@ impl RSAPrivateKey {
 
 /// Randomly generate an RSA keypair with an specific exponent `e`.
 #[must_use]
-pub fn generate_rsa_keypair(bits: u64, e: &BigUint) -> (RSAPublicKey, RSAPrivateKey) {
+pub fn generate_rsa_keypair(bits: u32, e: &BigUint) -> (RSAPublicKey, RSAPrivateKey) {
     loop {
         let p = gen_rsa_prime(bits / 2, e);
         let q = gen_rsa_prime(bits / 2, e);

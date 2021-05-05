@@ -28,22 +28,22 @@ use rustopals::rsa::{generate_rsa_keypair_from_primes, RSAPrivateKey, RSAPublicK
 
 // Some 1024-bit RSA keypairs to avoid prime generation.
 static RSA_KEYPAIR_0: Lazy<(RSAPublicKey, RSAPrivateKey)> = Lazy::new(|| {
-    let p = BigUint::from_str_radix("1ae28a7709975a3584ccb3f6736a2e8cff920012d87195217dd4fe874978177217b294d6632fa4947f357141133aff91f20fa7d7d846cdf96a51348cc4a1f519", 16).unwrap();
-    let q = BigUint::from_str_radix("a8939a961989a83296bc351f0108118ca00ce185166ec5347a1729c55e9a000156409049a45f9a9e35fa4c5c26405021d0ff173c2c4fd6b0dabd6e706d5a7f5", 16).unwrap();
+    let p = BigUint::from_str_radix("c2daf71206b801d0d0805d3cad91c650dfe06f1d92ac44c72b41f2a362ff54670639cec218353e3a54fa68f9e1469800dee331e4b71b0a02284d42b9fad9cee9", 16).unwrap();
+    let q = BigUint::from_str_radix("f4ea8ee535b3c80af47b902604742ad2db7af89d6e9e7bb75139839c50bf478f7fc5290d359acff41e23a680311c31afbd7aaec2814e3e73962a77036ebb608f", 16).unwrap();
 
     generate_rsa_keypair_from_primes(E.clone(), &p, &q).unwrap()
 });
 
 static RSA_KEYPAIR_1: Lazy<(RSAPublicKey, RSAPrivateKey)> = Lazy::new(|| {
-    let p = BigUint::from_str_radix("efd9340b34a17a8a3d6a83ff9fa6c91b8f0be8f5353afc07e38e4c45eec9e13c80d57786d8b2737abf32f62c7bea51e853267df0f74846ba78a29c4f007e13f", 16).unwrap();
-    let q = BigUint::from_str_radix("5de5597c67e6763c87da21d4285e2344d4526da6572fdb2ecd9b347103788dfe5283f5259360220c6d915adbacf1cb052107c2022dae194b9f172143c2087fa7", 16).unwrap();
+    let p = BigUint::from_str_radix("994f1aa62ee83a1dc305057068ede154d13f28031570e7357825c54d9c830616ebc05e541ef6c3d595cf56769d9322d6bee65c5b1bf184fa7a51035ea2dac549", 16).unwrap();
+    let q = BigUint::from_str_radix("b8ee0acba8cfbfc07f6ed0bbfaf572a0af5f72cc0a75ca4add92a5e0cb7a4b03410339fc24944982b5099908e72c253f2d55238693abaf7eeebacf0b9e69304f", 16).unwrap();
 
     generate_rsa_keypair_from_primes(E.clone(), &p, &q).unwrap()
 });
 
 static RSA_KEYPAIR_2: Lazy<(RSAPublicKey, RSAPrivateKey)> = Lazy::new(|| {
-    let p = BigUint::from_str_radix("e8e7ef9169a329cb5b11735b54368944862286584501694774065de9b48eaf9d3c616b698abcc1892cf2f220e78dbabd2a83eb4e740d768930eb9e2ea9477a81", 16).unwrap();
-    let q = BigUint::from_str_radix("661cda8aca9de55bdb30240d8e5516cc94b82cfa9bd205240f9b050dc6e4d9730724e8ffe8b6ccf9c1428646f0c21c1857503ab117d92b1c7445688a3db5e9af", 16).unwrap();
+    let p = BigUint::from_str_radix("905793fc80550a17ce3a7c039c5aa739b3c1ebcb0fb2dabc09f9cedf0948d03bec7b7bffc4f037abecf998167b1d008519915f602134cde70a7be44809547ca3", 16).unwrap();
+    let q = BigUint::from_str_radix("b853a2656a1a62fb6dce1ea2ecdbe45e184677643f7ee859196d3b311a0dcf7a95f8cff4cfa04466ee4a4489279f40384296b8ae2b07230856e0b8a2e1cc0c15", 16).unwrap();
 
     generate_rsa_keypair_from_primes(E.clone(), &p, &q).unwrap()
 });

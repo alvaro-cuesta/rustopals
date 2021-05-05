@@ -101,9 +101,15 @@ fn rabin_miller(candidate: &BigUint) -> bool {
     true
 }
 
-fn gen_prime(bits: u64) -> BigUint {
+fn gen_prime(bits: u32) -> BigUint {
+    let one = BigUint::from(1_usize);
+    let two = BigUint::from(2_usize);
+
     loop {
-        let candidate = thread_rng().gen_biguint(bits);
+        let mut candidate =
+            thread_rng().gen_biguint_range(&(two.pow(bits - 1) + &one), &(two.pow(bits) - &one));
+
+        candidate.set_bit(0, true); // Set LSB to 1 to ensure the number is odd
 
         if !first_primes(&candidate) || !fermat(&candidate) || !rabin_miller(&candidate) {
             continue;
@@ -113,7 +119,7 @@ fn gen_prime(bits: u64) -> BigUint {
     }
 }
 
-pub fn gen_rsa_prime(bits: u64, e: &BigUint) -> BigUint {
+pub fn gen_rsa_prime(bits: u32, e: &BigUint) -> BigUint {
     loop {
         let candidate = gen_prime(bits);
 
