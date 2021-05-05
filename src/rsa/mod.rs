@@ -103,6 +103,33 @@ pub fn generate_rsa_keypair_from_primes(
     Some((RSAPublicKey { e, n: n.clone() }, RSAPrivateKey { d, n }))
 }
 
+/// Perform an E=3 Broadcast attack given three pairs of `(public_key, ciphertext)`.
+///
+/// Each ciphertext must have been ecnrypted by its corresponding public key, and
+/// all of them must be the encryption of the same plaintext.
+///
+/// Returns the common `plaintext`.
+#[must_use]
+#[allow(clippy::missing_panics_doc)]
+pub fn e_3_broadcast_attack(input: [(&RSAPublicKey, &BigUint); 3]) -> BigUint {
+    let (RSAPublicKey { n: n_0, .. }, c_0) = input[0];
+    let (RSAPublicKey { n: n_1, .. }, c_1) = input[1];
+    let (RSAPublicKey { n: n_2, .. }, c_2) = input[2];
+
+    let m_s_0 = n_1 * n_2;
+    let m_s_1 = n_0 * n_2;
+    let m_s_2 = n_0 * n_1;
+
+    let n_0_1_2 = n_0 * n_1 * n_2;
+
+    let crt_result = ((c_0 * &m_s_0 * inv_mod(m_s_0, n_0).unwrap())
+        + (c_1 * &m_s_1 * inv_mod(m_s_1, n_1).unwrap())
+        + (c_2 * &m_s_2 * inv_mod(m_s_2, n_2).unwrap()))
+        % &n_0_1_2;
+
+    crt_result.cbrt()
+}
+
 #[cfg(test)]
 mod test {
     use num_bigint::{BigUint, RandBigInt};

@@ -15,10 +15,6 @@ fn math_mod(x: &BigInt, n: &BigUint) -> BigUint {
 /// [Extended Eucliean algorithm](https://en.wikipedia.org/wiki/Extended_Euclidean_algorithm)
 ///
 /// Naive implementation.
-///
-/// # Panics
-///
-/// If `a` >= `b`.
 #[allow(clippy::many_single_char_names)]
 pub fn egcd(a: BigInt, b: BigInt) -> (BigInt, BigInt, BigInt) {
     if a.is_zero() {
@@ -34,8 +30,6 @@ pub fn egcd(a: BigInt, b: BigInt) -> (BigInt, BigInt, BigInt) {
 ///
 /// Naive implementation.
 pub fn inv_mod(a: BigUint, n: &BigUint) -> Option<BigUint> {
-    assert!(&a < n);
-
     let (g, x, _) = egcd(BigInt::from(a), n.to_bigint().unwrap());
 
     if !g.is_one() {

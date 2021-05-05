@@ -44,7 +44,7 @@ serve as a real-world exercise.
     cargo doc --open
     ```
 
-## Progress (35/64)
+## Progress (36/64)
 
 ### [Set 1: Basics](https://cryptopals.com/sets/1)
 
@@ -99,7 +99,7 @@ serve as a real-world exercise.
 - ✅ [Break SRP with a zero key](https://cryptopals.com/sets/5/challenges/37)
 - ✅ [Offline dictionary attack on simplified SRP](https://cryptopals.com/sets/5/challenges/38)
 - ✅ [Implement RSA](https://cryptopals.com/sets/5/challenges/39)
-- ⬛ [Implement an E=3 RSA Broadcast attack](https://cryptopals.com/sets/5/challenges/40)
+- ✅ [Implement an E=3 RSA Broadcast attack](https://cryptopals.com/sets/5/challenges/40)
 
 ### [Set 6: RSA and DSA](https://cryptopals.com/sets/6)
 
