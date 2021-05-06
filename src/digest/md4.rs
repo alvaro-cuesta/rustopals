@@ -110,6 +110,10 @@ impl Default for MD4 {
 impl Digest for MD4 {
     const OUTPUT_LENGTH: usize = 16;
     const BLOCK_LENGTH: usize = 64;
+    const ASN1_PREFIX: &'static [u8] = &[
+        0x30, 0x20, 0x30, 0x0c, 0x06, 0x08, 0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d, 0x02, 0x04, 0x05,
+        0x00, 0x04, 0x10,
+    ];
 
     type Output = [u8; Self::OUTPUT_LENGTH];
 

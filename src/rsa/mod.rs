@@ -2,14 +2,18 @@
 //!
 //! Enables asymmetric encryption and signatures.
 
+pub mod padding;
 mod primes;
 mod util;
 
 use num_bigint::{BigInt, BigUint};
+use num_integer::Integer;
 use once_cell::sync::Lazy;
+pub use padding::{BadNoPadding, BadPKCS1v1_5, PKCS1v1_5, SignaturePadding};
 use util::{egcd, inv_mod};
 
 use self::primes::gen_rsa_prime;
+use crate::digest::Digest;
 
 /// A not-very-safe default exponent (`3`).
 ///
@@ -37,6 +41,33 @@ impl RSAPublicKey {
 
         Some(message.modpow(&self.e, &self.n))
     }
+
+    /// Verify a `signature` against a `message`.
+    #[must_use]
+    pub fn verify<S, D>(&self, message: &[u8], signature: &BigUint) -> bool
+    where
+        S: SignaturePadding,
+        D: Digest,
+    {
+        match self.textbook_process(signature) {
+            Some(decrypted_signature) => {
+                S::unpad_verify::<D>(self.len_bytes(), message, &decrypted_signature)
+            }
+            None => false,
+        }
+    }
+
+    /// Get modulus length in bits.
+    #[must_use]
+    fn len_bits(&self) -> usize {
+        self.n.bits() as usize
+    }
+
+    /// Get modulus length in bytes.
+    #[must_use]
+    fn len_bytes(&self) -> usize {
+        self.len_bits().div_ceil(&8) as usize
+    }
 }
 
 /// An RSA private key.
@@ -59,6 +90,29 @@ impl RSAPrivateKey {
         }
 
         Some(message.modpow(&self.d, &self.n))
+    }
+
+    /// Sign a `message`.
+    #[must_use]
+    pub fn sign<S, D>(&self, message: &[u8]) -> Option<BigUint>
+    where
+        S: SignaturePadding,
+        D: Digest,
+    {
+        S::hash_pad::<D>(self.len_bytes(), message)
+            .and_then(|signature| self.textbook_process(&signature))
+    }
+
+    /// Get modulus length in bits.
+    #[must_use]
+    fn len_bits(&self) -> usize {
+        self.n.bits() as usize
+    }
+
+    /// Get modulus length in bytes.
+    #[must_use]
+    fn len_bytes(&self) -> usize {
+        self.len_bits().div_ceil(&8) as usize
     }
 }
 
@@ -154,9 +208,23 @@ where
 #[cfg(test)]
 mod test {
     use num_bigint::{BigUint, RandBigInt};
+    use num_traits::Num;
+    use once_cell::sync::Lazy;
     use rand::thread_rng;
 
-    use super::{generate_rsa_keypair, generate_rsa_keypair_from_primes, E};
+    use super::{
+        generate_rsa_keypair, generate_rsa_keypair_from_primes, RSAPrivateKey, RSAPublicKey, E,
+    };
+    use crate::digest::SHA256;
+    use crate::rsa::PKCS1v1_5;
+
+    // Some 1024-bit RSA keypairs to avoid prime generation.
+    static RSA_KEYPAIR: Lazy<(RSAPublicKey, RSAPrivateKey)> = Lazy::new(|| {
+        let p = BigUint::from_str_radix("c2daf71206b801d0d0805d3cad91c650dfe06f1d92ac44c72b41f2a362ff54670639cec218353e3a54fa68f9e1469800dee331e4b71b0a02284d42b9fad9cee9", 16).unwrap();
+        let q = BigUint::from_str_radix("f4ea8ee535b3c80af47b902604742ad2db7af89d6e9e7bb75139839c50bf478f7fc5290d359acff41e23a680311c31afbd7aaec2814e3e73962a77036ebb608f", 16).unwrap();
+
+        generate_rsa_keypair_from_primes(E.clone(), &p, &q).unwrap()
+    });
 
     #[test]
     fn test_rsa_bad_keygen() {
@@ -214,5 +282,17 @@ mod test {
 
             assert_eq!(private_key.textbook_process(&ciphertext), Some(plaintext));
         }
+    }
+
+    #[test]
+    fn test_rsa_pkcs1_v1_5_full() {
+        const SIGN_MESSAGE: &[u8] = b"THIS IS MY MESSAGE";
+
+        let (public_key, private_key) = &RSA_KEYPAIR as &(RSAPublicKey, RSAPrivateKey);
+
+        let signature = private_key.sign::<PKCS1v1_5, SHA256>(SIGN_MESSAGE).unwrap();
+        let is_valid = public_key.verify::<PKCS1v1_5, SHA256>(SIGN_MESSAGE, &signature);
+
+        assert!(is_valid);
     }
 }

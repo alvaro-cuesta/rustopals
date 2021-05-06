@@ -13,6 +13,7 @@ pub use sha256::SHA256;
 pub trait Digest: Default {
     const OUTPUT_LENGTH: usize;
     const BLOCK_LENGTH: usize;
+    const ASN1_PREFIX: &'static [u8];
 
     type Output: AsRef<[u8]>;
 
