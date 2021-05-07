@@ -82,3 +82,73 @@ pub fn get_unix_time() -> u64 {
         .expect("Who invented a time machine!?")
         .as_secs()
 }
+
+use num_bigint::{BigInt, BigUint};
+use num_traits::{One, Zero};
+
+/// Does mathematical modulo (similar to remainder `%`).
+///
+/// The difference is that `-1 % 5 = -1`, but `-1 mod 5 = 4`.
+#[must_use]
+pub fn math_mod(x: &BigInt, n: &BigUint) -> BigUint {
+    let n_bigint = BigInt::from(n.clone());
+
+    (((x % &n_bigint) + &n_bigint) % &n_bigint)
+        .to_biguint()
+        .expect("Already ensure non-negative sign")
+}
+
+/// [Extended Eucliean algorithm](https://en.wikipedia.org/wiki/Extended_Euclidean_algorithm)
+///
+/// Naive implementation.
+#[allow(clippy::many_single_char_names)]
+#[must_use]
+pub fn egcd(a: BigInt, b: BigInt) -> (BigInt, BigInt, BigInt) {
+    if a.is_zero() {
+        return (b, BigInt::from(0_usize), BigInt::from(1_usize));
+    }
+
+    let (g, y, x) = egcd(&b % &a, a.clone());
+
+    (g, x - (b / a) * &y, y)
+}
+
+/// [Modular multiplicative inverse](https://en.wikipedia.org/wiki/Modular_multiplicative_inverse)
+///
+/// Naive implementation.
+#[must_use]
+pub fn inv_mod(a: BigUint, n: &BigUint) -> Option<BigUint> {
+    let (g, x, _) = egcd(BigInt::from(a), BigInt::from(n.clone()));
+
+    if !g.is_one() {
+        return None;
+    }
+
+    Some(math_mod(&x, n))
+}
+
+#[cfg(test)]
+mod test {
+    use num_bigint::{BigInt, BigUint};
+
+    use super::{egcd, inv_mod};
+
+    #[test]
+    fn test_egcd() {
+        let a = BigInt::from(3_usize);
+        let b = BigInt::from(26_usize);
+        let (gcd, x, y) = egcd(a.clone(), b.clone());
+
+        assert_eq!(gcd, BigInt::from(1_usize));
+        assert_eq!(x, BigInt::from(9_usize));
+        assert_eq!(y, BigInt::from(-1_isize));
+        assert_eq!(a * x + b * y, gcd);
+    }
+    #[test]
+    fn test_inv_mod() {
+        assert_eq!(
+            inv_mod(BigUint::from(17_usize), &BigUint::from(3120_usize)),
+            Some(BigUint::from(2753_usize)),
+        );
+    }
+}

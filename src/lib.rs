@@ -36,6 +36,7 @@ extern crate test;
 
 pub mod block;
 pub mod digest;
+pub mod dsa;
 pub mod key_exchange;
 pub mod mac;
 pub mod rand;

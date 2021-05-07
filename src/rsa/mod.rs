@@ -4,16 +4,15 @@
 
 pub mod padding;
 mod primes;
-mod util;
 
 use num_bigint::{BigInt, BigUint};
 use num_integer::Integer;
 use once_cell::sync::Lazy;
 pub use padding::{BadNoPadding, BadPKCS1v1_5, PKCS1v1_5, SignaturePadding};
-use util::{egcd, inv_mod};
 
 use self::primes::gen_rsa_prime;
 use crate::digest::Digest;
+use crate::util::{egcd, inv_mod};
 
 /// A not-very-safe default exponent (`3`).
 ///
