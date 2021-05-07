@@ -188,6 +188,10 @@ pub fn e_3_broadcast_attack(input: [(&RSAPublicKey, &BigUint); 3]) -> BigUint {
 /// recovers the original plaintext for the oracle's response.
 ///
 /// This works because RSA is homomorphic under multiplication.
+///
+/// # Panics
+///
+/// If `s` has no modular inverse.
 pub fn unpadded_message_recovery<O>(
     public_key: &RSAPublicKey,
     s: &BigUint,

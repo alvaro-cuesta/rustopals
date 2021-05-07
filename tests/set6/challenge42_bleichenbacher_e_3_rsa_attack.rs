@@ -8,7 +8,7 @@ fn forge_signature<D: Digest>(block_len: usize, message: &[u8]) -> BigUint {
     let hash = D::digest(message);
 
     let left_bytes = [
-        &vec![0x00, 0x01, 0xff, 0x00],
+        &[0x00, 0x01, 0xff, 0x00],
         D::ASN1_PREFIX,
         hash.as_ref(),
         // Padding for garbage

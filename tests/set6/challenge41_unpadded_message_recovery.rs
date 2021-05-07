@@ -78,7 +78,7 @@ fn crack() {
 
     assert_eq!(
         unpadded_message_recovery(public_key, &s, &ciphertext, |malleated| server
-            .decrypt(&malleated)
+            .decrypt(malleated)
             .unwrap()),
         plaintext
     );

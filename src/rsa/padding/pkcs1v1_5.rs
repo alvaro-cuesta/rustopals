@@ -86,6 +86,7 @@ impl SignaturePadding for PKCS1v1_5 {
         Some(BigUint::from_bytes_be(&block))
     }
 
+    #[allow(clippy::shadow_unrelated)]
     fn unpad_verify<D>(block_len: usize, message: &[u8], signature: &BigUint) -> bool
     where
         D: Digest,
@@ -145,9 +146,9 @@ mod test {
         assert_eq!(
             padded_message.to_bytes_be(),
             [
-                &vec![0x01],
-                &vec![0xff; 74],
-                &vec![0x00],
+                &[0x01_u8] as &[u8],
+                &[0xff; 74],
+                &[0x00],
                 <SHA256 as Digest>::ASN1_PREFIX,
                 &SHA256::digest(&[]),
             ]
@@ -158,9 +159,9 @@ mod test {
     #[test]
     fn test_pkcs1_v1_5_signature_unpad() {
         let signature_bytes = [
-            &vec![0x01],
-            &vec![0xff; 74],
-            &vec![0x00],
+            &[0x01_u8] as &[u8],
+            &[0xff; 74],
+            &[0x00],
             <SHA256 as Digest>::ASN1_PREFIX,
             &SHA256::digest(&[]),
         ]
@@ -175,9 +176,9 @@ mod test {
     #[test]
     fn test_pkcs1_v1_5_signature_unpad_reject_bad_start() {
         let signature_bytes = [
-            &vec![0x13],
-            &vec![0xff; 74],
-            &vec![0x00],
+            &[0x13_u8] as &[u8],
+            &[0xff; 74],
+            &[0x00],
             <SHA256 as Digest>::ASN1_PREFIX,
             &SHA256::digest(&[]),
         ]
@@ -192,9 +193,9 @@ mod test {
     #[test]
     fn test_pkcs1_v1_5_signature_unpad_reject_bad_len() {
         let signature_bytes = [
-            &vec![0x01],
-            &vec![0xff; 37],
-            &vec![0x00],
+            &[0x01_u8] as &[u8],
+            &[0xff; 37],
+            &[0x00],
             <SHA256 as Digest>::ASN1_PREFIX,
             &SHA256::digest(&[]),
         ]
@@ -209,9 +210,9 @@ mod test {
     #[test]
     fn test_pkcs1_v1_5_signature_unpad_reject_bad_padding() {
         let signature_bytes = [
-            &vec![0x01],
-            &vec![0x13; 74],
-            &vec![0x00],
+            &[0x01_u8] as &[u8],
+            &[0x13; 74],
+            &[0x00],
             <SHA256 as Digest>::ASN1_PREFIX,
             &SHA256::digest(&[]),
         ]
@@ -226,9 +227,9 @@ mod test {
     #[test]
     fn test_pkcs1_v1_5_signature_unpad_reject_bad_before_prefix() {
         let signature_bytes = [
-            &vec![0x01],
-            &vec![0xff; 74],
-            &vec![0x13],
+            &[0x01_u8] as &[u8],
+            &[0xff; 74],
+            &[0x13],
             <SHA256 as Digest>::ASN1_PREFIX,
             &SHA256::digest(&[]),
         ]
@@ -243,10 +244,10 @@ mod test {
     #[test]
     fn test_pkcs1_v1_5_signature_unpad_reject_bad_prefix() {
         let signature_bytes = [
-            &vec![0x01],
-            &vec![0xff; 74],
-            &vec![0x00],
-            vec![0x00; <SHA256 as Digest>::ASN1_PREFIX.len()].as_slice(),
+            &[0x01_u8] as &[u8],
+            &[0xff; 74],
+            &[0x00],
+            &[0x00; <SHA256 as Digest>::ASN1_PREFIX.len()],
             &SHA256::digest(&[]),
         ]
         .concat();
@@ -260,9 +261,9 @@ mod test {
     #[test]
     fn test_pkcs1_v1_5_signature_unpad_reject_bad_digest() {
         let signature_bytes = [
-            &vec![0x01],
-            &vec![0xff; 74],
-            &vec![0x00],
+            &[0x01_u8] as &[u8],
+            &[0xff; 74],
+            &[0x00],
             <SHA256 as Digest>::ASN1_PREFIX,
             &SHA256::digest(b"Not empty slice!"),
         ]
@@ -284,9 +285,9 @@ mod test {
         assert_eq!(
             padded_message.to_bytes_be(),
             [
-                &vec![0x01],
-                &vec![0xff; 74],
-                &vec![0x00],
+                &[0x01_u8] as &[u8],
+                &[0xff; 74],
+                &[0x00],
                 <SHA256 as Digest>::ASN1_PREFIX,
                 &SHA256::digest(&[]),
             ]
@@ -297,9 +298,9 @@ mod test {
     #[test]
     fn test_bad_pkcs1_v1_5_signature_unpad() {
         let signature_bytes = [
-            &vec![0x01],
-            &vec![0xff; 74],
-            &vec![0x00],
+            &[0x01_u8] as &[u8],
+            &[0xff; 74],
+            &[0x00],
             <SHA256 as Digest>::ASN1_PREFIX,
             &SHA256::digest(&[]),
         ]
@@ -314,9 +315,9 @@ mod test {
     #[test]
     fn test_bad_pkcs1_v1_5_signature_unpad_reject_bad_start() {
         let signature_bytes = [
-            &vec![0x13],
-            &vec![0xff; 74],
-            &vec![0x00],
+            &[0x13_u8] as &[u8],
+            &[0xff; 74],
+            &[0x00],
             <SHA256 as Digest>::ASN1_PREFIX,
             &SHA256::digest(&[]),
         ]
@@ -331,9 +332,9 @@ mod test {
     #[test]
     fn test_bad_pkcs1_v1_5_signature_unpad_reject_bad_len() {
         let signature_bytes = [
-            &vec![0x01],
-            &vec![0xff; 37],
-            &vec![0x00],
+            &[0x01_u8] as &[u8],
+            &[0xff; 37],
+            &[0x00],
             <SHA256 as Digest>::ASN1_PREFIX,
             &SHA256::digest(&[]),
         ]
@@ -348,9 +349,9 @@ mod test {
     #[test]
     fn test_bad_pkcs1_v1_5_signature_unpad_reject_bad_padding() {
         let signature_bytes = [
-            &vec![0x01],
-            &vec![0x13; 74],
-            &vec![0x00],
+            &[0x01_u8] as &[u8],
+            &[0x13; 74],
+            &[0x00],
             <SHA256 as Digest>::ASN1_PREFIX,
             &SHA256::digest(&[]),
         ]
@@ -365,9 +366,9 @@ mod test {
     #[test]
     fn test_bad_pkcs1_v1_5_signature_unpad_reject_bad_before_prefix() {
         let signature_bytes = [
-            &vec![0x01],
-            &vec![0xff; 74],
-            &vec![0x13],
+            &[0x01_u8] as &[u8],
+            &[0xff; 74],
+            &[0x13],
             <SHA256 as Digest>::ASN1_PREFIX,
             &SHA256::digest(&[]),
         ]
@@ -382,10 +383,10 @@ mod test {
     #[test]
     fn test_bad_pkcs1_v1_5_signature_unpad_reject_bad_prefix() {
         let signature_bytes = [
-            &vec![0x01],
-            &vec![0xff; 74],
-            &vec![0x00],
-            vec![0x00; <SHA256 as Digest>::ASN1_PREFIX.len()].as_slice(),
+            &[0x01_u8] as &[u8],
+            &[0xff; 74],
+            &[0x00],
+            &[0x00; <SHA256 as Digest>::ASN1_PREFIX.len()],
             &SHA256::digest(&[]),
         ]
         .concat();
@@ -399,9 +400,9 @@ mod test {
     #[test]
     fn test_bad_pkcs1_v1_5_signature_unpad_reject_bad_digest() {
         let signature_bytes = [
-            &vec![0x01],
-            &vec![0xff; 74],
-            &vec![0x00],
+            &[0x01_u8] as &[u8],
+            &[0xff; 74],
+            &[0x00],
             <SHA256 as Digest>::ASN1_PREFIX,
             &SHA256::digest(b"Not empty slice!"),
         ]
