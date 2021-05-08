@@ -106,9 +106,12 @@ impl SignaturePadding for PKCS1v1_5 {
             return false;
         }
 
-        let is_valid_padding = block[2..block_len - hash_len - prefix_len - 1]
-            .iter()
-            .all(|&x| x == 0xff);
+        let padding_len = block_len - hash_len - prefix_len - 2;
+        if padding_len < 8 {
+            return false;
+        }
+
+        let is_valid_padding = block[1..1 + padding_len].iter().all(|&x| x == 0xff);
 
         if !is_valid_padding {
             return false;
@@ -273,6 +276,34 @@ mod test {
         let is_valid = PKCS1v1_5::unpad_verify::<SHA256>(BITS / 8, &[], &signature);
 
         assert!(!is_valid);
+    }
+
+    #[test]
+    fn test_pkcs1_v1_5_signature_unpad_reject_short_padding() {
+        let prefix = <SHA256 as Digest>::ASN1_PREFIX;
+        let digest = SHA256::digest(&[]);
+
+        let signature_bytes = [&[0x01_u8] as &[u8], &[0xff; 7], &[0x00], prefix, &digest].concat();
+
+        let signature = BigUint::from_bytes_be(&signature_bytes);
+        let is_valid =
+            PKCS1v1_5::unpad_verify::<SHA256>(10 + prefix.len() + digest.len(), &[], &signature);
+
+        assert!(!is_valid);
+    }
+
+    #[test]
+    fn test_pkcs1_v1_5_signature_unpad_min_padding() {
+        let prefix = <SHA256 as Digest>::ASN1_PREFIX;
+        let digest = SHA256::digest(&[]);
+
+        let signature_bytes = [&[0x01_u8] as &[u8], &[0xff; 8], &[0x00], prefix, &digest].concat();
+
+        let signature = BigUint::from_bytes_be(&signature_bytes);
+        let is_valid =
+            PKCS1v1_5::unpad_verify::<SHA256>(11 + prefix.len() + digest.len(), &[], &signature);
+
+        assert!(is_valid);
     }
 
     #[test]
