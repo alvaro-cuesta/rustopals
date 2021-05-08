@@ -26,7 +26,7 @@ impl SignaturePadding for BadPKCS1v1_5 {
     {
         let block = signature.to_bytes_be();
 
-        if block.len() != block_len - 1 || block[0] != 0x01 {
+        if block.len() + 1 != block_len || block[0] != 0x01 {
             return false;
         }
 
@@ -94,7 +94,7 @@ impl SignaturePadding for PKCS1v1_5 {
         let block = signature.to_bytes_be();
 
         // - 1 because first 0x00 is dropped on `to_bytes_be`
-        if block.len() != block_len - 1 || block[0] != 0x01 {
+        if block.len() + 1 != block_len || block[0] != 0x01 {
             return false;
         }
 
