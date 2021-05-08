@@ -44,7 +44,7 @@ serve as a real-world exercise.
     cargo doc --open
     ```
 
-## Progress (40/64)
+ ## Progress (41/64)
 
 ### [Set 1: Basics](https://cryptopals.com/sets/1)
 
@@ -111,7 +111,7 @@ serve as a real-world exercise.
 - 🟨 [DSA key recovery from nonce](https://cryptopals.com/sets/6/challenges/43)
   - Pending: DSA parameter generation.
 - ✅ [DSA nonce recovery from repeated nonce](https://cryptopals.com/sets/6/challenges/44)
-- ⬛ [DSA parameter tampering](https://cryptopals.com/sets/6/challenges/45)
+- ✅ [DSA parameter tampering](https://cryptopals.com/sets/6/challenges/45)
 - ⬛ [RSA parity oracle](https://cryptopals.com/sets/6/challenges/46)
 - ⬛ [Bleichenbacher's PKCS 1.5 Padding Oracle (Simple Case)](https://cryptopals.com/sets/6/challenges/47)
 - ⬛ [Bleichenbacher's PKCS 1.5 Padding Oracle (Complete Case)](https://cryptopals.com/sets/6/challenges/48)

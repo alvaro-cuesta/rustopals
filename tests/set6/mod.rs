@@ -1,7 +1,9 @@
 use num_bigint::BigUint;
 use num_traits::Num;
 use rustopals::digest::SHA1;
-use rustopals::dsa::{DSASignature, CHALLENGE_DSA, DSA};
+use rustopals::dsa::{
+    DSAPublicKey, DSASignature, CHALLENGE_DSA, CHALLENGE_DSA_P, CHALLENGE_DSA_Q, DSA,
+};
 
 // Implement unpadded message recovery oracle - https://cryptopals.com/sets/1/challenges/41
 mod challenge41_unpadded_message_recovery;
@@ -92,4 +94,32 @@ fn challenge44_dsa_key_from_repeated_nonce() {
     let pk_fingerprint = cracked_pk.fingerprint_after_hex::<SHA1>();
 
     assert_eq!(pk_fingerprint, EXPECTED_FINGERPRINT);
+}
+
+// DSA parameter tampering - https://cryptopals.com/sets/1/challenges/45
+#[test]
+fn challenge45_dsa_param_tampering() {
+    let dsa = DSA::<SHA1>::new_from_params(
+        CHALLENGE_DSA_P.clone(),
+        CHALLENGE_DSA_Q.clone(),
+        (&CHALLENGE_DSA_P as &BigUint) + BigUint::from(1_usize),
+    );
+
+    let y = BigUint::from_str_radix(
+        "\
+        2d026f4bf30195ede3a088da85e398ef869611d0f68f07\
+        13d51c9c1a3a26c95105d915e2d8cdf26d056b86b8a7b8\
+        5519b1c23cc3ecdc6062650462e3063bd179c2a6581519\
+        f674a61f1d89a1fff27171ebc1b93d4dc57bceb7ae2430\
+        f98a6a4d83d8279ee65d71c1203d2c96d65ebbf7cce9d3\
+        2971c3de5084cce04a2e147821",
+        16,
+    )
+    .unwrap();
+
+    let public_key = DSAPublicKey(y);
+    let magic_signature = dsa.gen_magic_signature(&public_key).unwrap();
+
+    assert!(dsa.verify(&public_key, b"Hello, world", &magic_signature));
+    assert!(dsa.verify(&public_key, b"Goodbye, world", &magic_signature));
 }

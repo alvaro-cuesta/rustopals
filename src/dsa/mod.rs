@@ -11,10 +11,10 @@ use crate::digest::{Digest, SHA1};
 use crate::util::iter::ToHexable;
 use crate::util::{inv_mod, math_mod};
 
-/// A DSA instance with pre-chosen parameters. Used in Cryptopals challenges
-/// as well as in tests.
-pub static CHALLENGE_DSA: Lazy<DSA<SHA1>> = Lazy::new(|| {
-    let p = BigUint::from_str_radix(
+/// Pre-chosen `p` parameter for DSA. Used in Cryptopals challenges as well as
+/// in tests.
+pub static CHALLENGE_DSA_P: Lazy<BigUint> = Lazy::new(|| {
+    BigUint::from_str_radix(
         "\
         800000000000000089e1855218a0e7dac38136ffafa72eda7\
         859f2171e25e65eac698c1702578b07dc2a1076da241c76c6\
@@ -24,11 +24,18 @@ pub static CHALLENGE_DSA: Lazy<DSA<SHA1>> = Lazy::new(|| {
         1a584471bb1",
         16,
     )
-    .unwrap();
+    .unwrap()
+});
 
-    let q = BigUint::from_str_radix("f4f47f05794b256174bba6e9b396a7707e563c5b", 16).unwrap();
+/// Pre-chosen `q` parameter for DSA. Used in Cryptopals challenges as well as
+/// in tests.
+pub static CHALLENGE_DSA_Q: Lazy<BigUint> =
+    Lazy::new(|| BigUint::from_str_radix("f4f47f05794b256174bba6e9b396a7707e563c5b", 16).unwrap());
 
-    let g = BigUint::from_str_radix(
+/// Pre-chosen `g` parameter for DSA. Used in Cryptopals challenges as well as
+/// in tests.
+pub static CHALLENGE_DSA_G: Lazy<BigUint> = Lazy::new(|| {
+    BigUint::from_str_radix(
         "\
         5958c9d3898b224b12672c0b98e06c60df923cb8bc999d119\
         458fef538b8fa4046c8db53039db620c094c9fa077ef389b5\
@@ -38,9 +45,17 @@ pub static CHALLENGE_DSA: Lazy<DSA<SHA1>> = Lazy::new(|| {
         9fc95302291",
         16,
     )
-    .unwrap();
+    .unwrap()
+});
 
-    DSA::new_from_params(p, q, g)
+/// A DSA instance with pre-chosen parameters. Used in Cryptopals challenges
+/// as well as in tests.
+pub static CHALLENGE_DSA: Lazy<DSA<SHA1>> = Lazy::new(|| {
+    DSA::new_from_params(
+        CHALLENGE_DSA_P.clone(),
+        CHALLENGE_DSA_Q.clone(),
+        CHALLENGE_DSA_G.clone(),
+    )
 });
 
 /// DSA instance with associated parameters.
@@ -207,6 +222,23 @@ impl<D: Digest> DSA<D> {
         let k = (m_sub * s_sub_inv) % &self.q;
 
         Some(self.crack_private_key_guess(pairs[0].0, h_m_1, &k))
+    }
+
+    /// Generates a magic signature that valiates against any message.
+    ///
+    /// Requires tampered DSA parameters. Specifically, `g` must be `p + 1`.
+    #[must_use]
+    pub fn gen_magic_signature(&self, DSAPublicKey(y): &DSAPublicKey) -> Option<DSASignature> {
+        if self.g != &self.p + BigUint::from(1_usize) {
+            return None;
+        }
+
+        let z = BigUint::from(1337_usize);
+        let r = y.modpow(&z, &self.p) % &self.q;
+        let z_inv = inv_mod(z, &self.q)?;
+        let s = (&r * &z_inv) % &self.q;
+
+        Some(DSASignature { r, s })
     }
 }
 
