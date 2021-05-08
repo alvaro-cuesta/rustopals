@@ -115,6 +115,7 @@ impl SignaturePadding for PKCS1v1_5 {
             return false;
         }
 
+        #[allow(clippy::range_plus_one)]
         let is_valid_padding = block[1..1 + padding_len].iter().all(|&x| x == 0xff);
 
         if !is_valid_padding {
