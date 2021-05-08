@@ -41,7 +41,7 @@ impl RSAPublicKey {
         match self.textbook_process(signature) {
             Some(decrypted_signature) => {
                 S::unpad_verify::<D>(self.len_bytes(), message, &decrypted_signature)
-            }
+            },
             None => false,
         }
     }
@@ -126,7 +126,6 @@ impl RSAPrivateKey {
 
         Some(message.modpow(&self.d, &self.n))
     }
-
 
     /// Get modulus length in bits.
     #[must_use]

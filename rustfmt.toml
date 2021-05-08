@@ -1,2 +1,4 @@
 imports_granularity = "Module"
 group_imports = "StdExternalCrate"
+trailing_comma = "Vertical"
+match_block_trailing_comma = true

@@ -24,7 +24,7 @@ fn alice(tx: SyncSender<Message>, rx: Receiver<Message>) -> Vec<u8> {
 
     // (2) B->A -- Send ACK
     match rx.recv().unwrap() {
-        Message::Accept => {}
+        Message::Accept => {},
         _ => panic!("Expected `Message::Accept` on Alice"),
     };
 
@@ -158,7 +158,7 @@ fn eve_g_1(
 
     // (2) B->A -- Send ACK
     match bob_rx.recv().unwrap() {
-        Message::Accept => {}
+        Message::Accept => {},
         _ => panic!("Expected `Message::Accept` on Eve"),
     };
 
@@ -267,7 +267,7 @@ fn eve_g_p(
 
     // (2) B->A -- Send ACK
     match bob_rx.recv().unwrap() {
-        Message::Accept => {}
+        Message::Accept => {},
         _ => panic!("Expected `Message::Accept` on Eve"),
     };
 
@@ -399,7 +399,7 @@ fn eve_g_p_minus_1(
 
     // (2) B->A -- Send ACK
     match bob_rx.recv().unwrap() {
-        Message::Accept => {}
+        Message::Accept => {},
         _ => panic!("Expected `Message::Accept` on Eve"),
     };
 

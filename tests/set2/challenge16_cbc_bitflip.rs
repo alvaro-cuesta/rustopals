@@ -39,7 +39,7 @@ mod adversary {
                     let credentials = unsafe { str::from_utf8_unchecked(&decrypted) };
 
                     credentials.contains(";admin=true;")
-                }
+                },
                 Err(_) => false,
             }
         }

@@ -30,7 +30,7 @@ impl Adversary {
                 } else {
                     Ok(())
                 }
-            }
+            },
             Err(e) => Err(AdversaryError::PKCS7Error(e)),
         }
     }
@@ -73,7 +73,7 @@ mod test {
 
                     assert_eq!(recovered_key, adversary.key);
                     return;
-                }
+                },
                 _ => continue,
             }
         }
