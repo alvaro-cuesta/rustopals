@@ -62,9 +62,11 @@ serve as a real-world exercise.
 - ✅ [Implement PKCS#7 padding](https://cryptopals.com/sets/2/challenges/9)
 - ✅ [Implement CBC mode](https://cryptopals.com/sets/2/challenges/10)
 - ✅ [An ECB/CBC detection oracle](https://cryptopals.com/sets/2/challenges/11)
-- ✅ [Byte-at-a-time ECB decryption (Simple)](https://cryptopals.com/sets/2/challenges/12)
+- 🟨 [Byte-at-a-time ECB decryption (Simple)](https://cryptopals.com/sets/2/challenges/12)
+  - Tests sometimes fail due to randomness.
 - ✅ [ECB cut-and-paste](https://cryptopals.com/sets/2/challenges/13)
-- ✅ [Byte-at-a-time ECB decryption (Harder)](https://cryptopals.com/sets/2/challenges/14)
+- 🟨 [Byte-at-a-time ECB decryption (Harder)](https://cryptopals.com/sets/2/challenges/14)
+  - Tests sometimes fail due to randomness.
 - ✅ [PKCS#7 padding validation](https://cryptopals.com/sets/2/challenges/15)
 - ✅ [CBC bitflipping attacks](https://cryptopals.com/sets/2/challenges/16)
 
