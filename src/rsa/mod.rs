@@ -26,8 +26,8 @@ pub static E: Lazy<BigUint> = Lazy::new(|| BigUint::from(3_usize));
 /// corresponding private key).
 #[derive(Debug, PartialEq, Eq)]
 pub struct RSAPublicKey {
-    e: BigUint,
-    n: BigUint,
+    pub e: BigUint,
+    pub n: BigUint,
 }
 
 impl RSAPublicKey {

@@ -123,3 +123,6 @@ fn challenge45_dsa_param_tampering() {
     assert!(dsa.verify(&public_key, b"Hello, world", &magic_signature));
     assert!(dsa.verify(&public_key, b"Goodbye, world", &magic_signature));
 }
+
+// RSA parity oracle - https://cryptopals.com/sets/1/challenges/46
+mod challenge46_rsa_parity_oracle;
