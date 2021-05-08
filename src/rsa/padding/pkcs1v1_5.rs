@@ -135,16 +135,16 @@ impl SignaturePadding for PKCS1v1_5 {
 }
 
 #[cfg(test)]
-mod test {
+mod test_pkcs1_v1_5_signature {
     use num_bigint::BigUint;
 
-    use super::{BadPKCS1v1_5, PKCS1v1_5, SignaturePadding};
+    use super::{PKCS1v1_5, SignaturePadding};
     use crate::digest::{Digest, SHA256};
 
     const BITS: usize = 1024;
 
     #[test]
-    fn test_pkcs1_v1_5_signature_pad() {
+    fn pad() {
         let padded_message = PKCS1v1_5::hash_pad::<SHA256>(BITS / 8, &[]).unwrap();
 
         // + 15 because of 0x0001 left-side padding = 15 zero bits
@@ -164,7 +164,7 @@ mod test {
     }
 
     #[test]
-    fn test_pkcs1_v1_5_signature_unpad() {
+    fn unpad() {
         let signature_bytes = [
             &[0x01_u8] as &[u8],
             &[0xff; 74],
@@ -181,7 +181,7 @@ mod test {
     }
 
     #[test]
-    fn test_pkcs1_v1_5_signature_unpad_reject_bad_start() {
+    fn unpad_reject_bad_start() {
         let signature_bytes = [
             &[0x13_u8] as &[u8],
             &[0xff; 74],
@@ -198,7 +198,7 @@ mod test {
     }
 
     #[test]
-    fn test_pkcs1_v1_5_signature_unpad_reject_bad_len() {
+    fn unpad_reject_bad_len() {
         let signature_bytes = [
             &[0x01_u8] as &[u8],
             &[0xff; 37],
@@ -215,7 +215,7 @@ mod test {
     }
 
     #[test]
-    fn test_pkcs1_v1_5_signature_unpad_reject_bad_padding() {
+    fn unpad_reject_bad_padding() {
         let signature_bytes = [
             &[0x01_u8] as &[u8],
             &[0x13; 74],
@@ -232,7 +232,7 @@ mod test {
     }
 
     #[test]
-    fn test_pkcs1_v1_5_signature_unpad_reject_bad_before_prefix() {
+    fn unpad_reject_bad_before_prefix() {
         let signature_bytes = [
             &[0x01_u8] as &[u8],
             &[0xff; 74],
@@ -249,7 +249,7 @@ mod test {
     }
 
     #[test]
-    fn test_pkcs1_v1_5_signature_unpad_reject_bad_prefix() {
+    fn unpad_reject_bad_prefix() {
         let signature_bytes = [
             &[0x01_u8] as &[u8],
             &[0xff; 74],
@@ -266,7 +266,7 @@ mod test {
     }
 
     #[test]
-    fn test_pkcs1_v1_5_signature_unpad_reject_bad_digest() {
+    fn unpad_reject_bad_digest() {
         let signature_bytes = [
             &[0x01_u8] as &[u8],
             &[0xff; 74],
@@ -283,7 +283,7 @@ mod test {
     }
 
     #[test]
-    fn test_pkcs1_v1_5_signature_unpad_reject_short_padding() {
+    fn unpad_reject_short_padding() {
         let prefix = <SHA256 as Digest>::ASN1_PREFIX;
         let digest = SHA256::digest(&[]);
 
@@ -297,7 +297,7 @@ mod test {
     }
 
     #[test]
-    fn test_pkcs1_v1_5_signature_unpad_min_padding() {
+    fn unpad_min_padding() {
         let prefix = <SHA256 as Digest>::ASN1_PREFIX;
         let digest = SHA256::digest(&[]);
 
@@ -309,9 +309,19 @@ mod test {
 
         assert!(is_valid);
     }
+}
+
+#[cfg(test)]
+mod test_bad_pkcs1_v1_5_signature {
+    use num_bigint::BigUint;
+
+    use super::{BadPKCS1v1_5, SignaturePadding};
+    use crate::digest::{Digest, SHA256};
+
+    const BITS: usize = 1024;
 
     #[test]
-    fn test_bad_pkcs1_v1_5_signature_pad() {
+    fn pad() {
         let padded_message = BadPKCS1v1_5::hash_pad::<SHA256>(BITS / 8, &[]).unwrap();
 
         // + 15 because of 0x0001 left-side padding = 15 zero bits
@@ -331,7 +341,7 @@ mod test {
     }
 
     #[test]
-    fn test_bad_pkcs1_v1_5_signature_unpad() {
+    fn unpad() {
         let signature_bytes = [
             &[0x01_u8] as &[u8],
             &[0xff; 74],
@@ -348,7 +358,7 @@ mod test {
     }
 
     #[test]
-    fn test_bad_pkcs1_v1_5_signature_unpad_reject_bad_start() {
+    fn unpad_reject_bad_start() {
         let signature_bytes = [
             &[0x13_u8] as &[u8],
             &[0xff; 74],
@@ -365,7 +375,7 @@ mod test {
     }
 
     #[test]
-    fn test_bad_pkcs1_v1_5_signature_unpad_reject_bad_len() {
+    fn unpad_reject_bad_len() {
         let signature_bytes = [
             &[0x01_u8] as &[u8],
             &[0xff; 37],
@@ -382,7 +392,7 @@ mod test {
     }
 
     #[test]
-    fn test_bad_pkcs1_v1_5_signature_unpad_reject_bad_padding() {
+    fn unpad_reject_bad_padding() {
         let signature_bytes = [
             &[0x01_u8] as &[u8],
             &[0x13; 74],
@@ -399,7 +409,7 @@ mod test {
     }
 
     #[test]
-    fn test_bad_pkcs1_v1_5_signature_unpad_reject_bad_before_prefix() {
+    fn unpad_reject_bad_before_prefix() {
         let signature_bytes = [
             &[0x01_u8] as &[u8],
             &[0xff; 74],
@@ -416,7 +426,7 @@ mod test {
     }
 
     #[test]
-    fn test_bad_pkcs1_v1_5_signature_unpad_reject_bad_prefix() {
+    fn unpad_reject_bad_prefix() {
         let signature_bytes = [
             &[0x01_u8] as &[u8],
             &[0xff; 74],
@@ -433,7 +443,7 @@ mod test {
     }
 
     #[test]
-    fn test_bad_pkcs1_v1_5_signature_unpad_reject_bad_digest() {
+    fn unpad_reject_bad_digest() {
         let signature_bytes = [
             &[0x01_u8] as &[u8],
             &[0xff; 74],
@@ -450,7 +460,7 @@ mod test {
     }
 
     #[test]
-    fn test_bad_pkcs1_v1_5_signature_unpad_accepts_right_garbage() {
+    fn unpad_accepts_right_garbage() {
         let signature_bytes = [
             &[0x01, 0xff, 0x00],
             <SHA256 as Digest>::ASN1_PREFIX,
