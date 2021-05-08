@@ -22,6 +22,15 @@ pub trait SignaturePadding {
         D: Digest;
 }
 
+/// Trait implemented by message padding schemes for usage in RSA encryption.
+pub trait EncrytionPadding {
+    /// Pad a `plaintext` for encryption.
+    fn pad(block_length: usize, plaintext: &[u8]) -> Option<BigUint>;
+
+    /// Unpad a `ciphertext` for decryption.
+    fn unpad(block_length: usize, ciphertext: &BigUint) -> Option<Vec<u8>>;
+}
+
 /// **INTENTIONALLY UNSAFE** no-op padding scheme.
 pub struct BadNoPadding;
 
@@ -53,5 +62,23 @@ impl SignaturePadding for BadNoPadding {
         let message_hash = D::digest(message);
 
         signature_hash == message_hash.as_ref()
+    }
+}
+
+impl EncrytionPadding for BadNoPadding {
+    fn pad(block_length: usize, plaintext: &[u8]) -> Option<BigUint> {
+        if plaintext.len() > block_length {
+            return None;
+        }
+
+        Some(BigUint::from_bytes_be(plaintext))
+    }
+
+    fn unpad(block_length: usize, ciphertext: &BigUint) -> Option<Vec<u8>> {
+        if (ciphertext.bits() * 8) as usize > block_length {
+            return None;
+        }
+
+        Some(ciphertext.to_bytes_be())
     }
 }

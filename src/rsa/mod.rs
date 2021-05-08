@@ -8,7 +8,7 @@ mod primes;
 use num_bigint::{BigInt, BigUint};
 use num_integer::Integer;
 use once_cell::sync::Lazy;
-pub use padding::{BadNoPadding, BadPKCS1v1_5, PKCS1v1_5, SignaturePadding};
+pub use padding::{BadNoPadding, BadPKCS1v1_5, EncrytionPadding, PKCS1v1_5, SignaturePadding};
 
 use self::primes::gen_rsa_prime;
 use crate::digest::Digest;
@@ -31,16 +31,6 @@ pub struct RSAPublicKey {
 }
 
 impl RSAPublicKey {
-    /// Process a message with [textbook RSA](https://crypto.stackexchange.com/questions/1448/definition-of-textbook-rsa).
-    #[must_use]
-    pub fn textbook_process(&self, message: &BigUint) -> Option<BigUint> {
-        if message > &self.n {
-            return None;
-        }
-
-        Some(message.modpow(&self.e, &self.n))
-    }
-
     /// Verify a `signature` against a `message`.
     #[must_use]
     pub fn verify<S, D>(&self, message: &[u8], signature: &BigUint) -> bool
@@ -54,6 +44,28 @@ impl RSAPublicKey {
             }
             None => false,
         }
+    }
+
+    /// Encrypt a `plaintext`.
+    #[must_use]
+    pub fn encrypt<E>(&self, plaintext: &[u8]) -> Option<BigUint>
+    where
+        E: EncrytionPadding,
+    {
+        E::pad(self.len_bytes(), plaintext).and_then(|padded| self.textbook_process(&padded))
+    }
+
+    /// Process a message with [textbook RSA](https://crypto.stackexchange.com/questions/1448/definition-of-textbook-rsa).
+    ///
+    /// Mostly used as a primitive, not intended as a public-facing API. Prefer using `verify`/`encrypt` which are safer.
+    /// If you need the textbook behavior just use `BadNoPadding` scheme.
+    #[must_use]
+    pub fn textbook_process(&self, message: &BigUint) -> Option<BigUint> {
+        if message > &self.n {
+            return None;
+        }
+
+        Some(message.modpow(&self.e, &self.n))
     }
 
     /// Get modulus length in bits.
@@ -81,16 +93,6 @@ pub struct RSAPrivateKey {
 }
 
 impl RSAPrivateKey {
-    /// Process a message with [textbook RSA](https://crypto.stackexchange.com/questions/1448/definition-of-textbook-rsa).
-    #[must_use]
-    pub fn textbook_process(&self, message: &BigUint) -> Option<BigUint> {
-        if message > &self.n {
-            return None;
-        }
-
-        Some(message.modpow(&self.d, &self.n))
-    }
-
     /// Sign a `message`.
     #[must_use]
     pub fn sign<S, D>(&self, message: &[u8]) -> Option<BigUint>
@@ -101,6 +103,30 @@ impl RSAPrivateKey {
         S::hash_pad::<D>(self.len_bytes(), message)
             .and_then(|signature| self.textbook_process(&signature))
     }
+
+    /// Decrypt a `ciphertext`.
+    #[must_use]
+    pub fn decrypt<E>(&self, ciphertext: &BigUint) -> Option<Vec<u8>>
+    where
+        E: EncrytionPadding,
+    {
+        self.textbook_process(ciphertext)
+            .and_then(|padded| E::unpad(self.len_bytes(), &padded))
+    }
+
+    /// Process a message with [textbook RSA](https://crypto.stackexchange.com/questions/1448/definition-of-textbook-rsa).
+    ///
+    /// Mostly used as a primitive, not intended as a public-facing API. Prefer using `sign`/`decrypt` which are safer.
+    /// If you need the textbook behavior just use `BadNoPadding` scheme.
+    #[must_use]
+    pub fn textbook_process(&self, message: &BigUint) -> Option<BigUint> {
+        if message > &self.n {
+            return None;
+        }
+
+        Some(message.modpow(&self.d, &self.n))
+    }
+
 
     /// Get modulus length in bits.
     #[must_use]
@@ -288,7 +314,7 @@ mod test {
     }
 
     #[test]
-    fn test_rsa_pkcs1_v1_5_full() {
+    fn test_rsa_pkcs1_v1_5_signature_full() {
         const SIGN_MESSAGE: &[u8] = b"THIS IS MY MESSAGE";
 
         let (public_key, private_key) = &RSA_KEYPAIR as &(RSAPublicKey, RSAPrivateKey);
@@ -297,5 +323,17 @@ mod test {
         let is_valid = public_key.verify::<PKCS1v1_5, SHA256>(SIGN_MESSAGE, &signature);
 
         assert!(is_valid);
+    }
+
+    #[test]
+    fn test_rsa_pkcs1_v1_5_encryption_full() {
+        const PLAINTEXT: &[u8] = b"THIS IS MY MESSAGE";
+
+        let (public_key, private_key) = &RSA_KEYPAIR as &(RSAPublicKey, RSAPrivateKey);
+
+        let ciphertext = public_key.encrypt::<PKCS1v1_5>(PLAINTEXT).unwrap();
+        let decrypted_plaintext = private_key.decrypt::<PKCS1v1_5>(&ciphertext);
+
+        assert_eq!(decrypted_plaintext.unwrap(), PLAINTEXT);
     }
 }

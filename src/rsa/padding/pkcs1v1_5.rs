@@ -1,9 +1,13 @@
 //! [PKCS#1 v1.5](https://tools.ietf.org/html/rfc2313) padding.
 
+use std::iter;
+
 use num_bigint::BigUint;
+use rand::distributions::Standard;
+use rand::{thread_rng, Rng};
 
 use crate::digest::Digest;
-use crate::rsa::SignaturePadding;
+use crate::rsa::{EncrytionPadding, SignaturePadding};
 
 /// **INTENTIONALLY UNSAFE** [PKCS#1 v1.5](https://tools.ietf.org/html/rfc2313)
 /// padding implementation that stops parsing the block after the hash, even if
@@ -131,6 +135,45 @@ impl SignaturePadding for PKCS1v1_5 {
         let message_hash = D::digest(message);
 
         signature_hash == message_hash.as_ref()
+    }
+}
+
+impl EncrytionPadding for PKCS1v1_5 {
+    fn pad(block_len: usize, plaintext: &[u8]) -> Option<BigUint> {
+        if block_len < plaintext.len() + 11 {
+            return None;
+        }
+
+        let padding_len = block_len - 3 - plaintext.len();
+        let padding_bytes_iter = thread_rng()
+            .sample_iter::<u8, _>(Standard)
+            .filter(|&x| x > 0)
+            .take(padding_len);
+
+        let bytes = iter::once(0x02_u8)
+            .chain(padding_bytes_iter)
+            .chain(iter::once(0x00_u8))
+            .chain(plaintext.iter().copied())
+            .collect::<Vec<_>>();
+
+        assert_eq!(bytes.len(), block_len - 1);
+
+        Some(BigUint::from_bytes_be(&bytes))
+    }
+
+    fn unpad(block_len: usize, ciphertext: &BigUint) -> Option<Vec<u8>> {
+        let bytes = ciphertext.to_bytes_be();
+
+        if bytes.len() + 1 != block_len || bytes[0] != 0x02 {
+            return None;
+        }
+
+        let padding_len = bytes[1..].iter().position(|&x| x == 0)?;
+        if padding_len < 8 {
+            return None;
+        }
+
+        Some(bytes[1 + padding_len + 1..].to_vec())
     }
 }
 
@@ -308,6 +351,122 @@ mod test_pkcs1_v1_5_signature {
             PKCS1v1_5::unpad_verify::<SHA256>(11 + prefix.len() + digest.len(), &[], &signature);
 
         assert!(is_valid);
+    }
+}
+
+#[cfg(test)]
+mod test_pkcs1_v1_5_encryption {
+    use num_bigint::BigUint;
+
+    use super::{EncrytionPadding, PKCS1v1_5};
+
+    const MESSAGE: &[u8] = b"THIS IS MY PLAINTEXT";
+    const BITS: usize = 1024;
+
+    #[test]
+    fn pad_exact_len() {
+        assert!(PKCS1v1_5::pad(MESSAGE.len() + 11, MESSAGE).is_some());
+    }
+
+    #[test]
+    fn pad_reject_short_block() {
+        assert!(PKCS1v1_5::pad(MESSAGE.len() + 10, MESSAGE).is_none());
+    }
+
+    #[test]
+    fn unpad() {
+        let bytes = [
+            &[
+                0x02_u8, 0xba, 0xad, 0xca, 0xfe, 0xde, 0xad, 0xbe, 0xef, 0xba, 0xad, 0xca, 0xfe,
+                0xde, 0xad, 0xbe, 0xef, 0x00,
+            ] as &[u8],
+            MESSAGE,
+        ]
+        .concat();
+        let padded = BigUint::from_bytes_be(&bytes);
+
+        assert_eq!(
+            PKCS1v1_5::unpad(19 + MESSAGE.len(), &padded).unwrap(),
+            MESSAGE
+        );
+    }
+    #[test]
+    fn unpad_reject_bad_len() {
+        let bytes = [
+            &[
+                0x02_u8, 0xba, 0xad, 0xca, 0xfe, 0xde, 0xad, 0xbe, 0xef, 0xba, 0xad, 0xca, 0xfe,
+                0xde, 0xad, 0xbe, 0xef, 0x00,
+            ] as &[u8],
+            MESSAGE,
+        ]
+        .concat();
+        let padded = BigUint::from_bytes_be(&bytes);
+
+        assert_eq!(PKCS1v1_5::unpad(123, &padded), None);
+    }
+
+    #[test]
+    fn unpad_reject_bad_block_type() {
+        let bytes = [
+            &[
+                0x13_u8, 0xba, 0xad, 0xca, 0xfe, 0xde, 0xad, 0xbe, 0xef, 0xba, 0xad, 0xca, 0xfe,
+                0xde, 0xad, 0xbe, 0xef, 0x00,
+            ] as &[u8],
+            MESSAGE,
+        ]
+        .concat();
+        let padded = BigUint::from_bytes_be(&bytes);
+
+        assert_eq!(PKCS1v1_5::unpad(19 + MESSAGE.len(), &padded), None);
+    }
+
+    #[test]
+    fn unpad_reject_short_padding() {
+        let bytes = [
+            &[0x02_u8, 0xba, 0xad, 0xca, 0xfe, 0xde, 0xad, 0xbe, 0x00] as &[u8],
+            MESSAGE,
+        ]
+        .concat();
+        let padded = BigUint::from_bytes_be(&bytes);
+
+        assert_eq!(PKCS1v1_5::unpad(10 + MESSAGE.len(), &padded), None);
+    }
+
+    #[test]
+    fn unpad_exact_padding() {
+        let bytes = [
+            &[
+                0x02_u8, 0xba, 0xad, 0xca, 0xfe, 0xde, 0xad, 0xbe, 0xef, 0x00,
+            ] as &[u8],
+            MESSAGE,
+        ]
+        .concat();
+        let padded = BigUint::from_bytes_be(&bytes);
+
+        assert_eq!(
+            PKCS1v1_5::unpad(11 + MESSAGE.len(), &padded).unwrap(),
+            MESSAGE
+        );
+    }
+
+    #[test]
+    fn unpad_reject_missing_pad_ending() {
+        let bytes = [&[
+            0x02_u8, 0xba, 0xad, 0xca, 0xfe, 0xde, 0xad, 0xbe, 0xef, 0xba, 0xad, 0xca, 0xfe, 0xde,
+            0xad, 0xbe, 0xef,
+        ] as &[u8]]
+        .concat();
+        let padded = BigUint::from_bytes_be(&bytes);
+
+        assert_eq!(PKCS1v1_5::unpad(18, &padded), None);
+    }
+
+    #[test]
+    fn roundtrip() {
+        let padded = PKCS1v1_5::pad(BITS / 8, MESSAGE).unwrap();
+        let unpadded = PKCS1v1_5::unpad(BITS / 8, &padded).unwrap();
+
+        assert_eq!(unpadded, MESSAGE);
     }
 }
 
