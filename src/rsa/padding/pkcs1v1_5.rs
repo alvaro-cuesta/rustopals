@@ -36,7 +36,7 @@ impl SignaturePadding for BadPKCS1v1_5 {
             padding_end += 1;
         }
 
-        if padding_end == 1 || block[padding_end] != 0 {
+        if padding_end == 1 || block[padding_end] != 0x00 {
             return false;
         }
 
@@ -114,6 +114,10 @@ impl SignaturePadding for PKCS1v1_5 {
         let is_valid_padding = block[1..1 + padding_len].iter().all(|&x| x == 0xff);
 
         if !is_valid_padding {
+            return false;
+        }
+
+        if block[padding_len + 1] != 0x00 {
             return false;
         }
 
