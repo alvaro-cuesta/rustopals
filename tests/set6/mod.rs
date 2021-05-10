@@ -126,3 +126,7 @@ fn challenge45_dsa_param_tampering() {
 
 // RSA parity oracle - https://cryptopals.com/sets/1/challenges/46
 mod challenge46_rsa_parity_oracle;
+
+// Bleichenbacher's PKCS 1.5 Padding Oracle (Simple Case) - https://cryptopals.com/sets/1/challenges/47
+// Bleichenbacher's PKCS 1.5 Padding Oracle (Complete Case) - https://cryptopals.com/sets/1/challenges/48
+mod challenge47_48_pkcs1_5_padding_oracle;

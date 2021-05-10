@@ -70,13 +70,13 @@ impl RSAPublicKey {
 
     /// Get modulus length in bits.
     #[must_use]
-    fn len_bits(&self) -> usize {
+    pub fn len_bits(&self) -> usize {
         self.n.bits() as usize
     }
 
     /// Get modulus length in bytes.
     #[must_use]
-    fn len_bytes(&self) -> usize {
+    pub fn len_bytes(&self) -> usize {
         self.len_bits().div_ceil(&8) as usize
     }
 }
@@ -129,13 +129,13 @@ impl RSAPrivateKey {
 
     /// Get modulus length in bits.
     #[must_use]
-    fn len_bits(&self) -> usize {
+    pub fn len_bits(&self) -> usize {
         self.n.bits() as usize
     }
 
     /// Get modulus length in bytes.
     #[must_use]
-    fn len_bytes(&self) -> usize {
+    pub fn len_bytes(&self) -> usize {
         self.len_bits().div_ceil(&8) as usize
     }
 }

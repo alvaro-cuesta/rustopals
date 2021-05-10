@@ -20,10 +20,17 @@ serve as a real-world exercise.
 
 ## Running
 
-- Run all tests:
+- Running tests:
 
     ```sh
     cargo test
+    ```
+
+    Some tests are ignored due to long running time (and are not run in the CI).
+    You can run those (probably you want them in `release` mode):
+
+    ```sh
+    cargo test --release -- --ignored
     ```
 
     You can also run tests only for specific sets/tests. E.g. for set 1, challenge 2:
@@ -32,7 +39,7 @@ serve as a real-world exercise.
     cargo test set1::challenge2
     ```
 
-    Or run the documentation tests:
+    And run the documentation examples as tests:
 
     ```sh
     cargo test --doc
@@ -44,7 +51,7 @@ serve as a real-world exercise.
     cargo doc --open
     ```
 
-## Progress (42/64)
+## Progress (44/64)
 
 ### [Set 1: Basics](https://cryptopals.com/sets/1)
 
@@ -113,8 +120,10 @@ serve as a real-world exercise.
 - ✅ [DSA nonce recovery from repeated nonce](https://cryptopals.com/sets/6/challenges/44)
 - ✅ [DSA parameter tampering](https://cryptopals.com/sets/6/challenges/45)
 - ✅ [RSA parity oracle](https://cryptopals.com/sets/6/challenges/46)
-- ⬛ [Bleichenbacher's PKCS 1.5 Padding Oracle (Simple Case)](https://cryptopals.com/sets/6/challenges/47)
-- ⬛ [Bleichenbacher's PKCS 1.5 Padding Oracle (Complete Case)](https://cryptopals.com/sets/6/challenges/48)
+- 🟨 [Bleichenbacher's PKCS 1.5 Padding Oracle (Simple Case)](https://cryptopals.com/sets/6/challenges/47)
+  - This required the code for challenge 48 blow, i.e., I had more than one
+    interval, but the challenge said otherwise. Did I do something wrong?
+- ✅ [Bleichenbacher's PKCS 1.5 Padding Oracle (Complete Case)](https://cryptopals.com/sets/6/challenges/48)
 
 ### [Set 7: Hashes](https://cryptopals.com/sets/7)
 
