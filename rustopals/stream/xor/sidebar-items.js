@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["RepeatingXORCipher","XOR cipher with a repeating multi-item key (`ABCDABCDABCD...`)"],["SingleXORCipher","XOR cipher with a single-item key (`AAAAAAAAAAAA...`)"]]});

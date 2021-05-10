@@ -1,0 +1,1 @@
+initSidebarItems({"static":[["NIST_BASE","NIST-recommended base for DH."],["NIST_MODULUS","NIST-recommended modulus for DH."]],"struct":[["DHOffer","A Diffie-Hellman local offer."],["DHSession","A Diffie-Hellman already-established session."]]});

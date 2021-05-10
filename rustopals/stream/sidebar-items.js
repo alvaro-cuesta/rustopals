@@ -1,0 +1,1 @@
+initSidebarItems({"mod":[["ctr","CTR-based stream cipher."],["rng","RNG-based stream cipher."],["xor","XOR-based stream ciphers."]],"trait":[["SeekableStreamCipher","Trait for seekable stream ciphers, which allow seeking into any position of the stream."],["StreamCipher","Trait for stream ciphers."]]});

@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["RNG","RNG-based stream cipher. The RNG seed is the key."]]});

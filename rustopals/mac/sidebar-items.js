@@ -1,0 +1,1 @@
+initSidebarItems({"fn":[["bad_mac","A very bad MAC implementation that nobody should use."],["hmac","HMAC implementation."]]});

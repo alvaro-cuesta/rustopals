@@ -1,0 +1,1 @@
+window.ALL_CRATES = ["aho_corasick","base64","byteorder","cfg_if","either","getrandom","hex","itertools","libc","memchr","num_bigint","num_integer","num_iter","num_traits","once_cell","ppv_lite86","rand","rand_chacha","rand_core","regex","regex_syntax","rustopals"];
